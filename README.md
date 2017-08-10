@@ -8,12 +8,12 @@ Make sure to have all required packages installed code to install pacakges from 
 ```
 install.packages(c("dplyr","tidyr","ggplot2","ggstance","shiny","shinyjs","markdown","devtools"))
 devtools::install_github("baptiste/egg")
-```
 shiny::runGitHub('interactiveforestplot', 'smouksassi')
 ```
-
+### Example
 An example data is provided.
 Your data should have the following column names:
-label,mid,lower,upper,labtable,covname,paramname
-
+label,mid,lower,upper,covname,paramname
 More on this soon
+
+![screenshot](img/snapshotforest.png)
