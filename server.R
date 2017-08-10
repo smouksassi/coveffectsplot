@@ -85,7 +85,7 @@ function(input, output, session) {
     summarydata<- df %>%
       group_by(paramname,covname,label) %>%
       mutate(
-        MEANEXP = median(mid),
+        MEANEXP = mid,
         LOWCI = lower,
         UPCI =  upper,
         MEANLABEL=signif_pad(MEANEXP,sigdigits),
