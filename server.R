@@ -27,7 +27,7 @@ function(input, output, session) {
                    choices = choices,
                    selected = choices[1],
                    multiple=FALSE,
-                   options = list(plugins = list('drag_drop')),
+                   options = list(plugins = list('remove_button', 'drag_drop')),
                    width = '8000px'
     )
   })
@@ -63,7 +63,7 @@ function(input, output, session) {
                    choices = choices,
                    selected = choices,
                    multiple=TRUE,
-                   options = list(plugins = list('drag_drop')),
+                   options = list(plugins = list('remove_button','drag_drop')),
                    width = '8000px'
     )   
     
@@ -113,9 +113,6 @@ function(input, output, session) {
     sliderInput("refareain", "Reference Area", min=0, max=ymaxmax, value=c(ymin,ymax),step=ystep, animate = FALSE)
     
   })
-  
-
-  
 
   output$plot <- renderPlot({
              req(input$refareain)
@@ -128,13 +125,11 @@ function(input, output, session) {
              summarydata <-  formatstats()
              summarydata [,"covname"] <- factor(summarydata [,"covname"], levels = c(input$covariatesin) )
              summarydata [,"label"]   <- factor(summarydata[,"label"]   , levels = c(input$covvalueorderin))
+             summarydata <- summarydata %>%
+               filter(label %in% c(input$covvalueorderin))
+             
              facetformula <- "covname~."
-             
-
-               
-
-             
-             
+     
              if (!input$customlegendtitle){
              
              p1<- ggplot(data=summarydata,aes(y=factor(label), x=mid, xmin=lower, xmax=upper)) +
