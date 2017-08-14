@@ -140,7 +140,8 @@ function(input, output, session) {
                facet_grid(covname~.,scales="free",space = "free",switch="both")+
                ylab("") + 
                theme_bw(base_size = 22)+
-               theme(axis.text.y  = element_text(angle=0, vjust=1,size=24),
+               theme(axis.text.y  = element_text(angle=0, vjust=1,size=input$ylablesize),
+                     axis.text.x  = element_text(size=input$xlablesize),
                      legend.position="top", 
                      legend.justification=c(0.5,0.5),
                      legend.direction="horizontal",

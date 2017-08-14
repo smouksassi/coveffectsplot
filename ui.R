@@ -49,10 +49,11 @@ column(2,
              fluidRow(
                
                column (12,
+                       hr(),
                        numericInput("sigdigits",label = "Significant Digits",value = 2,min=NA,max=NA),
                        sliderInput("textsize", "Table Text Size", min=1, max=12,step=1, value=7),
                        uiOutput("refarea"),
-
+                       hr(),
                        
                        checkboxInput('customxticks', 'Custom X axis Ticks ?', value = FALSE),
                        
@@ -66,16 +67,21 @@ column(2,
                                                   value = as.character(paste(
                                                     0.75,1.333
                                                     ,sep=",") )
-                                        )
+                                        ),
+                                        hr()
                        ),
                        checkboxInput('userxzoom', 'Custom X axis Range ?', value = FALSE),
                        conditionalPanel(condition = "input.userxzoom" , 
                                         numericInput("lowerxin",label = "Lower X Limit",value = 0,min=NA,max=NA,width='100%'),
                                         numericInput("upperxin",label = "Upper X Limit",value = 2,min=NA,max=NA,width='100%')
                        ),
-
+                       hr(),
                               sliderInput("plottotableratio", "Plot to Table Ratio", min=1, max=5, value=4,step=0.5, animate = FALSE),
-                       hr())
+                       hr(),
+                       sliderInput("ylablesize", "Y axis labels size", min=1, max=32, value=24,step=0.5),
+                       sliderInput("xlablesize", "X axis labels size", min=1, max=32, value=24,step=0.5)
+                       
+                       )
                      
              )
            ),#tabpanel
@@ -100,7 +106,7 @@ column(2,
                multiple=TRUE,  options = list(
                  plugins = list('drag_drop')
                )),
-             checkboxInput('combineareareflegend', 'Combine Ref and Area Legends if they share the same text ?',value = FALSE)
+             checkboxInput('combineareareflegend', 'Combine Ref and Area Legends if they share the same text ?',value = TRUE)
              
              )
            )
