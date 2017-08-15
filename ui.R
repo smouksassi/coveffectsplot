@@ -25,7 +25,6 @@ fluidPage(
                textInput("yaxistitle", label = "Y axis Title", value = ""),
                textInput("xaxistitle", label = "X axis Title", value = ""),
                sliderInput("facettext", "Facet Text Size", min=8, max=32,step=1, value=22),
-               sliderInput("height", "Plot Height", min=1080/4, max=1080, value=900, animate = FALSE),
                
                  hr()
                ), # tabPanel
@@ -33,8 +32,8 @@ fluidPage(
                
                tabPanel(
                  "How To",
-                 hr()
-                 #includeMarkdown(file.path("text", "howto.md"))
+                 hr(),
+                 includeMarkdown(file.path("text", "howto.md"))
                )# tabpanel 
                )#tabsetPanel
            ),#column3
@@ -79,8 +78,8 @@ column(2,
                               sliderInput("plottotableratio", "Plot to Table Ratio", min=1, max=5, value=4,step=0.5, animate = FALSE),
                        hr(),
                        sliderInput("ylablesize", "Y axis labels size", min=1, max=32, value=24,step=0.5),
-                       sliderInput("xlablesize", "X axis labels size", min=1, max=32, value=24,step=0.5)
-                       
+                       sliderInput("xlablesize", "X axis labels size", min=1, max=32, value=24,step=0.5),
+                       sliderInput("height", "Plot Height", min=1080/4, max=1080, value=900, animate = FALSE)
                        )
                      
              )

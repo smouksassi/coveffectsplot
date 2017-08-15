@@ -16,4 +16,4 @@ Your data should have the following column names:
 label,mid,lower,upper,covname,paramname
 More on this soon
 
-![screenshot](img/snapshotforest.png)
+![example plot with the included dataset](img/snapshotforest.png)
