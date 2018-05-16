@@ -147,74 +147,23 @@ req(formatstats())
     req(plotdataprepare())
     req(input$height)
     req(summarydata)
+    
+    p1 <-
+      ggplot(data = summarydata, aes(
+        y = factor(label),
+        x = mid,
+        xmin = lower,
+        xmax = upper
+      )) 
     if (!input$customlegendtitle) {
-      p1 <-
-        ggplot(data = summarydata, aes(
-          y = factor(label),
-          x = mid,
-          xmin = lower,
-          xmax = upper
-        )) +
+        p1 <- p1 +
         geom_pointrangeh(
           position = position_dodgev(height = 0.75),
           aes(color = "Median (points)\n95% CI (horizontal lines)"),
           size = 1,
           alpha = 1,
           shape = 16
-        ) +
-        facet_grid(
-          covname ~ .,
-          scales = "free",
-          space = "free",
-          switch = input$facetswitch
-        ) +
-        ylab("") +
-        theme_bw(base_size = 22) +
-        theme(
-          axis.text.y  = element_text(
-            angle = 0,
-            vjust = 1,
-            size = input$ylablesize
-          ),
-          axis.text.x  = element_text(size = input$xlablesize),
-          legend.position = "top",
-          legend.justification = c(0.5, 0.5),
-          legend.direction = "horizontal",
-          legend.key.width = unit(3, "line"),
-          strip.text = element_text(size = input$facettext),
-          panel.grid.minor = element_line(colour = "gray", linetype = "dotted"),
-          panel.grid.major = element_line(colour = "gray", linetype = "solid"),
-          strip.background = element_rect(fill = input$stripbackgroundfill),
-          strip.placement  = input$stripplacement
-        ) +
-        ggtitle("\n")
-      
-      
-      if (input$xaxistitle == "") {
-        p1 <- p1 +
-          xlab(paste(
-            "Changes of",
-            unique(summarydata$exposurename),
-            "Relative to Reference"
-          ))
-      }
-      if (input$xaxistitle != "") {
-        p1 <- p1 +
-          xlab(input$xaxistitle)
-      }
-      if (input$yaxistitle != "") {
-        p1 <- p1 +
-          ylab(input$yaxistitle)
-      }
-      if (input$customxticks) {
-        p1 <- p1 +
-          scale_x_continuous(breaks = as.numeric(unique(unlist (
-            strsplit(input$xaxisbreaks     , ",")
-          ))),
-          minor_breaks = as.numeric(unique(unlist (
-            strsplit(input$xaxisminorbreaks, ",")
-          ))))
-      }
+        ) 
       
       if (input$showrefarea) {
         p1 <- p1 +
@@ -232,7 +181,7 @@ req(formatstats())
             ymin = 1,
             aes(fill = "Reference (vertical line)\nClinically relevant limits (colored area)"),
             size = 1
-          )  # fake ribobn for fill legend
+          )  # fake ribbon for fill legend
       }
       
       p1 <- p1 +
@@ -260,11 +209,7 @@ req(formatstats())
         ) +
         
         guides(colour = guide_legend(order = 1))
-      
-      if (input$userxzoom) {
-        p1 <- p1 +
-          coord_cartesian(xlim = c(input$lowerxin, input$upperxin))
-      }
+
     }
     
     if (input$customlegendtitle) {
@@ -293,72 +238,14 @@ req(formatstats())
       if (length(linetypepos) != 0) {
         glinetype <- guide_legend("", order = linetypepos)
       }
-      p1 <-
-        ggplot(data = summarydata, aes(
-          y = factor(label),
-          x = mid,
-          xmin = lower,
-          xmax = upper
-        )) +
+        p1 <- p1 +
         geom_pointrangeh(
           position = position_dodgev(height = 0.75),
           aes(color = collegend),
           size = 1,
           alpha = 1,
           shape = 16
-        ) +
-        facet_grid(
-          covname ~ .,
-          scales = "free",
-          space = "free",
-          switch = input$facetswitch
-        ) +
-        ylab("") +
-        theme_bw(base_size = 22) +
-        theme(
-          axis.text.y  = element_text(
-            angle = 0,
-            vjust = 1,
-            size = 24
-          ),
-          legend.position = "top",
-          legend.justification = c(0.5, 0.5),
-          legend.direction = "horizontal",
-          legend.key.width = unit(3, "line"),
-          strip.text = element_text(size = input$facettext),
-          panel.grid.minor = element_line(colour = "gray", linetype = "dotted"),
-          panel.grid.major = element_line(colour = "gray", linetype = "solid"),
-          strip.background = element_rect(fill = input$stripbackgroundfill),
-          strip.placement  = input$stripplacement
-        ) +
-        ggtitle("\n")
-      
-      
-      if (input$xaxistitle == "") {
-        p1 <- p1 +
-          xlab(paste(
-            "Changes of",
-            unique(summarydata$exposurename),
-            "Relative to Reference"
-          ))
-      }
-      if (input$xaxistitle != "") {
-        p1 <- p1 +
-          xlab(input$xaxistitle)
-      }
-      if (input$yaxistitle != "") {
-        p1 <- p1 +
-          ylab(input$yaxistitle)
-      }
-      if (input$customxticks) {
-        p1 <- p1 +
-          scale_x_continuous(breaks = as.numeric(unique(unlist (
-            strsplit(input$xaxisbreaks     , ",")
-          ))),
-          minor_breaks = as.numeric(unique(unlist (
-            strsplit(input$xaxisminorbreaks, ",")
-          ))))
-      }
+        ) 
       
       if (input$showrefarea) {
         p1 <- p1 +
@@ -389,14 +276,7 @@ req(formatstats())
                               values = 2) +
         scale_fill_manual(""    , breaks  = filllegend,
                           values = input$fillrefarea) +
-        
         guides(colour = guide_legend(order = 1))
-      
-      if (input$userxzoom) {
-        p1 <- p1 +
-          coord_cartesian(xlim = c(input$lowerxin, input$upperxin))
-      }
-      
       p1 <-
         p1 + guides(colour = gcol,
                     linetype = glinetype,
@@ -409,7 +289,62 @@ req(formatstats())
       }
     }
     
-    
+    p1 <- p1+
+      facet_grid(
+        covname ~ .,
+        scales = "free",
+        space = "free",
+        switch = input$facetswitch
+      ) +
+      ylab("") +
+      theme_bw(base_size = 22) +
+      theme(
+        axis.text.y  = element_text(
+          angle = 0,
+          vjust = 1,
+          size = input$ylablesize
+        ),
+        axis.text.x  = element_text(size = input$xlablesize),
+        legend.position = "top",
+        legend.justification = c(0.5, 0.5),
+        legend.direction = "horizontal",
+        legend.key.width = unit(3, "line"),
+        strip.text = element_text(size = input$facettext),
+        panel.grid.minor = element_line(colour = "gray", linetype = "dotted"),
+        panel.grid.major = element_line(colour = "gray", linetype = "solid"),
+        strip.background = element_rect(fill = input$stripbackgroundfill),
+        strip.placement  = input$stripplacement
+      ) +
+      ggtitle("\n")
+     if (input$xaxistitle == "") {
+      p1 <- p1 +
+        xlab(paste(
+          "Changes of",
+          unique(summarydata$exposurename),
+          "Relative to Reference"
+        ))
+    }
+    if (input$xaxistitle != "") {
+      p1 <- p1 +
+        xlab(input$xaxistitle)
+    }
+    if (input$yaxistitle != "") {
+      p1 <- p1 +
+        ylab(input$yaxistitle)
+    }
+    if (input$customxticks) {
+      p1 <- p1 +
+        scale_x_continuous(breaks = as.numeric(unique(unlist (
+          strsplit(input$xaxisbreaks     , ",")
+        ))),
+        minor_breaks = as.numeric(unique(unlist (
+          strsplit(input$xaxisminorbreaks, ",")
+        ))))
+    }
+    if (input$userxzoom) {
+      p1 <- p1 +
+        coord_cartesian(xlim = c(input$lowerxin, input$upperxin))
+    }
     
     p2 <- ggplot(data = summarydata, aes(y = factor(label)))
     p2 <- p2 +
