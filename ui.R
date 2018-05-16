@@ -25,6 +25,22 @@ fluidPage(
                textInput("yaxistitle", label = "Y axis Title", value = ""),
                textInput("xaxistitle", label = "X axis Title", value = ""),
                sliderInput("facettext", "Facet Text Size", min=8, max=32,step=1, value=22),
+                         colourpicker::colourInput("stripbackgroundfill",
+                                         "Strip Background Fill:",
+                                         value="#E5E5E5",
+                                         showColour = "both",allowTransparent=TRUE),
+                     div( actionButton("stripbackfillreset", "Reset Strip Background Fill"),
+                    style="text-align: right"),
+               selectizeInput(  "stripplacement", "Strip Placement:",
+                                choices = c("inside","outside"),
+                                options = list(  maxItems = 1 )  ),
+           
+               selectInput(  "facetswitch", "Facet Switch to Near Axis:",
+                                choices = c("both","y","x"),selected=c("both"),
+                                selectize=FALSE,multiple=FALSE),
+               
+               
+               
                
                  hr()
                ), # tabPanel
@@ -51,7 +67,9 @@ column(2,
                        hr(),
                        numericInput("sigdigits",label = "Significant Digits",value = 2,min=NA,max=NA),
                        sliderInput("textsize", "Table Text Size", min=1, max=12,step=1, value=7),
-                       uiOutput("refarea"),
+                       checkboxInput('showrefarea', 'Show Reference Window ?', value = TRUE),
+                       conditionalPanel(condition = "input.showrefarea" , 
+                       uiOutput("refarea")),
                        hr(),
                        
                        checkboxInput('customxticks', 'Custom X axis Ticks ?', value = FALSE),
@@ -85,7 +103,22 @@ column(2,
              )
            ),#tabpanel
            tabPanel(
-             "Legend Options",
+             "Additional Colour/Legend Options",
+             
+             colourpicker::colourInput("colourpointrange",
+                                       "Point Range Colour:",
+                                       value="blue",
+                                       showColour = "both",allowTransparent=TRUE),
+             div( actionButton("colourpointrangereset", "Reset Point Range Colour"),
+                  style="text-align: right"),
+             
+             colourpicker::colourInput("fillrefarea",
+                                       "Reference Area Fill:",
+                                       value= "#BEBEBE50",
+                                       showColour = "both",allowTransparent=TRUE),
+             div( actionButton("fillrefareareset", "Reset Reference Area Fill"),
+                  style="text-align: right"),
+             
              checkboxInput('customlegendtitle', 'Customization of Legend items and ordering ?',value = FALSE),
              conditionalPanel(
                condition = "input.customlegendtitle",

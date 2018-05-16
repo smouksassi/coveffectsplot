@@ -6,6 +6,9 @@ suppressPackageStartupMessages(library(ggstance))
 suppressPackageStartupMessages(library(shiny))
 suppressPackageStartupMessages(library(shinyjs)) 
 suppressPackageStartupMessages(library(markdown)) 
+suppressPackageStartupMessages(library(colourpicker)) 
+
+
 signif_pad <- function(x, digits=3, round.integers=TRUE, round5up=TRUE) {
   eps <- ifelse(round5up, x*(10^(-(digits + 3))), 0)
   if (round.integers) {

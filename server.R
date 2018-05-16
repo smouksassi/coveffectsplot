@@ -113,7 +113,18 @@ function(input, output, session) {
     sliderInput("refareain", "Reference Area", min=0, max=ymaxmax, value=c(ymin,ymax),step=ystep, animate = FALSE)
     
   })
-
+  observeEvent(input$colourpointrangereset, {
+    shinyjs::reset("colourpointrange")
+  })  
+  
+  observeEvent(input$stripbackfillreset, {
+    shinyjs::reset("stripbackgroundfill")
+  })  
+  observeEvent(input$fillrefareareset, {
+    shinyjs::reset("fillrefarea")
+  })  
+   
+  
   output$plot <- renderPlot({
              req(input$refareain)
              req(formatstats())
@@ -137,7 +148,7 @@ function(input, output, session) {
                  position=position_dodgev(height=0.75),
                  aes(color="Median (points)\n95% CI (horizontal lines)"),
                  size=1,alpha=1,shape=16) + 
-               facet_grid(covname~.,scales="free",space = "free",switch="both")+
+               facet_grid(covname~.,scales="free",space = "free",switch=input$facetswitch)+
                ylab("") + 
                theme_bw(base_size = 22)+
                theme(axis.text.y  = element_text(angle=0, vjust=1,size=input$ylablesize),
@@ -148,7 +159,9 @@ function(input, output, session) {
                      legend.key.width=unit(3,"line"),
                      strip.text= element_text( size=input$facettext),
                      panel.grid.minor = element_line(colour = "gray", linetype = "dotted"),
-                     panel.grid.major= element_line(colour = "gray", linetype = "solid")
+                     panel.grid.major= element_line(colour = "gray", linetype = "solid"),
+                     strip.background = element_rect(fill=input$stripbackgroundfill),
+                     strip.placement  = input$stripplacement
                )+
                ggtitle("\n")
              
@@ -172,23 +185,27 @@ function(input, output, session) {
                  )
              }
 
-             
+             if (input$showrefarea) {
              p1<- p1 +
                annotate("rect",
                         xmin=input$refareain[1],
                         xmax=input$refareain[2],
                         ymin=-Inf, ymax=Inf,
-                        col="grey",alpha=0.1)+
-               geom_ribbon(x=1,ymax=1,ymin=1,aes(fill="Reference (vertical line)\nClinically relevant limits (colored area)"),size=1,alpha=0.2) +  # fake ribobn for fill legend
-               
+                        fill=input$fillrefarea)+
+               geom_ribbon(x=1,ymax=1,ymin=1,
+          aes(fill="Reference (vertical line)\nClinically relevant limits (colored area)"),
+          size=1)  # fake ribobn for fill legend
+             }
+             
+             p1<- p1 +
                geom_vline(aes(xintercept=ref,linetype="Reference (vertical line)\nClinically relevant limits (colored area)"),size=1) +
             
                scale_colour_manual(""  ,breaks  ="Median (points)\n95% CI (horizontal lines)",
-                                   values ="blue")+
+                                   values =input$colourpointrange)+
                scale_linetype_manual("",breaks  = c("Reference (vertical line)\nClinically relevant limits (colored area)"),
                                      values =2)+
                scale_fill_manual(""    ,breaks  = c("Reference (vertical line)\nClinically relevant limits (colored area)"),
-                                 values ="grey")+
+                                 values =input$fillrefarea)+
 
                guides(colour = guide_legend(order = 1))
              
@@ -227,7 +244,7 @@ function(input, output, session) {
                    position=position_dodgev(height=0.75),
                    aes(color=collegend),
                    size=1,alpha=1,shape=16) + 
-                 facet_grid(covname~.,scales="free",space = "free",switch="both")+
+                 facet_grid(covname~.,scales="free",space = "free",switch=input$facetswitch)+
                  ylab("") + 
                  theme_bw(base_size = 22)+
                  theme(axis.text.y  = element_text(angle=0, vjust=1,size=24),
@@ -237,7 +254,9 @@ function(input, output, session) {
                        legend.key.width=unit(3,"line"),
                        strip.text= element_text( size=input$facettext),
                        panel.grid.minor = element_line(colour = "gray", linetype = "dotted"),
-                       panel.grid.major= element_line(colour = "gray", linetype = "solid")
+                       panel.grid.major= element_line(colour = "gray", linetype = "solid"),
+                       strip.background = element_rect(fill=input$stripbackgroundfill),
+                       strip.placement  = input$stripplacement
                  )+
                  ggtitle("\n")
                
@@ -261,24 +280,26 @@ function(input, output, session) {
                    )
                }
                
-               
+               if (input$showrefarea) {
+                 p1<- p1 +
+                   annotate("rect",
+                            xmin=input$refareain[1],
+                            xmax=input$refareain[2],
+                            ymin=-Inf, ymax=Inf,
+                            fill=input$fillrefarea)+
+                   geom_ribbon(x=1,ymax=1,ymin=1,
+                               aes(fill=filllegend),
+                               size=1)  # fake ribbon for fill legend
+               }
                p1<- p1 +
-                 annotate("rect",
-                          xmin=input$refareain[1],
-                          xmax=input$refareain[2],
-                          ymin=-Inf, ymax=Inf,
-                          col="grey",alpha=0.1)+
-                 geom_ribbon(x=1,ymax=1,ymin=1,aes(fill=filllegend),
-                             size=1,alpha=0.2) +  # fake ribobn for fill legend
-                 
                  geom_vline(aes(xintercept=ref,linetype=linetypelegend),size=1) +
                  
                  scale_colour_manual(""  ,breaks  =collegend,
-                                     values ="blue")+
+                                     values =input$colourpointrange)+
                  scale_linetype_manual("",breaks  = linetypelegend,
                                        values =2)+
                  scale_fill_manual(""    ,breaks  = filllegend,
-                                   values ="grey")+
+                                   values =input$fillrefarea)+
                  
                  guides(colour = guide_legend(order = 1))
                
@@ -289,7 +310,10 @@ function(input, output, session) {
                }
              
                p1 <- p1+ guides(colour = gcol, linetype = glinetype, fill = gfill)
-               
+               if(!input$showrefarea){
+                 p1 <- p1+ guides(colour = gcol, linetype = glinetype, fill = NULL)
+                 
+               }
              }
              
              
