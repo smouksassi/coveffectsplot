@@ -10,6 +10,6 @@ except for missing values where both (NA) and dot (.) are treated as missing.
 label mid lower upper covname paramname
 
 
-![data example](./img/snapshottable.png "Logo Title Text 1")
+![data example](./img/snapshottable.png "tableexample")
 
-*Samer Mouksassi 2017*
+*Samer Mouksassi 2018*

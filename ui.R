@@ -25,12 +25,6 @@ fluidPage(
                textInput("yaxistitle", label = "Y axis Title", value = ""),
                textInput("xaxistitle", label = "X axis Title", value = ""),
                sliderInput("facettext", "Facet Text Size", min=8, max=32,step=1, value=22),
-                         colourpicker::colourInput("stripbackgroundfill",
-                                         "Strip Background Fill:",
-                                         value="#E5E5E5",
-                                         showColour = "both",allowTransparent=TRUE),
-                     div( actionButton("stripbackfillreset", "Reset Strip Background Fill"),
-                    style="text-align: right"),
                selectizeInput(  "stripplacement", "Strip Placement:",
                                 choices = c("inside","outside"),
                                 options = list(  maxItems = 1 )  ),
@@ -103,8 +97,13 @@ column(2,
              )
            ),#tabpanel
            tabPanel(
-             "Additional Colour/Legend Options",
-             
+             "Colour/Legend Options",
+             colourpicker::colourInput("stripbackgroundfill",
+                                       "Strip Background Fill:",
+                                       value="#E5E5E5",
+                                       showColour = "both",allowTransparent=TRUE),
+             div( actionButton("stripbackfillreset", "Reset Strip Background Fill"),
+                  style="text-align: right"),
              colourpicker::colourInput("colourpointrange",
                                        "Point Range Colour:",
                                        value="blue",

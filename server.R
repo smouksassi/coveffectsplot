@@ -155,64 +155,6 @@ req(formatstats())
         xmin = lower,
         xmax = upper
       )) 
-    if (!input$customlegendtitle) {
-        p1 <- p1 +
-        geom_pointrangeh(
-          position = position_dodgev(height = 0.75),
-          aes(color = "Median (points)\n95% CI (horizontal lines)"),
-          size = 1,
-          alpha = 1,
-          shape = 16
-        ) 
-      
-      if (input$showrefarea) {
-        p1 <- p1 +
-          annotate(
-            "rect",
-            xmin = input$refareain[1],
-            xmax = input$refareain[2],
-            ymin = -Inf,
-            ymax = Inf,
-            fill = input$fillrefarea
-          ) +
-          geom_ribbon(
-            x = 1,
-            ymax = 1,
-            ymin = 1,
-            aes(fill = "Reference (vertical line)\nClinically relevant limits (colored area)"),
-            size = 1
-          )  # fake ribbon for fill legend
-      }
-      
-      p1 <- p1 +
-        geom_vline(
-          aes(xintercept = ref, linetype = "Reference (vertical line)\nClinically relevant limits (colored area)"),
-          size = 1
-        ) +
-        
-        scale_colour_manual(""  ,
-                            breaks  = "Median (points)\n95% CI (horizontal lines)",
-                            values = input$colourpointrange) +
-        scale_linetype_manual(
-          "",
-          breaks  = c(
-            "Reference (vertical line)\nClinically relevant limits (colored area)"
-          ),
-          values = 2
-        ) +
-        scale_fill_manual(
-          ""    ,
-          breaks  = c(
-            "Reference (vertical line)\nClinically relevant limits (colored area)"
-          ),
-          values = input$fillrefarea
-        ) +
-        
-        guides(colour = guide_legend(order = 1))
-
-    }
-    
-    if (input$customlegendtitle) {
       colourpos <-  which(input$legendordering == "pointinterval")
       fillpos      <-  which(input$legendordering == "area")
       linetypepos  <-  which(input$legendordering == "ref")
@@ -287,7 +229,7 @@ req(formatstats())
                           fill = NULL)
         
       }
-    }
+ 
     
     p1 <- p1+
       facet_grid(
