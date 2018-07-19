@@ -10,7 +10,8 @@ interactiveforest<- function (forestdata=plotdata,
                               REF= 1,REFmin= 0.8,REFmax= 1.25,
                               legendreftext=paste("Reference (vertical line)\n","Clinically relevant limits (colored area)",sep=""),
                               show.relevanceareainplot=TRUE,show.relevanceareainlegend=TRUE,
-                              facetformula="covname~paramname",facetscales="free_y",facetspace="fixed"
+                              facetformula="covname~paramname",facetscales="free_y",facetspace="fixed",
+                              switch="y"
 )
 { forestdata=forestdata
 xaxistitlesize<-  xaxistitlesize
@@ -35,8 +36,17 @@ p1<-  ggplot(data=forestdata,aes(y=factor(label), x=mid, xmin=lower, xmax=upper)
   geom_pointrangeh(
     position=position_dodgev(height=0.75),
     aes(color="Median (points)\n95% CI (horizontal lines)"),
-    size=1,alpha=1,shape=16) + 
-  facet_grid(facetformula,scales=facetscales,space = facetspace,switch="y")+
+    size=1,alpha=1,shape=16)
+
+if(switch!="none"){
+  p1<- p1+
+    facet_grid(facetformula,scales=facetscales,space = facetspace,switch=switch)
+}
+if(switch=="none"){
+  p1<- p1+
+    facet_grid(facetformula,scales=facetscales,space = facetspace)
+}
+p1<- p1+
   ylab("") + 
   theme_bw(base_size = 22)+
   theme(axis.text.y  = element_text(angle=0, vjust=1,size=yaxistitlesize),
@@ -86,7 +96,8 @@ interactivetableplot<- function (forestdata=plotdata,
                                  textsize=6,xaxistitlesize=14,striptextsize=14,yaxistitlesize=14,
                                  facetformula="covname~paramname",
                                  facetscales="free_y",facetspace="fixed",
-                                 remove.ylabels=TRUE,remove.xlabels=TRUE,xlim=c(0.5,1.5))
+                                 remove.ylabels=TRUE,remove.xlabels=TRUE,xlim=c(0.5,1.5),
+                                 switch="y")
 { forestdata=forestdata
 if(striptextsize==0){
   strip.text= element_blank()
@@ -98,9 +109,18 @@ facetformula<- as.formula(facetformula)
 
 p2<- ggplot(data=forestdata, aes(y=factor(label) )) +
   geom_text(aes(x =1,label =LABEL,hjust=0.5),size=textsize,
-            position=position_dodgev(height=0.75))+
-  facet_grid(facetformula,scales=facetscales,space=facetspace,switch="both")+
-  theme_bw(base_size = 22)+
+            position=position_dodgev(height=0.75))
+
+if(switch!="none"){
+  p2<- p2+
+    facet_grid(facetformula,scales=facetscales,space = facetspace,switch=switch)
+}
+if(switch=="none"){
+  p2<- p2+
+    facet_grid(facetformula,scales=facetscales,space = facetspace)
+}
+    p2<- p2+
+    theme_bw(base_size = 22)+
   theme(axis.text.y  = element_text(angle=0, vjust=1,size=yaxistitlesize),
         axis.text.x  = element_text(size=xaxistitlesize),
         legend.position="top", 
@@ -132,83 +152,3 @@ p2<-p2+
   theme(legend.position="none")
 (p2)
 }
-
-
-#############examples
-
-plotdata<- read.csv("forest-plot-table.csv")
-
-
-plotdata <- plotdata %>% 
-  mutate(midlabel = format(round(mid,2), nsmall = 2),
-         lowerlabel = format(round(lower,2), nsmall = 2),
-         upperlabel = format(round(upper,2), nsmall = 2),
-         LABEL = paste0(midlabel, " [", lowerlabel, "-", upperlabel, "]"))
-
-
-param <- "Midazolam AUC"
-plotdata <-  filter(plotdata,paramname==param)
-plotdata$covname <- reorder(plotdata$covname,plotdata$upper,FUN =max)
-plotdata$label <- reorder(plotdata$label,plotdata$scen)
-
-ggarrange(interactiveforest(plotdata,
-                            legendreftext="Reference (vertical line)",
-                            xlabtext=paste("Fold Change in",param,"Relative to Reference"),
-                            show.relevanceareainlegend=FALSE,
-                            show.relevanceareainplot=FALSE,
-                            facetformula="covname~.",
-                            facetscales="free_y",facetspace="free_y"),
-          interactivetableplot(plotdata,striptextsize=0,facetspace="free_y"), 
-          nrow=1, widths = c(4,1))
-
-
-
-
-
-
-
-plotdata<- read.csv("forest-plot-table.csv")
-
-
-plotdata <- plotdata %>% 
-  mutate(midlabel = format(round(mid,2), nsmall = 2),
-         lowerlabel = format(round(lower,2), nsmall = 2),
-         upperlabel = format(round(upper,2), nsmall = 2),
-         LABEL = paste0(midlabel, " [", lowerlabel, "-", upperlabel, "]"))
-
-
-param <- c("Midazolam AUC","Midazolam Cmax")
-plotdata <-  filter(plotdata,paramname%in%param)
-plotdata$covname <- reorder(plotdata$covname,plotdata$upper,FUN =max)
-plotdata$label <- reorder(plotdata$label,plotdata$scen)
-
-ggarrange(interactiveforest(plotdata,
-                            legendreftext="Reference (vertical line)",
-                            xlabtext=paste("Fold Change in",param,"Relative to Reference"),
-                            show.relevanceareainlegend=FALSE,
-                            show.relevanceareainplot=FALSE,
-                            facetformula="covname~paramname",
-                            facetscales="free_y",facetspace="free_y"),
-          interactivetableplot(plotdata,striptextsize=14,
-                               facetscales="free_y",facetspace="free_y",remove.ylabels=FALSE,xlim=c(0.25,2.5)), 
-          nrow=2, heights =  c(1,1))
-
-###
-
-
-plotdata<- read.csv("forestplotdatacpidata.csv")
-ggarrange(
-interactiveforest(plotdata,REF= 1,REFmin= 0.8,REFmax= 1.20,striptextsize=13,
-                 legendreftext="Reference (vertical line)\n+/- 20% limits (colored area)",
-                 xlabtext=paste("Fold Change Relative to RHZE"),
-                 facetformula="covname~paramname")
-,
-interactivetableplot(plotdata,striptextsize=13,remove.ylabels=FALSE)
-,nrow=2)
-
-
-
-
-
-
-
