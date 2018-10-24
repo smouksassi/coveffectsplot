@@ -24,18 +24,30 @@ fluidPage(
                
                textInput("yaxistitle", label = "Y axis Title", value = ""),
                textInput("xaxistitle", label = "X axis Title", value = ""),
-               sliderInput("facettext", "Facet Text Size", min=8, max=32,step=1, value=22),
+               sliderInput("facettexty", "Facet Text Size Y", min=0, max=32,step=1, value=22),
+               
+               sliderInput("facettextx", "Facet Text Size X", min=0, max=32,step=1, value=22),
+               
+               
+               
+               
                selectizeInput(  "stripplacement", "Strip Placement:",
                                 choices = c("inside","outside"),
                                 options = list(  maxItems = 1 )  ),
            
                selectInput(  "facetswitch", "Facet Switch to Near Axis:",
-                                choices = c("both","y","x"),selected=c("both"),
+                                choices = c("both","y","x","none"),selected=c("both"),
                                 selectize=FALSE,multiple=FALSE),
                
+               selectInput(  "facetformula", "Facet Formula:",
+                             choices = c("covname ~ .","covname~paramname"),selected=c("both"),
+                             selectize=FALSE,multiple=FALSE),
                
-               
-               
+               selectInput(  "facetscales", "Facet Scales:",
+                             choices = c("free_y","fixed","free_x","free"),selected=c("free_y"),
+                             selectize=FALSE,multiple=FALSE),
+               selectInput('facetspace' ,'Facet Spaces:',c("fixed","free_x","free_y","free") ),
+          
                  hr()
                ), # tabPanel
 
@@ -88,6 +100,10 @@ column(2,
                        ),
                        hr(),
                               sliderInput("plottotableratio", "Plot to Table Ratio", min=1, max=5, value=4,step=0.5, animate = FALSE),
+
+                         selectInput('tableposition','Table Position:',c("on the right","below") ),
+                 
+                       
                        hr(),
                        sliderInput("ylablesize", "Y axis labels size", min=1, max=32, value=24,step=0.5),
                        sliderInput("xlablesize", "X axis labels size", min=1, max=32, value=24,step=0.5),

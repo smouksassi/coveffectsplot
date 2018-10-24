@@ -19,7 +19,7 @@ function(input, output, session) {
       label = "Exposure Variable(s)",
       choices = choices,
       selected = choices[1],
-      multiple = FALSE,
+      multiple = TRUE,
       options = list(plugins = list('remove_button', 'drag_drop')),
       width = '8000px'
     )
@@ -30,6 +30,8 @@ function(input, output, session) {
     req(df)
     df <- df %>%
       filter(paramname %in% c(input$exposurevariablesin))
+
+    
     choices <-     unique(df[, "covname"])
     selectizeInput(
       "covariatesin",
@@ -95,7 +97,7 @@ function(input, output, session) {
     summarydata$covvalue <- factor(summarydata$label)
     summarydata <- summarydata %>%
       filter(covname %in% c(input$covariatesin)) %>%
-      filter(paramname == input$exposurevariablesin)
+      filter(paramname %in% input$exposurevariablesin)
     summarydata <- as.data.frame(summarydata)
     summarydata
   })
@@ -138,6 +140,10 @@ req(formatstats())
       factor(summarydata[, "label"]   , levels = c(input$covvalueorderin))
     summarydata <- summarydata %>%
       filter(label %in% c(input$covvalueorderin))
+    
+    summarydata [, "paramname"]   <-
+      factor(summarydata[, "paramname"]   , levels = c(input$exposurevariablesin))
+    
     summarydata
   })
   
@@ -147,6 +153,24 @@ req(formatstats())
     req(plotdataprepare())
     req(input$height)
     req(summarydata)
+    
+    facetformula<- as.formula(input$facetformula)
+
+    if(input$facettextx==0){
+      x.strip.text= element_blank()
+    }
+    if(input$facettextx>0){
+      x.strip.text= element_text( size=input$facettextx)
+    }
+    
+    if(input$facettexty==0){
+      y.strip.text= element_blank()
+    }
+    if(input$facettexty>0){
+      y.strip.text= element_text( size=input$facettexty)
+    }
+    
+    
     
     p1 <-
       ggplot(data = summarydata, aes(
@@ -231,13 +255,17 @@ req(formatstats())
       }
  
     
+      if(input$facetswitch!="none"){
+        p1<- p1+
+          facet_grid(facetformula,scales=input$facetscales,space = input$facetspace,switch=input$facetswitch)
+      }
+    if(input$facetswitch=="none"){
+      p1<- p1+
+        facet_grid(facetformula,scales=input$facetscales,space = input$facetspace,switch=NULL)
+    }
+    
+      
     p1 <- p1+
-      facet_grid(
-        covname ~ .,
-        scales = "free",
-        space = "free",
-        switch = input$facetswitch
-      ) +
       ylab("") +
       theme_bw(base_size = 22) +
       theme(
@@ -251,7 +279,8 @@ req(formatstats())
         legend.justification = c(0.5, 0.5),
         legend.direction = "horizontal",
         legend.key.width = unit(3, "line"),
-        strip.text = element_text(size = input$facettext),
+        strip.text.x = x.strip.text,
+        strip.text.y = y.strip.text,
         panel.grid.minor = element_line(colour = "gray", linetype = "dotted"),
         panel.grid.major = element_line(colour = "gray", linetype = "solid"),
         strip.background = element_rect(fill = input$stripbackgroundfill),
@@ -261,8 +290,7 @@ req(formatstats())
      if (input$xaxistitle == "") {
       p1 <- p1 +
         xlab(paste(
-          "Changes of",
-          unique(summarydata$exposurename),
+          "Changes of Parameter",
           "Relative to Reference"
         ))
     }
@@ -300,8 +328,17 @@ req(formatstats())
         position = position_dodgev(height = 0.75)
       )
     
+
+    if(input$facetswitch!="none"){
+      p2 <- p2 +
+        facet_grid(facetformula,scales=input$facetscales,space = input$facetspace,switch=input$facetswitch)
+    }
+    if(input$facetswitch=="none"){
+      p2 <- p2 +
+        facet_grid(facetformula,scales=input$facetscales,space = input$facetspace,switch=NULL)
+    }
+    
     p2 <- p2 +
-      facet_grid(covname ~ ., scales = "free", space = "free") +
       theme_bw(base_size = 26) +
       theme(
         strip.background = element_blank(),
@@ -316,11 +353,27 @@ req(formatstats())
       xlab("") +
       xlim(c(0.99, 1.01)) +
       theme(legend.position = "none")
+
+    if ( input$tableposition=="on the right") {
+      ggarrange(p1,
+                p2,
+                nrow = 1,
+                widths = c(input$plottotableratio, 1))
+      
+    }
+
+    if ( input$tableposition=="below") {
+      ggarrange(p1,
+                p2,
+                nrow = 2,
+                heights = c(input$plottotableratio, 1))
+      
+    }
     
-    ggarrange(p1,
-              p2,
-              nrow = 1,
-              widths = c(input$plottotableratio, 1))
+    
+    
+    
+    
   }, height =   function() {
     input$height
   })
