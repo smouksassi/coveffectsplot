@@ -40,7 +40,7 @@ fluidPage(
                                 selectize=FALSE,multiple=FALSE),
                
                selectInput(  "facetformula", "Facet Formula:",
-                             choices = c("covname ~ .","covname~paramname"),selected=c("both"),
+                             choices = c("covname ~ .","covname~paramname"),selected=c("covname ~ ."),
                              selectize=FALSE,multiple=FALSE),
                
                selectInput(  "facetscales", "Facet Scales:",
@@ -102,12 +102,14 @@ column(2,
                               sliderInput("plottotableratio", "Plot to Table Ratio", min=1, max=5, value=4,step=0.5, animate = FALSE),
 
                          selectInput('tableposition','Table Position:',c("on the right","below") ),
-                 
+                       checkboxInput('showtablefacetstrips', 'Show Table Facet Strip ?', value = FALSE),
                        
                        hr(),
                        sliderInput("ylablesize", "Y axis labels size", min=1, max=32, value=24,step=0.5),
                        sliderInput("xlablesize", "X axis labels size", min=1, max=32, value=24,step=0.5),
-                       sliderInput("height", "Plot Height", min=1080/4, max=1080, value=900, animate = FALSE)
+                       sliderInput("height", "Plot Height", min=1080/4, max=1080, value=900, animate = FALSE),
+                       checkboxInput('shapebyparamname', 'Map Symbol to Parameter(s) ?', value = TRUE)
+                       
                        )
                      
              )
@@ -148,8 +150,8 @@ column(2,
              selectizeInput(
                'legendordering',
                label = paste("Drag/Drop to reorder","Colour, Ref, Area Legends"),
-               choices = c("pointinterval","ref","area"),
-               selected = c("pointinterval","ref","area"),
+               choices = c("pointinterval","ref","area","shape"),
+               selected = c("pointinterval","ref","area","shape"),
                multiple=TRUE,  options = list(
                  plugins = list('drag_drop')
                )),
