@@ -403,14 +403,7 @@ req(formatstats())
     
     
     
-  }, height =   function() {
+  }, height = function() {
     input$height
-  })
-  
-  
-  
-  
-  output$ui_plot <-  renderUI({
-    plotOutput('plot',  height = input$height, width = "100%")
   })
 }

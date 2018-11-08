@@ -60,9 +60,10 @@ fluidPage(
                )#tabsetPanel
            ),#column3
     
-    column(8, 
-               uiOutput('ui_plot')
-),# column6
+    column(
+      8, 
+      plotOutput('plot', height = "auto", width = "100%")
+    ), # column6
 column(2,
          tabsetPanel(
            tabPanel(
