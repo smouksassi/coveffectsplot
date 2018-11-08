@@ -383,25 +383,20 @@ req(formatstats())
     }
     
 
-    if ( input$tableposition=="on the right") {
+    if ( input$tableposition == "right") {
       ggarrange(p1,
                 p2,
                 nrow = 1,
                 widths = c(input$plottotableratio, 1))
       
-    }
-
-    if ( input$tableposition=="below") {
+    } else if ( input$tableposition == "below") {
       ggarrange(p1,
                 p2,
                 nrow = 2,
                 heights = c(input$plottotableratio, 1))
-      
+    } else {
+      stop("Invalid table position: ", input$tableposition)
     }
-    
-    
-    
-    
     
   }, height = function() {
     input$height
