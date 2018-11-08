@@ -1,80 +1,60 @@
 function(input, output, session) {
-  values <- reactiveValues(maindata = NULL)
+  maindata <- reactiveVal(NULL)
+  
+  # Set the data source
   observeEvent(input$datafile, {
     file <- input$datafile$datapath
-    values$maindata <- read.csv(file, na.strings = c("NA", "."))
+    maindata(read.csv(file, na.strings = c("NA", ".")))
   })
   observeEvent(input$sample_data_btn, {
     file <- "data/dfall.csv"
-    values$maindata <- read.csv(file, na.strings = c("NA", "."))
+    maindata(read.csv(file, na.strings = c("NA", ".")))
   })
   
+  # Show inputs once the data source exists
+  observeEvent(maindata(), once = TRUE, {
+    shinyjs::show("exposurevariables")
+    shinyjs::show("covariates")
+    shinyjs::show("covvalueorder")
+  })
   
-  output$exposurevariables <- renderUI({
-    df <- values$maindata
+  # Update the options in different inputs based on data
+  observe({
+    df <- maindata()
     req(df)
-    choices <-     unique(df[, "paramname"])
-    selectizeInput(
-      'exposurevariablesin',
-      label = "Exposure Variable(s)",
-      choices = choices,
-      selected = choices[1],
-      multiple = TRUE,
-      options = list(plugins = list('remove_button', 'drag_drop')),
-      width = '8000px'
-    )
+    choices <- unique(df[["paramname"]])
+    updateSelectizeInput(session, "exposurevariables",
+                         choices = choices, selected = choices[1])
   })
-  
-  output$covariates <- renderUI({
-    df <- values$maindata
-    req(df)
-    df <- df %>%
-      filter(paramname %in% c(input$exposurevariablesin))
-
-    
-    choices <-     unique(df[, "covname"])
-    selectizeInput(
-      "covariatesin",
-      "Covariates Top to Bottom (Remove/Drag and Drop to Desired Order):",
-      choices = choices,
-      selected = choices,
-      multiple = TRUE,
-      options = list(
-        placeholder = 'Please select one or more variables',
-        plugins = list('remove_button', 'drag_drop')
-      ),
-      width = '800px'
-    )
-  })
-  
-  output$covvalueorder <- renderUI({
-    df <- values$maindata
+  observe({
+    df <- maindata()
     req(df)
     df <- df %>%
-      filter(paramname %in% c(input$exposurevariablesin)) %>%
-      filter(covname %in% c(input$covariatesin))
-    
-    choices <-     as.character(unique(df[, "label"]))
-    selectizeInput(
-      'covvalueorderin',
-      label = paste("Drag and Drop to Desired Order within facets", "values"),
-      choices = choices,
-      selected = choices,
-      multiple = TRUE,
-      options = list(plugins = list('remove_button', 'drag_drop')),
-      width = '8000px'
-    )
+      filter(paramname %in% c(input$exposurevariables))
+    choices <- unique(df[["covname"]])
+    updateSelectizeInput(session, "covariates",
+                         choices = choices, selected = choices)
+  })
+  observe({
+    df <- maindata()
+    req(df)
+    df <- df %>%
+      filter(paramname %in% c(input$exposurevariables)) %>%
+      filter(covname %in% c(input$covariates))
+    choices <- as.character(unique(df[["label"]]))
+    updateSelectizeInput(session, "covvalueorder",
+                         choices = choices, selected = choices)
   })
   
   formatstats  <- reactive({
-    df <- values$maindata
+    df <- maindata()
     req(df)
     validate(need(
-      length(input$covariatesin) >= 1,
+      length(input$covariates) >= 1,
       "Please select a least one covariate or All"
     ))
     validate(need(
-      length(input$covvalueorderin) >= 1,
+      length(input$covvalueorder) >= 1,
       "Please select a least one covariate/All level"
     ))
     df$covname <- factor(df$covname)
@@ -92,12 +72,12 @@ function(input, output, session) {
         LOWCILABEL = signif_pad(LOWCI, sigdigits),
         UPCILABEL = signif_pad(UPCI, sigdigits),
         LABEL = paste0(MEANLABEL, " [", LOWCILABEL, "-", UPCILABEL, "]")
-       )
+      )
     
     summarydata$covvalue <- factor(summarydata$label)
     summarydata <- summarydata %>%
-      filter(covname %in% c(input$covariatesin)) %>%
-      filter(paramname %in% input$exposurevariablesin)
+      filter(covname %in% c(input$covariates)) %>%
+      filter(paramname %in% input$exposurevariables)
     summarydata <- as.data.frame(summarydata)
     summarydata
   })
@@ -132,17 +112,17 @@ function(input, output, session) {
   })
   
   plotdataprepare  <- reactive({
-req(formatstats())
+    req(formatstats())
     summarydata <-  formatstats()
     summarydata [, "covname"] <-
-      factor(summarydata [, "covname"], levels = c(input$covariatesin))
+      factor(summarydata [, "covname"], levels = c(input$covariates))
     summarydata [, "label"]   <-
-      factor(summarydata[, "label"]   , levels = c(input$covvalueorderin))
+      factor(summarydata[, "label"]   , levels = c(input$covvalueorder))
     summarydata <- summarydata %>%
-      filter(label %in% c(input$covvalueorderin))
+      filter(label %in% c(input$covvalueorder))
     
     summarydata [, "paramname"]   <-
-      factor(summarydata[, "paramname"]   , levels = c(input$exposurevariablesin))
+      factor(summarydata[, "paramname"]   , levels = c(input$exposurevariables))
     
     summarydata
   })
@@ -150,12 +130,10 @@ req(formatstats())
   output$plot <- renderPlot({
     summarydata <- plotdataprepare()
     req(input$refareain)
-    req(plotdataprepare())
-    req(input$height)
     req(summarydata)
     
     facetformula<- as.formula(input$facetformula)
-
+    
     if(input$facettextx==0){
       x.strip.text= element_blank()
     }
@@ -179,109 +157,109 @@ req(formatstats())
         xmin = lower,
         xmax = upper
       )) 
-
-      colourpos <-  which(input$legendordering == "pointinterval")
-      fillpos      <-  which(input$legendordering == "area")
-      linetypepos  <-  which(input$legendordering == "ref")
-      shapepos  <-  which(input$legendordering == "shape")
-      
-
-      if (input$combineareareflegend) {
-        fillpos      <-  which(input$legendordering == "ref")
-      }
-      collegend <-
-        gsub("\\\\n", "\\\n", input$customcolourtitle)
-      filllegend <-
-        gsub("\\\\n", "\\\n", input$customfilltitle)
-      linetypelegend <-
-        gsub("\\\\n", "\\\n", input$customlinetypetitle)
-      gcol  <- guide_legend("")
-      if (length(colourpos) > 0) {
-        gcol  <- guide_legend("", order = colourpos)
-      }
-      gfill <- guide_legend("")
-      if (length(fillpos) > 0) {
-        gfill <- guide_legend("", order = fillpos)
-      }
-      glinetype <- guide_legend("")
-      if (length(linetypepos) > 0) {
-        glinetype <- guide_legend("", order = linetypepos)
-      }
-      gshape <- guide_legend("")
-      if (length(shapepos) > 0) {
-        gshape <- guide_legend("", order = shapepos,override.aes = list(linetype = 0,colour="gray") )
-      }
-      
-        p1 <- p1 +
-        geom_pointrangeh(
-          position = position_dodgev(height = 0.75),
-          aes(color = collegend),
-          size = 1,
-          alpha = 1
-        ) 
-
-      if (input$showrefarea) {
-        p1 <- p1 +
-          annotate(
-            "rect",
-            xmin = input$refareain[1],
-            xmax = input$refareain[2],
-            ymin = -Inf,
-            ymax = Inf,
-            fill = input$fillrefarea
-          ) +
-          geom_ribbon(
-            x = 1,
-            ymax = 1,
-            ymin = 1,
-            aes(fill = filllegend),
-            size = 1
-          )  # fake ribbon for fill legend
-      }
-      p1 <- p1 +
-        geom_vline(aes(xintercept = ref, linetype = linetypelegend), size =
-                     1) +
-        
-        scale_colour_manual(""  ,
-                            breaks  = collegend,
-                            values = input$colourpointrange) +
-        scale_linetype_manual("", breaks  = linetypelegend,
-                              values = 2) +
-        scale_fill_manual(""    , breaks  = filllegend,
-                          values = input$fillrefarea) +
-        guides(colour = guide_legend(order = 1))
-      p1 <-
-        p1 + guides(colour = gcol,
-                    linetype = glinetype,
-                    fill = gfill,
-                    shape=gshape)
-      if (!input$showrefarea) {
-        p1 <- p1 + guides(colour = gcol,
-                          linetype = glinetype,
-                          shape=gshape,
-                          fill = NULL)
-        
-      }
-      p1 <- p1+
-        aes(group=paramname)
     
-      if(input$shapebyparamname) {
-        p1 <- p1+
-          aes(shape=paramname)
-        }
-
+    colourpos <-  which(input$legendordering == "pointinterval")
+    fillpos      <-  which(input$legendordering == "area")
+    linetypepos  <-  which(input$legendordering == "ref")
+    shapepos  <-  which(input$legendordering == "shape")
+    
+    
+    if (input$combineareareflegend) {
+      fillpos      <-  which(input$legendordering == "ref")
+    }
+    collegend <-
+      gsub("\\\\n", "\\\n", input$customcolourtitle)
+    filllegend <-
+      gsub("\\\\n", "\\\n", input$customfilltitle)
+    linetypelegend <-
+      gsub("\\\\n", "\\\n", input$customlinetypetitle)
+    gcol  <- guide_legend("")
+    if (length(colourpos) > 0) {
+      gcol  <- guide_legend("", order = colourpos)
+    }
+    gfill <- guide_legend("")
+    if (length(fillpos) > 0) {
+      gfill <- guide_legend("", order = fillpos)
+    }
+    glinetype <- guide_legend("")
+    if (length(linetypepos) > 0) {
+      glinetype <- guide_legend("", order = linetypepos)
+    }
+    gshape <- guide_legend("")
+    if (length(shapepos) > 0) {
+      gshape <- guide_legend("", order = shapepos,override.aes = list(linetype = 0,colour="gray") )
+    }
+    
+    p1 <- p1 +
+      geom_pointrangeh(
+        position = position_dodgev(height = 0.75),
+        aes(color = collegend),
+        size = 1,
+        alpha = 1
+      ) 
+    
+    if (input$showrefarea) {
+      p1 <- p1 +
+        annotate(
+          "rect",
+          xmin = input$refareain[1],
+          xmax = input$refareain[2],
+          ymin = -Inf,
+          ymax = Inf,
+          fill = input$fillrefarea
+        ) +
+        geom_ribbon(
+          x = 1,
+          ymax = 1,
+          ymin = 1,
+          aes(fill = filllegend),
+          size = 1
+        )  # fake ribbon for fill legend
+    }
+    p1 <- p1 +
+      geom_vline(aes(xintercept = ref, linetype = linetypelegend), size =
+                   1) +
       
+      scale_colour_manual(""  ,
+                          breaks  = collegend,
+                          values = input$colourpointrange) +
+      scale_linetype_manual("", breaks  = linetypelegend,
+                            values = 2) +
+      scale_fill_manual(""    , breaks  = filllegend,
+                        values = input$fillrefarea) +
+      guides(colour = guide_legend(order = 1))
+    p1 <-
+      p1 + guides(colour = gcol,
+                  linetype = glinetype,
+                  fill = gfill,
+                  shape=gshape)
+    if (!input$showrefarea) {
+      p1 <- p1 + guides(colour = gcol,
+                        linetype = glinetype,
+                        shape=gshape,
+                        fill = NULL)
       
-      if(input$facetswitch!="none"){
-        p1<- p1+
-          facet_grid(facetformula,scales=input$facetscales,space = input$facetspace,switch=input$facetswitch)
-      }
+    }
+    p1 <- p1+
+      aes(group=paramname)
+    
+    if(input$shapebyparamname) {
+      p1 <- p1+
+        aes(shape=paramname)
+    }
+    
+    
+    
+    if(input$facetswitch!="none"){
+      p1<- p1+
+        facet_grid(facetformula,scales=input$facetscales,space = input$facetspace,switch=input$facetswitch)
+    }
     if(input$facetswitch=="none"){
       p1<- p1+
         facet_grid(facetformula,scales=input$facetscales,space = input$facetspace,switch=NULL)
     }
     
-      
+    
     p1 <- p1+
       ylab("") +
       theme_bw(base_size = 22) +
@@ -304,7 +282,7 @@ req(formatstats())
         strip.placement  = input$stripplacement
       ) +
       ggtitle("\n")
-     if (input$xaxistitle == "") {
+    if (input$xaxistitle == "") {
       p1 <- p1 +
         xlab(paste(
           "Changes of Parameter",
@@ -346,7 +324,7 @@ req(formatstats())
         position = position_dodgev(height = 0.75)
       )
     
-
+    
     if(input$facetswitch!="none"){
       p2 <- p2 +
         facet_grid(facetformula,scales=input$facetscales,space = input$facetspace,switch=input$facetswitch)
@@ -359,7 +337,7 @@ req(formatstats())
     p2 <- p2 +
       theme_bw(base_size = 26) +
       theme(
-       
+        
         strip.text.x = x.strip.text,
         strip.text.y = y.strip.text,
         axis.title = element_blank(),
@@ -382,7 +360,7 @@ req(formatstats())
       
     }
     
-
+    
     if ( input$tableposition == "right") {
       ggarrange(p1,
                 p2,

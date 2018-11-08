@@ -19,10 +19,36 @@ fluidPage(
           ),
           fileInput("datafile", NULL,
                     multiple = FALSE, accept = c("csv")),
-          uiOutput("exposurevariables"),
-          uiOutput("covariates"),
-          uiOutput("covvalueorder"),
-          
+          shinyjs::hidden(
+            selectizeInput(
+              'exposurevariables',
+              label = "Exposure Variable(s)",
+              choices = c(),
+              multiple = TRUE,
+              options = list(plugins = list('remove_button', 'drag_drop')),
+              width = '8000px'
+            ),
+            selectizeInput(
+              "covariates",
+              "Covariates Top to Bottom (Remove/Drag and Drop to Desired Order):",
+              choices = c(),
+              multiple = TRUE,
+              options = list(
+                placeholder = 'Please select one or more variables',
+                plugins = list('remove_button', 'drag_drop')
+              ),
+              width = '800px'
+            ),
+            selectizeInput(
+              'covvalueorder',
+              label = paste("Drag and Drop to Desired Order within facets", "values"),
+              choices = c(),
+              multiple = TRUE,
+              options = list(plugins = list('remove_button', 'drag_drop')),
+              width = '8000px'
+            )
+          ),
+
           textInput("yaxistitle", label = "Y axis Title", value = ""),
           textInput("xaxistitle", label = "X axis Title", value = ""),
           sliderInput("facettexty", "Facet Text Size Y",
