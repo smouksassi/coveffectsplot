@@ -4,7 +4,7 @@ require(egg)
 
 
 
-interactiveforest<- function (forestdata=plotdata,
+interactiveforest <- function(forestdata=plotdata,
                               xaxisparamname="param",xlabtext=NULL,
                               yaxistitlesize=16,xaxistitlesize=16,striptextsize=13,
                               REF= 1,REFmin= 0.8,REFmax= 1.25,
@@ -49,7 +49,7 @@ interactiveforest<- function (forestdata=plotdata,
   p1<- p1+
     ylab("") + 
     theme_bw(base_size = 22)+
-    theme(axis.text.y  = element_text(angle=0, vjust=1,size=yaxistitlesize),
+    theme(axis.text.y  = element_text(angle=0, size=yaxistitlesize),
           axis.text.x  = element_text(size=xaxistitlesize),
           legend.position="top", 
           legend.justification=c(0.5,0.5),
@@ -129,7 +129,8 @@ interactivetableplot<- function (forestdata=plotdata,
           legend.direction="horizontal",
           legend.key.width=unit(3,"line"),
           strip.text= strip.text,
-          panel.grid.major.x = element_blank(), panel.grid.minor.x= element_blank(),
+          panel.grid.major.x = element_blank(), panel.grid.minor.x = element_blank(),
+          panel.grid.major.y = element_blank() , panel.grid.minor.y = element_blank(),
           axis.title=element_blank()
     )
   if(remove.ylabels){
