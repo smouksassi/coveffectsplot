@@ -1,5 +1,7 @@
 source("interactiveforest.R")
 
+library(dplyr)
+
 plotdata<- read.csv("forest-plot-table.csv")
 plotdata <- plotdata %>% 
   mutate(midlabel = format(round(mid,2), nsmall = 2),

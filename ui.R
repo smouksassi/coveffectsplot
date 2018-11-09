@@ -26,7 +26,7 @@ fluidPage(
               choices = c(),
               multiple = TRUE,
               options = list(plugins = list('remove_button', 'drag_drop')),
-              width = '8000px'
+              width = '800px'
             ),
             selectizeInput(
               "covariates",
@@ -45,7 +45,7 @@ fluidPage(
               choices = c(),
               multiple = TRUE,
               options = list(plugins = list('remove_button', 'drag_drop')),
-              width = '8000px'
+              width = '800px'
             )
           ),
 
@@ -66,17 +66,17 @@ fluidPage(
           selectInput(  "facetswitch", "Facet Switch to Near Axis:",
                         choices = c("both","y","x","none"),
                         selected = c("both"),
-                        selectize = FALSE, multiple = FALSE),
+                        multiple = FALSE),
           
           selectInput(  "facetformula", "Facet Formula:",
                         choices = c("covname ~ .","covname~paramname"),
                         selected = c("covname ~ ."),
-                        selectize = FALSE, multiple = FALSE),
+                        multiple = FALSE),
           
           selectInput(  "facetscales", "Facet Scales:",
                         choices = c("free_y","fixed","free_x","free"),
                         selected = c("free_y"),
-                        selectize = FALSE, multiple = FALSE),
+                        multiple = FALSE),
           selectInput('facetspace' ,'Facet Spaces:',
                       c("fixed","free_x","free_y","free") ),
           
