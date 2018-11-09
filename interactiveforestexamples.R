@@ -8,7 +8,7 @@ plotdata <- plotdata %>%
          LABEL = paste0(midlabel, " [", lowerlabel, "-", upperlabel, "]"))
 
 
-param <- "Midazolam AUC"
+param <- "BZD AUC"
 plotdata <-  filter(plotdata,paramname==param)
 plotdata$covname <- reorder(plotdata$covname,plotdata$upper,FUN =max)
 plotdata$label <- reorder(plotdata$label,plotdata$scen)
@@ -30,8 +30,10 @@ plotdata <- plotdata %>%
          lowerlabel = format(round(lower,2), nsmall = 2),
          upperlabel = format(round(upper,2), nsmall = 2),
          LABEL = paste0(midlabel, " [", lowerlabel, "-", upperlabel, "]"))
-param <- c("Midazolam AUC","Midazolam Cmax")
+param <- c("BZD AUC","BZD Cmax")
 plotdata <-  filter(plotdata,paramname%in%param)
+plotdata <-  filter(plotdata,covname%in%"WEIGHT")
+
 plotdata$covname <- reorder(plotdata$covname,plotdata$upper,FUN =max)
 plotdata$label <- reorder(plotdata$label,plotdata$scen)
 
@@ -43,7 +45,10 @@ ggarrange(interactiveforest(plotdata,
                             facetformula="covname~paramname",
                             facetscales="free_y",facetspace="free_y"),
           interactivetableplot(plotdata,striptextsize=14,
-                               facetscales="free_y",facetspace="free_y",remove.ylabels=FALSE,xlim=c(0.25,2.5)), 
+                               facetscales="free_y",
+                               facetspace="free_y",
+                               switch="both",
+                               remove.ylabels=FALSE), 
           nrow=2, heights =  c(1,1))
 
 ###
@@ -104,4 +109,21 @@ egg::ggarrange(
   interactivetableplot(plotdata,striptextsize=13,remove.ylabels=FALSE,switch="both",
                        facetformula="covname~paramname")
   ,nrow=2)
+
+
+
+egg::ggarrange(
+  interactiveforest(plotdata,REF= 1,REFmin= 0.8,REFmax= 1.20,striptextsize=13,
+                    legendreftext="Reference (vertical line)\n+/- 20% limits (colored area)",
+                    xlabtext=paste("Fold Change Relative to Parameter"),
+                    facetformula="covname~.",
+                    facetscales="free",
+                    shapebyparamname=TRUE)
+  ,
+  interactivetableplot(plotdata,striptextsize=13,remove.ylabels=FALSE,switch="both",
+                       facetformula="covname~.")
+  ,nrow=2)
+
+
+
 

@@ -6,11 +6,14 @@ require(egg)
 
 interactiveforest <- function(forestdata=plotdata,
                               xaxisparamname="param",xlabtext=NULL,
-                              yaxistitlesize=16,xaxistitlesize=16,striptextsize=13,
+                              yaxistitlesize=16,xaxistitlesize=16,
+                              striptextsize=13,
                               REF= 1,REFmin= 0.8,REFmax= 1.25,
                               legendreftext=paste("Reference (vertical line)\n","Clinically relevant limits (colored area)",sep=""),
                               show.relevanceareainplot=TRUE,show.relevanceareainlegend=TRUE,
-                              facetformula="covname~paramname",facetscales="free_y",facetspace="fixed",
+                              facetformula="covname~paramname",
+                              shapebyparamname=FALSE,
+                              facetscales="free_y",facetspace="fixed",
                               switch="y")
 {
   forestdata=forestdata
@@ -32,11 +35,12 @@ interactiveforest <- function(forestdata=plotdata,
   facetformula<- as.formula(facetformula)
   
   
-  p1<-  ggplot(data=forestdata,aes(y=factor(label), x=mid, xmin=lower, xmax=upper)) +
+  p1<-  ggplot(data=forestdata,aes(y=factor(label),
+                                   x=mid, xmin=lower, xmax=upper)) +
     geom_pointrangeh(
       position=position_dodgev(height=0.75),
       aes(color="Median (points)\n95% CI (horizontal lines)"),
-      size=1,alpha=1,shape=16)
+      size=1,alpha=1)
   
   if(switch!="none"){
     p1<- p1+
@@ -78,6 +82,9 @@ interactiveforest <- function(forestdata=plotdata,
                     fill=legendreftext),
                   size=1,alpha=0.2)   # fake ribbon for fill legend
   }
+  
+gshape <- guide_legend("",override.aes = list(linetype = 0,colour="gray") )
+
   p1<-  p1+
     geom_vline(aes(xintercept=REF,
                    linetype=legendreftext),
@@ -88,7 +95,16 @@ interactiveforest <- function(forestdata=plotdata,
                           values =2)+
     scale_fill_manual(""    ,breaks  = c(legendreftext),
                       values ="grey")+
-    guides(colour = guide_legend(order = 1))
+    guides(colour = guide_legend(order = 1),shape=gshape)
+  
+  p1 <- p1+
+    aes(group=paramname)
+  
+  if(shapebyparamname) {
+    p1 <- p1+
+      aes(shape=paramname)
+  }
+  
   (p1)
 }
 
@@ -122,7 +138,7 @@ interactivetableplot<- function (forestdata=plotdata,
   }
   p2<- p2+
     theme_bw(base_size = 22)+
-    theme(axis.text.y  = element_text(angle=0, vjust=1,size=yaxistitlesize),
+    theme(axis.text.y  = element_text(angle=0, size=yaxistitlesize),
           axis.text.x  = element_text(size=xaxistitlesize),
           legend.position="top", 
           legend.justification=c(0.5,0.5),
@@ -152,5 +168,9 @@ interactivetableplot<- function (forestdata=plotdata,
     xlab("") +
     xlim(xlim)+
     theme(legend.position="none")
+  
+  p2 <- p2+
+    aes(group=paramname)
+  
   (p2)
 }
