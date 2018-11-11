@@ -1,176 +1,282 @@
-require(ggplot2)
-require(ggstance)
-require(egg)
+# TODO: in geom_vline(xintercept) is 1 in the script but data$ref in the app.
 
-
-
-interactiveforest <- function(forestdata=plotdata,
-                              xaxisparamname="param",xlabtext=NULL,
-                              yaxistitlesize=16,xaxistitlesize=16,
-                              striptextsize=13,
-                              REF= 1,REFmin= 0.8,REFmax= 1.25,
-                              legendreftext=paste("Reference (vertical line)\n","Clinically relevant limits (colored area)",sep=""),
-                              show.relevanceareainplot=TRUE,show.relevanceareainlegend=TRUE,
-                              facetformula="covname~paramname",
-                              shapebyparamname=FALSE,
-                              facetscales="free_y",facetspace="fixed",
-                              switch="y")
-{
-  forestdata=forestdata
-  xaxistitlesize<-  xaxistitlesize
-  yaxistitlesize<- yaxistitlesize
-  striptextsize <- striptextsize
-  if(!is.null(legendreftext)){
-    legendreftext<- legendreftext
+# Same as base R `which()` function, but return 0 instead of an empty vector
+# if there are no TRUE values in the array
+which0 <- function(x) {
+  result <- which(x)
+  if (length(result) == 0) {
+    result <- 0
   }
-  if(is.null(legendreftext)){
-    legendreftext<- paste("Reference (vertical line)\n","Clinically relevant limits (colored area)")
-  }
-  if(is.null(xlabtext)){
-    xlabtext<- paste("Changes of",xaxisparamname,"Relative to Reference" )
-  }
-  if(!is.null(xlabtext)){
-    xlabtext<- xlabtext
-  }
-  facetformula<- as.formula(facetformula)
-  
-  
-  p1<-  ggplot(data=forestdata,aes(y=factor(label),
-                                   x=mid, xmin=lower, xmax=upper)) +
-    geom_pointrangeh(
-      position=position_dodgev(height=0.75),
-      aes(color="Median (points)\n95% CI (horizontal lines)"),
-      size=1,alpha=1)
-  
-  if(switch!="none"){
-    p1<- p1+
-      facet_grid(facetformula,scales=facetscales,space = facetspace,switch=switch)
-  }
-  if(switch=="none"){
-    p1<- p1+
-      facet_grid(facetformula,scales=facetscales,space = facetspace)
-  }
-  p1<- p1+
-    ylab("") + 
-    theme_bw(base_size = 22)+
-    theme(axis.text.y  = element_text(angle=0, size=yaxistitlesize),
-          axis.text.x  = element_text(size=xaxistitlesize),
-          legend.position="top", 
-          legend.justification=c(0.5,0.5),
-          legend.direction="horizontal",
-          legend.key.width=unit(3,"line"),
-          strip.text= element_text( size=striptextsize),
-          panel.grid.minor = element_line(colour = "gray", linetype = "dotted"),
-          panel.grid.major= element_line(colour = "gray", linetype = "solid")
-    )+
-    ggtitle("\n")+
-    xlab(xlabtext)
-  
-  if(show.relevanceareainplot){
-    p1<-  p1+
-      annotate("rect",
-               xmin=REFmin,
-               xmax=REFmax,
-               ymin=-Inf, ymax=Inf,
-               col="grey",alpha=0.1)
-  }
-  
-  if(show.relevanceareainlegend){
-    p1<-  p1+
-      geom_ribbon(x=1,ymax=1,ymin=1,
-                  aes(
-                    fill=legendreftext),
-                  size=1,alpha=0.2)   # fake ribbon for fill legend
-  }
-  
-gshape <- guide_legend("",override.aes = list(linetype = 0,colour="gray") )
-
-  p1<-  p1+
-    geom_vline(aes(xintercept=REF,
-                   linetype=legendreftext),
-               size=1) +
-    scale_colour_manual(""  ,breaks  ="Median (points)\n95% CI (horizontal lines)",
-                        values ="blue")+
-    scale_linetype_manual("",breaks  = c(legendreftext),
-                          values =2)+
-    scale_fill_manual(""    ,breaks  = c(legendreftext),
-                      values ="grey")+
-    guides(colour = guide_legend(order = 1),shape=gshape)
-  
-  p1 <- p1+
-    aes(group=paramname)
-  
-  if(shapebyparamname) {
-    p1 <- p1+
-      aes(shape=paramname)
-  }
-  
-  (p1)
+  result
 }
 
-interactivetableplot<- function (forestdata=plotdata,
-                                 textsize=6,xaxistitlesize=14,striptextsize=14,yaxistitlesize=14,
-                                 facetformula="covname~paramname",
-                                 facetscales="free_y",facetspace="fixed",
-                                 remove.ylabels=TRUE,remove.xlabels=TRUE,xlim=c(0.5,1.5),
-                                 switch="y")
+forest_plot <- function(
+  data,
+  facet_formula = "covname~paramname",
+  xlabel = "",
+  ylabel = "",
+  x_facet_text_size = 13,
+  y_facet_text_size = 13,
+  x_label_text_size = 16,
+  y_label_text_size = 16,
+  table_text_size = 7,
+  ref_legend_text = "",
+  area_legend_text = "",
+  interval_legend_text = "",
+  legend_order = c("pointinterval", "ref", "area", "shape"),
+  combine_area_ref_legend = TRUE,
+  show_ref_area = TRUE,
+  ref_area = c(0.8, 1.25),
+  ref_area_col = "#BEBEBE50",
+  interval_col = "blue",
+  strip_col = "#E5E5E5",
+  paramname_shape = FALSE,
+  facet_switch = c("both", "y", "x", "none"),
+  facet_scales = c("fixed", "free_y", "free_x","free"),
+  facet_space = c("fixed","free_x","free_y","free"),
+  strip_placement = c("inside","outside"),
+  major_x_ticks = NULL,
+  minor_x_ticks = NULL,
+  x_range = NULL,
+  show_table_facet_strip = FALSE,
+  table_position = c("right", "below", "none"),
+  plot_table_ratio = 4)
 {
-  forestdata=forestdata
-  if(striptextsize==0){
-    strip.text= element_blank()
+
+  table_position <- match.arg(table_position)
+  legend_order <- match.arg(legend_order, several.ok = TRUE)
+  facet_switch <- match.arg(facet_switch)
+  facet_scales <- match.arg(facet_scales)
+  facet_space <- match.arg(facet_space)
+  strip_placement <- match.arg(strip_placement)
+  facet_formula <- stats::as.formula(facet_formula)
+
+  if (x_facet_text_size <= 0) {
+    x.strip.text <- ggplot2::element_blank()
+  } else {
+    x.strip.text <- ggplot2::element_text(size = x_facet_text_size)
   }
-  if(striptextsize>0){
-    strip.text= element_text( size=striptextsize)
+  if (y_facet_text_size <= 0) {
+    y.strip.text <- ggplot2::element_blank()
+  } else {
+    y.strip.text <- ggplot2::element_text(size = y_facet_text_size)
   }
-  facetformula<- as.formula(facetformula)
-  
-  p2<- ggplot(data=forestdata, aes(y=factor(label) )) +
-    geom_text(aes(x =1,label =LABEL,hjust=0.5),size=textsize,
-              position=position_dodgev(height=0.75))
-  
-  if(switch!="none"){
-    p2<- p2+
-      facet_grid(facetformula,scales=facetscales,space = facetspace,switch=switch)
+
+  if (xlabel == "") {
+    xlabel <- paste("Changes of Parameter Relative to Reference")
   }
-  if(switch=="none"){
-    p2<- p2+
-      facet_grid(facetformula,scales=facetscales,space = facetspace)
+
+  if (ref_legend_text == "") {
+    ref_legend_text <- "Reference (vertical line)\nClinically relevant limits (colored area)"
   }
-  p2<- p2+
-    theme_bw(base_size = 22)+
-    theme(axis.text.y  = element_text(angle=0, size=yaxistitlesize),
-          axis.text.x  = element_text(size=xaxistitlesize),
-          legend.position="top", 
-          legend.justification=c(0.5,0.5),
-          legend.direction="horizontal",
-          legend.key.width=unit(3,"line"),
-          strip.text= strip.text,
-          panel.grid.major.x = element_blank(), panel.grid.minor.x = element_blank(),
-          panel.grid.major.y = element_blank() , panel.grid.minor.y = element_blank(),
-          axis.title=element_blank()
+  if (area_legend_text == "") {
+    area_legend_text <- "Reference (vertical line)\nClinically relevant limits (colored area)"
+  }
+  if (interval_legend_text == "") {
+    interval_legend_text <- "Median (points)\n95% CI (horizontal lines)"
+  }
+
+  interval_pos <-  which0(legend_order == "pointinterval")[1]
+  fill_pos <- which0(legend_order == "area")[1]
+  linetype_pos <- which0(legend_order == "ref")[1]
+  shape_pos <- which0(legend_order == "shape")[1]
+  if (combine_area_ref_legend) {
+    fill_pos <- linetype_pos
+  }
+  guide_interval <- ggplot2::guide_legend("", order = interval_pos)
+  guide_fill <- ggplot2::guide_legend("", order = fill_pos)
+  guide_linetype <- ggplot2::guide_legend("", order = linetype_pos)
+  guide_shape <- ggplot2::guide_legend("", order = shape_pos,
+                                       override.aes = list(linetype = 0, colour = "gray"))
+
+  main_plot <-
+    ggplot2::ggplot(data = data, ggplot2::aes(
+      y = factor(label),
+      x = mid,
+      xmin = lower,
+      xmax = upper
+    )) +
+    ggstance::geom_pointrangeh(
+      position = ggstance::position_dodgev(height = 0.75),
+      ggplot2::aes(color = interval_legend_text),
+      size = 1,
+      alpha = 1
     )
-  if(remove.ylabels){
-    p2<-p2+
-      theme(axis.text.y=element_blank(),axis.ticks.y  =element_blank()
+
+  if (show_ref_area) {
+    main_plot <- main_plot +
+      ggplot2::annotate(
+        "rect",
+        xmin = min(ref_area),
+        xmax = max(ref_area),
+        ymin = -Inf,
+        ymax = Inf,
+        fill = ref_area_col
+      ) +
+      ggplot2::geom_ribbon(
+        x = 1,
+        ymax = 1,
+        ymin = 1,
+        ggplot2::aes(fill = area_legend_text),
+        size = 1
+      )  # fake ribbon for fill legend
+  }
+
+  main_plot <- main_plot +
+    ggplot2::geom_vline(
+      ggplot2::aes(xintercept = 1, linetype = ref_legend_text),
+      size = 1
+    ) +
+    ggplot2::scale_colour_manual("", breaks = interval_legend_text, values = interval_col) +
+    ggplot2::scale_linetype_manual("", breaks = ref_legend_text, values = 2) +
+    ggplot2::scale_fill_manual("", breaks = area_legend_text, values = ref_area_col) +
+    ggplot2::guides(colour = guide_interval,
+                    linetype = guide_linetype,
+                    fill = guide_fill,
+                    shape = guide_shape)
+
+  if (!show_ref_area) {
+    main_plot <- main_plot +
+      ggplot2::guides(colour = guide_interval,
+                      linetype = guide_linetype,
+                      shape = guide_shape,
+                      fill = NULL)
+
+  }
+
+  main_plot <- main_plot +
+    ggplot2::aes(group = paramname)
+  if (paramname_shape) {
+    main_plot <- main_plot +
+      ggplot2::aes(shape = paramname)
+  }
+
+  if (facet_switch != "none") {
+    main_plot <- main_plot +
+      ggplot2::facet_grid(facet_formula,
+                          scales = facet_scales,
+                          space = facet_space,
+                          switch = facet_switch)
+  } else {
+    main_plot <- main_plot +
+      ggplot2::facet_grid(facet_formula,
+                          scales = facet_scales,
+                          space = facet_space,
+                          switch = NULL)
+  }
+
+  main_plot <- main_plot +
+    ggplot2::ylab("") +
+    ggplot2::theme_bw(base_size = 22) +
+    ggplot2::theme(
+      axis.text.y = ggplot2::element_text(
+        angle = 0,
+        size = y_label_text_size
+      ),
+      axis.text.x = ggplot2::element_text(size = x_label_text_size),
+      legend.position = "top",
+      legend.justification = c(0.5, 0.5),
+      legend.direction = "horizontal",
+      legend.key.width = ggplot2::unit(3, "line"),
+      strip.text.x = x.strip.text,
+      strip.text.y = y.strip.text,
+      panel.grid.minor = ggplot2::element_line(colour = "gray", linetype = "dotted"),
+      panel.grid.major = ggplot2::element_line(colour = "gray", linetype = "solid"),
+      strip.background = ggplot2::element_rect(fill = strip_col),
+      strip.placement  = strip_placement
+    ) +
+    ggplot2::ggtitle("\n") +
+    ggplot2::xlab(xlabel) +
+    ggplot2::ylab(ylabel)
+
+  if (length(major_x_ticks) || length(minor_x_ticks)) {
+    main_plot <- main_plot +
+      ggplot2::scale_x_continuous(
+        breaks = major_x_ticks,
+        minor_breaks = minor_x_ticks
       )
   }
-  if(remove.xlabels){
-    p2<-p2+
-      theme(axis.text.x=element_blank(),axis.ticks.x  =element_blank()
-      )
+
+  if (!is.null(x_range)) {
+    main_plot <- main_plot +
+      ggplot2::coord_cartesian(xlim = x_range)
   }
-  # theme(
-  #    strip.background = element_blank(),strip.text = element_blank(),
-  #   axis.title=element_blank(),axis.text=element_blank(),axis.ticks=element_blank(),
-  #    panel.grid.major.x = element_blank(), panel.grid.minor.x= element_blank())+
-  p2<-p2+
-    ylab("") + 
-    xlab("") +
-    xlim(xlim)+
-    theme(legend.position="none")
-  
-  p2 <- p2+
-    aes(group=paramname)
-  
-  (p2)
+
+  if (table_position != "none") {
+    table_plot <- ggplot2::ggplot(data = data, ggplot2::aes(y = factor(label)))
+    table_plot <- table_plot +
+      ggplot2::aes(group = paramname) +
+      ggplot2::geom_text(
+        ggplot2::aes(
+          x = 1,
+          label = LABEL,
+          hjust = 0.5
+        ),
+        size = table_text_size,
+        position = ggstance::position_dodgev(height = 0.75)
+      )
+
+    if (facet_switch != "none") {
+      table_plot <- table_plot +
+        ggplot2::facet_grid(facet_formula,
+                            scales = facet_scales,
+                            space = facet_space,
+                            switch = facet_switch)
+    } else {
+      table_plot <- table_plot +
+        ggplot2::facet_grid(facet_formula,
+                            scales = facet_scales,
+                            space = facet_space,
+                            switch = NULL)
+    }
+
+    table_plot <- table_plot +
+      ggplot2::theme_bw(base_size = 26) +
+      ggplot2::theme(
+        strip.text.x = x.strip.text,
+        strip.text.y = y.strip.text,
+        axis.title = ggplot2::element_blank(),
+        axis.text = ggplot2::element_blank(),
+        axis.ticks = ggplot2::element_blank(),
+        panel.grid.major.x = ggplot2::element_blank(),
+        panel.grid.minor.x = ggplot2::element_blank(),
+        panel.grid.major.y = ggplot2::element_blank(),
+        panel.grid.minor.y = ggplot2::element_blank(),
+        strip.background = ggplot2::element_rect(fill = strip_col)
+      ) +
+      ggplot2::ylab("") +
+      ggplot2::xlab("") +
+      ggplot2::xlim(c(0.99, 1.01)) +
+      ggplot2::theme(legend.position = "none")
+
+
+    if (!show_table_facet_strip) {
+      table_plot <- table_plot +
+        ggplot2::theme(
+          strip.text = ggplot2::element_blank(),
+          strip.background = ggplot2::element_blank()
+        )
+    }
+  }
+
+  if (table_position == "none") {
+    result <- main_plot
+  } else if (table_position == "right") {
+    result <- egg::ggarrange(
+      main_plot,
+      table_plot,
+      nrow = 1,
+      widths = c(plot_table_ratio, 1)
+    )
+  } else if (table_position == "below") {
+    result <- egg::ggarrange(
+      main_plot,
+      table_plot,
+      nrow = 2,
+      heights = c(plot_table_ratio, 1)
+    )
+  }
+
+  result
 }
+

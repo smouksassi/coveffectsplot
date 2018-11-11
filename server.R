@@ -1,6 +1,10 @@
+escape_newline <- function(s) {
+  gsub("\\\\n", "\\\n", s)
+}
+
 function(input, output, session) {
   maindata <- reactiveVal(NULL)
-  
+
   # Set the data source
   observeEvent(input$datafile, {
     file <- input$datafile$datapath
@@ -10,14 +14,14 @@ function(input, output, session) {
     file <- "data/dfall.csv"
     maindata(read.csv(file, na.strings = c("NA", ".")))
   })
-  
+
   # Show inputs once the data source exists
   observeEvent(maindata(), once = TRUE, {
     shinyjs::show("exposurevariables")
     shinyjs::show("covariates")
     shinyjs::show("covvalueorder")
   })
-  
+
   # Update the options in different inputs based on data
   observe({
     df <- maindata()
@@ -45,7 +49,7 @@ function(input, output, session) {
     updateSelectizeInput(session, "covvalueorder",
                          choices = choices, selected = choices)
   })
-  
+
   formatstats  <- reactive({
     df <- maindata()
     req(df)
@@ -73,7 +77,7 @@ function(input, output, session) {
         UPCILABEL = signif_pad(UPCI, sigdigits),
         LABEL = paste0(MEANLABEL, " [", LOWCILABEL, "-", UPCILABEL, "]")
       )
-    
+
     summarydata$covvalue <- factor(summarydata$label)
     summarydata <- summarydata %>%
       filter(covname %in% c(input$covariates)) %>%
@@ -81,8 +85,8 @@ function(input, output, session) {
     summarydata <- as.data.frame(summarydata)
     summarydata
   })
-  
-  
+
+
   output$refarea <- renderUI({
     REF <- 1
     ymin <- REF * 0.8
@@ -98,19 +102,19 @@ function(input, output, session) {
       step = ystep,
       animate = FALSE
     )
-    
+
   })
   observeEvent(input$colourpointrangereset, {
     shinyjs::reset("colourpointrange")
   })
-  
+
   observeEvent(input$stripbackfillreset, {
     shinyjs::reset("stripbackgroundfill")
   })
   observeEvent(input$fillrefareareset, {
     shinyjs::reset("fillrefarea")
   })
-  
+
   plotdataprepare  <- reactive({
     req(formatstats())
     summarydata <-  formatstats()
@@ -120,263 +124,61 @@ function(input, output, session) {
       factor(summarydata[, "label"]   , levels = c(input$covvalueorder))
     summarydata <- summarydata %>%
       filter(label %in% c(input$covvalueorder))
-    
+
     summarydata [, "paramname"]   <-
       factor(summarydata[, "paramname"]   , levels = c(input$exposurevariables))
-    
+
     summarydata
   })
-  
+
   output$plot <- renderPlot({
     summarydata <- plotdataprepare()
-    req(input$refareain)
     req(summarydata)
-    
-    facetformula<- as.formula(input$facetformula)
-    
-    if(input$facettextx==0){
-      x.strip.text= element_blank()
-    }
-    if(input$facettextx>0){
-      x.strip.text= element_text( size=input$facettextx)
-    }
-    
-    if(input$facettexty==0){
-      y.strip.text= element_blank()
-    }
-    if(input$facettexty>0){
-      y.strip.text= element_text( size=input$facettexty)
-    }
-    
-    
-    
-    p1 <-
-      ggplot(data = summarydata, aes(
-        y = factor(label),
-        x = mid,
-        xmin = lower,
-        xmax = upper
-      )) 
-    
-    colourpos <-  which(input$legendordering == "pointinterval")
-    fillpos      <-  which(input$legendordering == "area")
-    linetypepos  <-  which(input$legendordering == "ref")
-    shapepos  <-  which(input$legendordering == "shape")
-    
-    
-    if (input$combineareareflegend) {
-      fillpos      <-  which(input$legendordering == "ref")
-    }
-    collegend <-
-      gsub("\\\\n", "\\\n", input$customcolourtitle)
-    filllegend <-
-      gsub("\\\\n", "\\\n", input$customfilltitle)
-    linetypelegend <-
-      gsub("\\\\n", "\\\n", input$customlinetypetitle)
-    gcol  <- guide_legend("")
-    if (length(colourpos) > 0) {
-      gcol  <- guide_legend("", order = colourpos)
-    }
-    gfill <- guide_legend("")
-    if (length(fillpos) > 0) {
-      gfill <- guide_legend("", order = fillpos)
-    }
-    glinetype <- guide_legend("")
-    if (length(linetypepos) > 0) {
-      glinetype <- guide_legend("", order = linetypepos)
-    }
-    gshape <- guide_legend("")
-    if (length(shapepos) > 0) {
-      gshape <- guide_legend("", order = shapepos,override.aes = list(linetype = 0,colour="gray") )
-    }
-    
-    p1 <- p1 +
-      geom_pointrangeh(
-        position = position_dodgev(height = 0.75),
-        aes(color = collegend),
-        size = 1,
-        alpha = 1
-      ) 
-    
-    if (input$showrefarea) {
-      p1 <- p1 +
-        annotate(
-          "rect",
-          xmin = input$refareain[1],
-          xmax = input$refareain[2],
-          ymin = -Inf,
-          ymax = Inf,
-          fill = input$fillrefarea
-        ) +
-        geom_ribbon(
-          x = 1,
-          ymax = 1,
-          ymin = 1,
-          aes(fill = filllegend),
-          size = 1
-        )  # fake ribbon for fill legend
-    }
-    p1 <- p1 +
-      geom_vline(aes(xintercept = ref, linetype = linetypelegend), size =
-                   1) +
-      
-      scale_colour_manual(""  ,
-                          breaks  = collegend,
-                          values = input$colourpointrange) +
-      scale_linetype_manual("", breaks  = linetypelegend,
-                            values = 2) +
-      scale_fill_manual(""    , breaks  = filllegend,
-                        values = input$fillrefarea) +
-      guides(colour = guide_legend(order = 1))
-    p1 <-
-      p1 + guides(colour = gcol,
-                  linetype = glinetype,
-                  fill = gfill,
-                  shape=gshape)
-    if (!input$showrefarea) {
-      p1 <- p1 + guides(colour = gcol,
-                        linetype = glinetype,
-                        shape=gshape,
-                        fill = NULL)
-      
-    }
-    p1 <- p1+
-      aes(group=paramname)
-    
-    if(input$shapebyparamname) {
-      p1 <- p1+
-        aes(shape=paramname)
-    }
-    
-    
-    
-    if(input$facetswitch!="none"){
-      p1<- p1+
-        facet_grid(facetformula,scales=input$facetscales,space = input$facetspace,switch=input$facetswitch)
-    }
-    if(input$facetswitch=="none"){
-      p1<- p1+
-        facet_grid(facetformula,scales=input$facetscales,space = input$facetspace,switch=NULL)
-    }
-    
-    
-    p1 <- p1+
-      ylab("") +
-      theme_bw(base_size = 22) +
-      theme(
-        axis.text.y  = element_text(
-          angle = 0,
-          size = input$ylablesize
-        ),
-        axis.text.x  = element_text(size = input$xlablesize),
-        legend.position = "top",
-        legend.justification = c(0.5, 0.5),
-        legend.direction = "horizontal",
-        legend.key.width = unit(3, "line"),
-        strip.text.x = x.strip.text,
-        strip.text.y = y.strip.text,
-        panel.grid.minor = element_line(colour = "gray", linetype = "dotted"),
-        panel.grid.major = element_line(colour = "gray", linetype = "solid"),
-        strip.background = element_rect(fill = input$stripbackgroundfill),
-        strip.placement  = input$stripplacement
-      ) +
-      ggtitle("\n")
-    if (input$xaxistitle == "") {
-      p1 <- p1 +
-        xlab(paste(
-          "Changes of Parameter",
-          "Relative to Reference"
-        ))
-    }
-    if (input$xaxistitle != "") {
-      p1 <- p1 +
-        xlab(input$xaxistitle)
-    }
-    if (input$yaxistitle != "") {
-      p1 <- p1 +
-        ylab(input$yaxistitle)
-    }
+
+    major_x_ticks <- NULL
+    minor_x_ticks <- NULL
     if (input$customxticks) {
-      p1 <- p1 +
-        scale_x_continuous(breaks = as.numeric(unique(unlist (
-          strsplit(input$xaxisbreaks     , ",")
-        ))),
-        minor_breaks = as.numeric(unique(unlist (
-          strsplit(input$xaxisminorbreaks, ",")
-        ))))
+      tryCatch({
+         major_x_ticks <- as.numeric(unique(unlist(strsplit(input$xaxisbreaks, ",")[[1]])))
+      }, warning = function(w) {}, error = function(e) {})
+      tryCatch({
+        minor_x_ticks <- as.numeric(unique(unlist(strsplit(input$xaxisminorbreaks, ",")[[1]])))
+      }, warning = function(w) {}, error = function(e) {})
     }
-    if (input$userxzoom) {
-      p1 <- p1 +
-        coord_cartesian(xlim = c(input$lowerxin, input$upperxin))
-    }
-    
-    p2 <- ggplot(data = summarydata, aes(y = factor(label)))
-    p2 <- p2 +
-      aes(group=paramname)+
-      geom_text(
-        aes(
-          x = 1,
-          label = LABEL,
-          hjust = 0.5
-        ),
-        size = input$textsize,
-        position = position_dodgev(height = 0.75)
-      )
-    
-    
-    if(input$facetswitch!="none"){
-      p2 <- p2 +
-        facet_grid(facetformula,scales=input$facetscales,space = input$facetspace,switch=input$facetswitch)
-    }
-    if(input$facetswitch=="none"){
-      p2 <- p2 +
-        facet_grid(facetformula,scales=input$facetscales,space = input$facetspace,switch=NULL)
-    }
-    
-    p2 <- p2 +
-      theme_bw(base_size = 26) +
-      theme(
-        
-        strip.text.x = x.strip.text,
-        strip.text.y = y.strip.text,
-        axis.title = element_blank(),
-        axis.text = element_blank(),
-        axis.ticks = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor.x = element_blank(),
-        panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        strip.background = element_rect(fill = input$stripbackgroundfill)
-      ) +
-      ylab("") +
-      xlab("") +
-      xlim(c(0.99, 1.01)) +
-      theme(legend.position = "none")
-    
-    if ( !input$showtablefacetstrips) {
-      p2 <- p2 +
-        theme(
-          strip.text = element_blank(),
-          strip.background = element_blank())
-      
-    }
-    
-    
-    if ( input$tableposition == "right") {
-      ggarrange(p1,
-                p2,
-                nrow = 1,
-                widths = c(input$plottotableratio, 1))
-      
-    } else if ( input$tableposition == "below") {
-      ggarrange(p1,
-                p2,
-                nrow = 2,
-                heights = c(input$plottotableratio, 1))
-    } else {
-      stop("Invalid table position: ", input$tableposition)
-    }
-    
+
+    plot <- forest_plot(
+      data = summarydata,
+      facet_formula = input$facetformula,
+      xlabel = input$xaxistitle,
+      ylabel = input$yaxistitle,
+      x_facet_text_size = input$facettextx,
+      y_facet_text_size = input$facettexty,
+      x_label_text_size = input$xlablesize,
+      y_label_text_size = input$ylablesize,
+      table_text_size = input$tabletextsize,
+      ref_legend_text = escape_newline(input$customlinetypetitle),
+      area_legend_text = escape_newline(input$customfilltitle),
+      interval_legend_text = escape_newline(input$customcolourtitle),
+      legend_order = input$legendordering,
+      combine_area_ref_legend = input$combineareareflegend,
+      show_ref_area = input$showrefarea,
+      ref_area = input$refareain,
+      ref_area_col = input$fillrefarea,
+      interval_col = input$colourpointrange,
+      strip_col = input$stripbackgroundfill,
+      paramname_shape = input$shapebyparamname,
+      facet_switch = input$facetswitch,
+      facet_scales = input$facetscales,
+      facet_space = input$facetspace,
+      strip_placement = input$stripplacement,
+      major_x_ticks = major_x_ticks,
+      minor_x_ticks = minor_x_ticks,
+      x_range = if (input$userxzoom) c(input$lowerxin, input$upperxin),
+      show_table_facet_strip = input$showtablefacetstrips,
+      table_position = input$tableposition,
+      plot_table_ratio = input$plottotableratio
+    )
+    plot
   }, height = function() {
     input$height
   })

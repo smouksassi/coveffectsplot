@@ -2,8 +2,9 @@ source("interactiveforest.R")
 
 library(dplyr)
 
-plotdata<- read.csv("forest-plot-table.csv")
-plotdata <- plotdata %>% 
+
+plotdata <- read.csv("forest-plot-table.csv")
+plotdata <- plotdata %>%
   mutate(midlabel = format(round(mid,2), nsmall = 2),
          lowerlabel = format(round(lower,2), nsmall = 2),
          upperlabel = format(round(upper,2), nsmall = 2),
@@ -15,19 +16,20 @@ plotdata <-  filter(plotdata,paramname==param)
 plotdata$covname <- reorder(plotdata$covname,plotdata$upper,FUN =max)
 plotdata$label <- reorder(plotdata$label,plotdata$scen)
 
-ggarrange(interactiveforest(plotdata,
-                            legendreftext="Reference (vertical line)",
-                            xlabtext=paste("Fold Change in",param,"Relative to Reference"),
-                            show.relevanceareainlegend=FALSE,
-                            show.relevanceareainplot=FALSE,
-                            facetformula="covname~.",
-                            facetscales="free_y",facetspace="free_y"),
-          interactivetableplot(plotdata,striptextsize=0,facetspace="free_y"), 
-          nrow=1, widths = c(4,1))
+forest_plot(plotdata,
+            ref_legend_text = "Reference (vertical line)",
+            area_legend_text = "Reference (vertical line)",
+            xlabel = paste("Fold Change in", param, "Relative to Reference"),
+            show_ref_area = FALSE,
+            facet_formula = "covname~.",
+            facet_scales = "free_y",
+            facet_space = "free_y",
+            show_table_facet_strip = FALSE,
+            table_position = "right",
+            plot_table_ratio = 4)
 
-
-plotdata<- read.csv("forest-plot-table.csv")
-plotdata <- plotdata %>% 
+plotdata <- read.csv("forest-plot-table.csv")
+plotdata <- plotdata %>%
   mutate(midlabel = format(round(mid,2), nsmall = 2),
          lowerlabel = format(round(lower,2), nsmall = 2),
          upperlabel = format(round(upper,2), nsmall = 2),
@@ -39,37 +41,38 @@ plotdata <-  filter(plotdata,covname%in%"WEIGHT")
 plotdata$covname <- reorder(plotdata$covname,plotdata$upper,FUN =max)
 plotdata$label <- reorder(plotdata$label,plotdata$scen)
 
-ggarrange(interactiveforest(plotdata,
-                            legendreftext="Reference (vertical line)",
-                            xlabtext=paste("Fold Change in",param,"Relative to Reference"),
-                            show.relevanceareainlegend=FALSE,
-                            show.relevanceareainplot=FALSE,
-                            facetformula="covname~paramname",
-                            facetscales="free_y",facetspace="free_y"),
-          interactivetableplot(plotdata,striptextsize=14,
-                               facetscales="free_y",
-                               facetspace="free_y",
-                               switch="both",
-                               remove.ylabels=FALSE), 
-          nrow=2, heights =  c(1,1))
+forest_plot(plotdata,
+            ref_legend_text = "Reference (vertical line)",
+            area_legend_text = "Reference (vertical line)",
+            xlabel = paste("Fold Change in", param[1], "Relative to Reference"),
+            show_ref_area = FALSE,
+            facet_formula = "covname~paramname",
+            facet_scales = "free_y",
+            facet_space = "free_y",
+            x_facet_text_size = 14,
+            y_facet_text_size = 14,
+            facet_switch = "both",
+            show_table_facet_strip = TRUE,
+            table_position = "below",
+            plot_table_ratio = 1)
 
-###
 
+plotdata <- read.csv("forestplotdatacpidata.csv")
+forest_plot(plotdata,
+            ref_area = c(0.8, 1.2),
+            x_facet_text_size = 13,
+            y_facet_text_size = 13,
+            ref_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
+            area_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
+            xlabel = "Fold Change Relative to RHZE",
+            facet_formula = "covname~paramname",
+            table_position = "below")
 
-plotdata<- read.csv("forestplotdatacpidata.csv")
-ggarrange(
-interactiveforest(plotdata,REF= 1,REFmin= 0.8,REFmax= 1.20,striptextsize=13,
-                 legendreftext="Reference (vertical line)\n+/- 20% limits (colored area)",
-                 xlabtext=paste("Fold Change Relative to RHZE"),
-                 facetformula="covname~paramname")
-,
-interactivetableplot(plotdata,striptextsize=13,remove.ylabels=FALSE)
-,nrow=2)
 
 
 
 plotdata<- read.csv("./data/dfall.csv")
-plotdata <- plotdata %>% 
+plotdata <- plotdata %>%
   mutate(midlabel = format(round(mid,2), nsmall = 2),
          lowerlabel = format(round(lower,2), nsmall = 2),
          upperlabel = format(round(upper,2), nsmall = 2),
@@ -77,24 +80,24 @@ plotdata <- plotdata %>%
 plotdata <- plotdata %>%
   filter(paramname%in%c("CL"))
 
+forest_plot(plotdata,
+            ref_area = c(0.8, 1.2),
+            x_facet_text_size = 13,
+            y_facet_text_size = 13,
+            ref_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
+            area_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
+            xlabel = "Fold Change Relative to RHZE",
+            facet_formula = "covname~.",
+            facet_switch = "none",
+            facet_scales = "free_y",
+            facet_space = "fixed",
+            table_position = "right",
+            plot_table_ratio = 4)
 
-ggarrange(
-  interactiveforest(plotdata,REF= 1,REFmin= 0.8,REFmax= 1.20,striptextsize=13,
-                    legendreftext="Reference (vertical line)\n+/- 20% limits (colored area)",
-                    xlabtext=paste("Fold Change Relative to RHZE"),
-                    facetformula="covname~.")
-  ,
-  interactivetableplot(plotdata,striptextsize=13,remove.ylabels=TRUE,switch="none",
-                       facetformula="covname~.")+
-    theme(    strip.background = element_blank(),strip.text = element_blank(),
-              axis.title=element_blank(),axis.text=element_blank(),axis.ticks=element_blank(),
-      panel.grid.major.x = element_blank(), panel.grid.minor.x= element_blank())
-  ,nrow=1,
-  widths = c(4, 1))
 
 ########
 plotdata<- read.csv("dataforest.csv")
-plotdata <- plotdata %>% 
+plotdata <- plotdata %>%
   mutate(midlabel = format(round(mid,2), nsmall = 2),
          lowerlabel = format(round(lower,2), nsmall = 2),
          upperlabel = format(round(upper,2), nsmall = 2),
@@ -102,30 +105,31 @@ plotdata <- plotdata %>%
 plotdata <- plotdata %>%
   filter(covname%in%c("Baseline TTR","Weight"))
 
-egg::ggarrange(
-  interactiveforest(plotdata,REF= 1,REFmin= 0.8,REFmax= 1.20,striptextsize=13,
-                    legendreftext="Reference (vertical line)\n+/- 20% limits (colored area)",
-                    xlabtext=paste("Fold Change Relative to Parameter"),
-                    facetformula="covname~paramname",facetscales="free")
-  ,
-  interactivetableplot(plotdata,striptextsize=13,remove.ylabels=FALSE,switch="both",
-                       facetformula="covname~paramname")
-  ,nrow=2)
+forest_plot(plotdata,
+            ref_area = c(0.8, 1.2),
+            x_facet_text_size = 13,
+            y_facet_text_size = 13,
+            ref_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
+            area_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
+            xlabel = "Fold Change Relative to Parameter",
+            facet_formula = "covname~paramname",
+            facet_switch = "both",
+            facet_scales = "free",
+            facet_space = "fixed",
+            table_position = "below",
+            plot_table_ratio = 1)
 
-
-
-egg::ggarrange(
-  interactiveforest(plotdata,REF= 1,REFmin= 0.8,REFmax= 1.20,striptextsize=13,
-                    legendreftext="Reference (vertical line)\n+/- 20% limits (colored area)",
-                    xlabtext=paste("Fold Change Relative to Parameter"),
-                    facetformula="covname~.",
-                    facetscales="free",
-                    shapebyparamname=TRUE)
-  ,
-  interactivetableplot(plotdata,striptextsize=13,remove.ylabels=FALSE,switch="both",
-                       facetformula="covname~.")
-  ,nrow=2)
-
-
-
-
+forest_plot(plotdata,
+            ref_area = c(0.8, 1.2),
+            x_facet_text_size = 13,
+            y_facet_text_size = 13,
+            ref_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
+            area_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
+            xlabel = "Fold Change Relative to Parameter",
+            facet_formula = "covname~.",
+            facet_switch = "both",
+            facet_scales = "free",
+            facet_space = "fixed",
+            paramname_shape = TRUE,
+            table_position = "below",
+            plot_table_ratio = 1)
