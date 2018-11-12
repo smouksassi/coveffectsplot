@@ -262,9 +262,11 @@ forest_plot <- function(
   guide_shape <- ggplot2::guide_legend("", order = shape_pos,
                                        override.aes = list(linetype = 0, colour = "gray"))
 
+  data$label <- factor(data$label)
+
   main_plot <-
     ggplot2::ggplot(data = data, ggplot2::aes_string(
-      y = factor("label"),
+      y = "label",
       x = "mid",
       xmin = "lower",
       xmax = "upper"
@@ -377,7 +379,7 @@ forest_plot <- function(
 
   if (table_position != "none") {
     table_plot <- ggplot2::ggplot(data = data,
-                                  ggplot2::aes_string(y = factor("label")))
+                                  ggplot2::aes_string(y = "label"))
     table_plot <- table_plot +
       ggplot2::aes_string(group = "paramname") +
       ggplot2::geom_text(
