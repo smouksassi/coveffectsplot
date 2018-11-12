@@ -1,7 +1,3 @@
-escape_newline <- function(s) {
-  gsub("\\\\n", "\\\n", s)
-}
-
 function(input, output, session) {
   maindata <- reactiveVal(NULL)
 
@@ -11,8 +7,8 @@ function(input, output, session) {
     maindata(read.csv(file, na.strings = c("NA", ".")))
   })
   observeEvent(input$sample_data_btn, {
-    file <- "data/dfall.csv"
-    maindata(read.csv(file, na.strings = c("NA", ".")))
+    data <- get_sample_data()
+    maindata(data)
   })
 
   # Show inputs once the data source exists
@@ -163,6 +159,7 @@ function(input, output, session) {
       combine_area_ref_legend = input$combineareareflegend,
       show_ref_area = input$showrefarea,
       ref_area = input$refareain,
+      ref_value = 1,
       ref_area_col = input$fillrefarea,
       interval_col = input$colourpointrange,
       strip_col = input$stripbackgroundfill,

@@ -2,7 +2,6 @@ inline_ui <- function(tag) {
   div(style = "display: inline-block", tag)
 }
 
-
 fluidPage(
   useShinyjs(),
   titlePanel("ForestPlotteR!"),
