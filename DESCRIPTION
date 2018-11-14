@@ -26,10 +26,10 @@ Imports:
     tidyr,
     utils
 Suggests:
+    MASS,
     knitr,
     rmarkdown,
-    tidyr,
-    ggplot2
+    ggridges
 License: MIT + file LICENSE
 SystemRequirements: pandoc with https support
 LazyData: true

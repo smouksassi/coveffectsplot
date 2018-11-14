@@ -36,14 +36,14 @@ Of interest as well is the observed distribution of the covariates Weight and SE
 Finally the distribution of the  unexplained between subject variability is important to contrast with the magnitude of variability explained by the covariate.
 
 ## Simulating data to mimick data and modeling outputs
-We will assume that we have run a 1000 bootstrap that gave us a 1000 rows  dataset: (the five first rows are shown below). For simplicity, we will also assume that there were equal number of SEX = 1 (Man) and SEX = 0 (Woman) and that men and women had mean weights of 85 and 68 kg, respectively. The model had the between subject variability on CL Standard deviation estimated to be 0.30 which translate to apparent CV of sqrt (exp (0.3^2) -1) = 0.3069. The resulting distribution is also shown. A 30 % BSV can be hard to interpret by a clinician. What does it really mean ? A more useful metric can be to compute the bounds where say 50 and 90% of the patients will be using simple quantile functions. For the above example, we get 50% of the patients will be within the 0.82 to 1.23 interval (thick blue lines) while 90% of the patients will be within 0.61,1.63 (thin blue lines).
+We will assume that we have run a 1000 bootstrap that gave us a 1000 rows dataset: (the five first rows are shown below). For simplicity, we will also assume that there were equal number of SEX = 1 (Man) and SEX = 0 (Woman) and that men and women had mean weights of 85 and 68 kg, respectively. The model had the between subject variability on CL Standard deviation estimated to be 0.30 which translate to apparent CV of sqrt (exp (0.3^2) -1) = 0.3069. The resulting distribution is also shown. A 30 % BSV can be hard to interpret by a clinician. What does it really mean ? A more useful metric can be to compute the bounds where say 50 and 90% of the patients will be using simple quantile functions. For the above example, we get 50% of the patients will be within the 0.82 to 1.23 interval (thick blue lines) while 90% of the patients will be within 0.61,1.63 (thin blue lines).
 
 ```{r, echo=FALSE, results='asis'}
   set.seed(657687)
   df<- data.frame(
 MASS::mvrnorm(n=1000 ,
-                mu =c(10,0.75,0.8),
-                Sigma=matrix(c(4,0.01,0.01,0.01,0.0225,0.01,0.01,0.01,0.0225),3,3,byrow = TRUE) 
+                mu =c(10,0.75,1.5),
+                Sigma=matrix(c(0.2,0.01,0.01,0.01,0.0225,0.01,0.01,0.01,0.0225),3,3,byrow = TRUE) 
 ))
 names(df)<- c("POPCL","dWTdCL","dSEXdCL")
 knitr::kable(head(df,5))
@@ -61,7 +61,7 @@ ggplot2::ggplot(dfcovlong,ggplot2::aes(x=value,fill=key))+
                    ggplot2::element_rect(fill="transparent"))+
   ggplot2::guides(fill=ggplot2::guide_legend(reverse = TRUE))
 
-CLBSVdistribution <- data.frame(CL= 10*exp(rnorm(10000,0,sd=0.30)))
+CLBSVdistribution <- data.frame(CL= 10*exp(rnorm(1000,0,sd=0.30)))
 CLBSVdistribution$CLBSV<- CLBSVdistribution$CL/10
 
 dfbsv<- as.data.frame(
@@ -90,25 +90,125 @@ ggplot2::ggplot(CLBSVdistribution,ggplot2::aes(x=CLBSV))+
 knitr::kable(dfbsv)
 ```
 
-## Visualizing bootstrap disributions
+## Visualizing effects disributions
 
 We will divide POPCL by its median to standardize it. This will give a standardized value of 1 and its uncertainty when all covariates are held at the reference value(s) here SEX = 0 and Weight = 70 kg.
 We will also compute the effects of Weight = 50 kg and 90 kg as compared to the 70 kg.
-We keep dSEXdCL as is, it represents the effects of SEX=1 effects when weight is held at its reference value = 70 kg.
+We keep dSEXdCL as is, it represents the effects of SEX=1 effects when weight is held at its reference value = 70 kg. Additionally we can compute the effects for any combination of covariates e.g. Weight =90 kg and SEX = 1. A clinical relevance areas e.g. between 0.8 and 1.25 of the reference value is shown since this is usually regarderd as the zone of equivalence. A covariate need to have lower or larger effects than this zone to trigger actions requiring dose changes.
 
-```{r, fig.show='hold'}
+```{r,fig.width= 7}
 dfeffects<- df
-dfeffects$REF<- dfeffects$POPCL/ median(dfeffects$POPCL)
-dfeffects$WT50<- dfeffects$REF*(50/70)^dfeffects$dWTdCL
-dfeffects$WT90<-  dfeffects$REF*(90/70)^dfeffects$dWTdCL
-dfeffects<- dfeffects[,c("WT50","WT90","REF")]
+dfeffects$REF <- dfeffects$POPCL/ median(dfeffects$POPCL)
+dfeffects$WT_50 <- dfeffects$REF*(50/70)^dfeffects$dWTdCL
+dfeffects$WT_90 <-  dfeffects$REF*(90/70)^dfeffects$dWTdCL
+dfeffects$SEX_Male <- dfeffects$dSEXdCL
+dfeffects$SEX_Male_WT_90 <- dfeffects$dSEXdCL*dfeffects$REF*(90/70)^dfeffects$dWTdCL
+
+dfeffects$SEX_Male <- dfeffects$dSEXdCL
+
+dfeffects<- dfeffects[,c("WT_50","WT_90","SEX_Male","SEX_Male_WT_90","REF")]
+dfeffects$BSV<-  CLBSVdistribution$CLBSV
+
+
 dflong <- tidyr::gather(dfeffects)
-ggplot2::ggplot(dflong,ggplot2::aes(x=value,fill=key))+
-  ggplot2::geom_density(alpha=0.2,ggplot2::aes(y=..scaled..))
-
-
-
+ggplot2::ggplot(dflong,ggplot2::aes(x=value,y=key,fill=factor(..quantile..)))+
+ggridges::stat_density_ridges(geom = "density_ridges_gradient", calc_ecdf = TRUE,
+                              quantile_lines = TRUE, rel_min_height = 0.01,
+quantiles = c(0.025,0.5, 0.975)) +
+  ggplot2::scale_fill_manual(
+    name = "Probability", values = c("#FF0000A0", "white","white", "#0000FFA0"),
+    labels = c("(0, 0.025]", "(0.025, 0.5]","(0.5, 0.975]", "(0.975, 1]")
+  )+
+      ggplot2::annotate(
+        "rect",
+        xmin = 0.8,
+        xmax = 1.25,
+        ymin = -Inf,
+        ymax = Inf,
+        fill = "gray",alpha=0.4
+      )+
+  ggplot2::geom_vline(
+      ggplot2::aes(xintercept = 1),
+      size = 1
+    )+
+  ggplot2::theme_bw()+
+  ggplot2::labs(x="Effects Relative to parameter reference value",y="")
 
 ```
 
+## Simplifying the effects disributions data
+The above plot might be overloading the reader with information. We will simplify it by removing unecessary details and by precomputing the desired stats.
+
+```{r,}
+dfeffects$SEX_Male_WT_90<- NULL
+dfeffectslong<- tidyr::gather(dfeffects)
+dfeffectslong<- dplyr::group_by(dfeffectslong,key)
+dfeffectslongsummaries<- dplyr::summarise(dfeffectslong,mid=quantile(value,0.5),
+                                   lower=quantile(value,0.025),
+                                   upper=quantile(value,0.975))
+
+dfeffectslongsummaries$paramname <- "CL"
+dfeffectslongsummaries$covname <- c("BSV","REF","SEX","Weight","Weight")
+dfeffectslongsummaries$label <- c("95% of patients","70 kg/Woman","Man","50 kg", "90 kg")
+dfeffectslongsummaries<- rbind(dfeffectslongsummaries,
+data.frame(key=c("BSV","BSV"),
+           mid=c(quantile(dfeffects$BSV,0.5), quantile(dfeffects$BSV,0.5)),
+           lower = c(quantile(dfeffects$BSV,0.25), quantile(dfeffects$BSV,0.05)),
+            upper = c(quantile(dfeffects$BSV,0.75), quantile(dfeffects$BSV,0.95)),
+           paramname= "CL",
+           covname=c("BSV","BSV"),
+           label = c("50% of patients","90% of patients")
+)
+)
+dfeffectslongsummaries<- dfeffectslongsummaries[c(2,6,7,3,4,5),]
+
+plotdata <- dplyr::mutate(dfeffectslongsummaries,
+          LABEL = paste0(format(round(mid,2), nsmall = 2),
+                         " [", format(round(lower,2), nsmall = 2), "-",
+                         format(round(upper,2), nsmall = 2), "]"))
+plotdata<- as.data.frame(plotdata)
+plotdata<- plotdata[,c("paramname","covname","label","mid","lower","upper","LABEL")]
+knitr::kable(plotdata)
+
+```
+
+## Plotting the Final Effects Data
+First we do a simple plot. Then we call `coveffectsplot::forest_plot`to make the final plot with the annotations, and legends. For interactice reordering and editing export the data as a "csv" and lauch the shiny app via `coveffectsplot::run_interactiveforestplot()`
+
+```{r,fig.width=7}
+ggplot2::ggplot(data = plotdata, ggplot2::aes_string(
+      y = "label",
+      x = "mid",
+      xmin = "lower",
+      xmax = "upper"
+    )) +
+    ggstance::geom_pointrangeh(
+      position = ggstance::position_dodgev(height = 0.75),
+      ggplot2::aes(color = "95 %CI\nCovariate Effects"),
+      size = 1,
+      alpha = 1
+    )+
+  ggplot2::facet_grid(covname~.,scales="free_y",switch="y")+
+  ggplot2::labs(y="",x="Effects Relative to Reference Value")
+
+png("coveffectsplot.png",width =9 ,height = 6,units = "in",res=72)
+coveffectsplot::forest_plot(plotdata,
+            ref_area = c(0.8, 1/0.8),
+            x_facet_text_size = 13,
+            y_facet_text_size = 13,
+            ref_legend_text = "Reference (vertical line)\n+/- 20% ratios (gray area)",
+            area_legend_text = "Reference (vertical line)\n+/- 20% ratios (gray area)",
+            xlabel = "Fold Change Relative to Parameter",
+            facet_formula = "covname~.",
+            facet_switch = "both",
+            facet_scales = "free",
+            facet_space = "fixed",
+            paramname_shape = TRUE,
+            table_position = "right",
+            table_text_size=4,
+            plot_table_ratio = 4)
+  dev.off()
+  
+```
+![Covariate Effects Plot.](coveffectsplot.png)
 

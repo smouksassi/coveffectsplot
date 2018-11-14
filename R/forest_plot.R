@@ -133,7 +133,7 @@ which0 <- function(x) {
 #'             y_facet_text_size = 13,
 #'             ref_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
 #'             area_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
-#'             xlabel = "Fold Change Relative to RHZE",
+#'             xlabel = "Fold Change Relative to Ref",
 #'             facet_formula = "covname~.",
 #'             facet_switch = "none",
 #'             facet_scales = "free_y",
@@ -150,7 +150,7 @@ which0 <- function(x) {
 #'          upperlabel = format(round(upper,2), nsmall = 2),
 #'          LABEL = paste0(midlabel, " [", lowerlabel, "-", upperlabel, "]"))
 #' plotdata <- plotdata %>%
-#'   filter(covname%in%c("Baseline TTR","Weight"))
+#'   filter(covname%in%c("Weight"))
 #' forest_plot(plotdata,
 #'             ref_area = c(0.8, 1.2),
 #'             x_facet_text_size = 13,
