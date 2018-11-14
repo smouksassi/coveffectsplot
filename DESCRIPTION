@@ -27,7 +27,9 @@ Imports:
     utils
 Suggests:
     knitr,
-    rmarkdown
+    rmarkdown,
+    tidyr,
+    ggplot2
 License: MIT + file LICENSE
 SystemRequirements: pandoc with https support
 LazyData: true

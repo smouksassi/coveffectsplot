@@ -1,0 +1,114 @@
+---
+title: "Introduction to coveffectsplot"
+author: "Samer Mouksassi"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Introduction to coveffectsplot}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+The use of forest plots to summarize the impact of various intrinsic and extrinsic factors on the pharmacokinetics(PK) of drugs is becoming a standard practice and a key part of submission packages to the FDA. The forest plots format make it easier for clinicians to quickly find and interpret the information they need.^[Essential pharmacokinetic information for drug dosage decisions: a concise visual presentation in the drug label. Clin Pharmacol Ther. 2011 Sep;90(3):471-4.]
+
+## Background for the studied example
+
+Given a first-order absorption one-compartment PK model with parameters absorption constant (Ka), Clearance (CL) and Volume of distribution (V). For simplicity let us also assume that the covariate modeling did not add any covariate on Ka and V and provided the following model for CL:
+
+$$CL = {POPCL} \times \left( \frac { \color{blue}{Weight}} {70}\right)^{dWTdCL}\times \left( dSEXdCL\times \left( \color{blue}{SEX}== 1  \right) \right)\times \left(  exp(\eta{CL})\right)$$
+
+
+The above equation shows that we have two covariates on CL one is Weight (kg) a continuous variable with reference value of 70 (kg) and influencing CL with a power model with coefficient dWTdCL. The second is SEX which is an indicator variable taking the value of 0 (Woman) and 1 (Man) and which is influencing CL with a coefficient dSEXdCL when SEX equals 1 which means SEX equals 0 was chosen as the reference value. The last term denotes the individual deviations  from the population (random effects) and it is common to use this model which assumes that CL in the population is log normally distributed.
+
+The modeling output would give you the value of the fixed effects parameters (POPCL,dWTdCL and dSEXdCL) as well as the variance covariance matrix of the random effects. The associated uncertainty can be obtained from an estimated asymptotic variance covariance matrix or from the bootstrap.
+
+Of interest as well is the observed distribution of the covariates Weight and SEX in the studied population since, as we will see later on, the effects plot would need to fill in a value for both and it is desirable to provide sensible values that would provide a good sense on where the bulk of the effects are.
+
+Finally the distribution of the  unexplained between subject variability is important to contrast with the magnitude of variability explained by the covariate.
+
+## Simulating data to mimick data and modeling outputs
+We will assume that we have run a 1000 bootstrap that gave us a 1000 rows  dataset: (the five first rows are shown below). For simplicity, we will also assume that there were equal number of SEX = 1 (Man) and SEX = 0 (Woman) and that men and women had mean weights of 85 and 68 kg, respectively. The model had the between subject variability on CL Standard deviation estimated to be 0.30 which translate to apparent CV of sqrt (exp (0.3^2) -1) = 0.3069. The resulting distribution is also shown. A 30 % BSV can be hard to interpret by a clinician. What does it really mean ? A more useful metric can be to compute the bounds where say 50 and 90% of the patients will be using simple quantile functions. For the above example, we get 50% of the patients will be within the 0.82 to 1.23 interval (thick blue lines) while 90% of the patients will be within 0.61,1.63 (thin blue lines).
+
+```{r, echo=FALSE, results='asis'}
+  set.seed(657687)
+  df<- data.frame(
+MASS::mvrnorm(n=1000 ,
+                mu =c(10,0.75,0.8),
+                Sigma=matrix(c(4,0.01,0.01,0.01,0.0225,0.01,0.01,0.01,0.0225),3,3,byrow = TRUE) 
+))
+names(df)<- c("POPCL","dWTdCL","dSEXdCL")
+knitr::kable(head(df,5))
+dfcov<- data.frame(
+MASS::mvrnorm(n=1000 ,
+                mu =c(68,85),
+                Sigma=matrix(c(15,0.01,0.01,20),2,2,byrow = TRUE) 
+))
+names(dfcov)<- c("WTWOMAN","WTMAN")
+dfcovlong <- tidyr::gather(dfcov)
+ggplot2::ggplot(dfcovlong,ggplot2::aes(x=value,fill=key))+
+  ggplot2::geom_density(,alpha=0.2)+
+  ggplot2::labs(fill="",x="Weight (kg)")+
+  ggplot2::theme(legend.position = c(0.65,0.95),legend.background = 
+                   ggplot2::element_rect(fill="transparent"))+
+  ggplot2::guides(fill=ggplot2::guide_legend(reverse = TRUE))
+
+CLBSVdistribution <- data.frame(CL= 10*exp(rnorm(10000,0,sd=0.30)))
+CLBSVdistribution$CLBSV<- CLBSVdistribution$CL/10
+
+dfbsv<- as.data.frame(
+  quantile(CLBSVdistribution$CLBSV,probs=c(0,0.05,0.25,0.5,0.75,0.95,1))
+)
+names(dfbsv)<- "BSVquantilevalue"
+dfbsv$quantile<- rownames(dfbsv)
+
+
+ggplot2::ggplot(CLBSVdistribution,ggplot2::aes(x=CLBSV))+
+  ggplot2::geom_density(,alpha=0.2)+
+  ggplot2::geom_vline(xintercept = c(0.8179004,1.2271218),size=3,col="blue",alpha=0.6)+
+  ggplot2::geom_vline(xintercept = c(0.6073418,1.6259988),size=2,col="blue",alpha=0.3)#+
+  # ggplot2::annotate("segment", x = 0.8179004, xend =1.2271218, y = 0.5, yend = 0.5,
+  #          colour = "blue", size=2, alpha=0.6, arrow=ggplot2::arrow())+
+  # ggplot2::annotate("segment", x = 0.8179004, xend =0.8179004, y = 0.5, yend = 0.5,
+  #          colour = "blue", size=2,  alpha=0.6, arrow=ggplot2::arrow())+
+  # ggplot2::annotate("segment", x = 0.6073418, xend =1.6259988, y = 0.25, yend = 0.25,
+  #          colour = "blue", size=2, alpha=0.3, arrow=ggplot2::arrow())+
+  # ggplot2::annotate("segment", x = 0.6073418, xend =0.6073418, y = 0.25, yend = 0.25,
+  #          colour = "blue", size=2,  alpha=0.3, arrow=ggplot2::arrow())+
+  #ggplot2::annotate("text", x = 1, y = 0.15, label="50%",size=4,col="blue",alpha=1)+
+  #ggplot2::annotate("text", x = 1, y = 0.65, label="90%",size=5,col="blue",alpha=1)
+  
+
+knitr::kable(dfbsv)
+```
+
+## Visualizing bootstrap disributions
+
+We will divide POPCL by its median to standardize it. This will give a standardized value of 1 and its uncertainty when all covariates are held at the reference value(s) here SEX = 0 and Weight = 70 kg.
+We will also compute the effects of Weight = 50 kg and 90 kg as compared to the 70 kg.
+We keep dSEXdCL as is, it represents the effects of SEX=1 effects when weight is held at its reference value = 70 kg.
+
+```{r, fig.show='hold'}
+dfeffects<- df
+dfeffects$REF<- dfeffects$POPCL/ median(dfeffects$POPCL)
+dfeffects$WT50<- dfeffects$REF*(50/70)^dfeffects$dWTdCL
+dfeffects$WT90<-  dfeffects$REF*(90/70)^dfeffects$dWTdCL
+dfeffects<- dfeffects[,c("WT50","WT90","REF")]
+dflong <- tidyr::gather(dfeffects)
+ggplot2::ggplot(dflong,ggplot2::aes(x=value,fill=key))+
+  ggplot2::geom_density(alpha=0.2,ggplot2::aes(y=..scaled..))
+
+
+
+
+```
+
+
