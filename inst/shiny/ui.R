@@ -21,12 +21,14 @@ fluidPage(
           shinyjs::hidden(
             selectizeInput(
               'exposurevariables',
-              label = "Exposure Variable(s)",
+              label = "Parameter(s)",
               choices = c(),
               multiple = TRUE,
               options = list(plugins = list('remove_button', 'drag_drop')),
               width = '800px'
             ),
+            checkboxInput('shapebyparamname', 'Change Symbol by Parameter(s) ?', value = TRUE),
+            
             selectizeInput(
               "covariates",
               "Covariates Top to Bottom (Remove/Drag and Drop to Desired Order):",
@@ -46,43 +48,61 @@ fluidPage(
               options = list(plugins = list('remove_button', 'drag_drop')),
               width = '800px'
             )
-          ),
-
-          textInput("yaxistitle", label = "Y axis Title", value = ""),
-          textInput("xaxistitle", label = "X axis Title", value = ""),
-          sliderInput("facettexty", "Facet Text Size Y",
-                      min = 0, max = 32, step = 1, value = 22),
-          sliderInput("facettextx", "Facet Text Size X",
-                      min = 0, max = 32, step = 1, value = 22),
-
-
-
-
-          selectizeInput(  "stripplacement", "Strip Placement:",
-                           choices = c("inside","outside"),
-                           options = list(  maxItems = 1 )  ),
-
-          selectInput(  "facetswitch", "Facet Switch to Near Axis:",
-                        choices = c("both","y","x","none"),
-                        selected = c("both"),
-                        multiple = FALSE),
-
-          selectInput(  "facetformula", "Facet Formula:",
-                        choices = c("covname ~ .","covname~paramname"),
-                        selected = c("covname ~ ."),
-                        multiple = FALSE),
-
-          selectInput(  "facetscales", "Facet Scales:",
-                        choices = c("free_y","fixed","free_x","free"),
-                        selected = c("free_y"),
-                        multiple = FALSE),
-          selectInput('facetspace' ,'Facet Spaces:',
-                      c("fixed","free_x","free_y","free") ),
-
-          hr()
+          )
         ), # tabPanel
-
-
+        tabPanel("Facets",
+                 selectInput(  "facetformula", "Facet Formula:",
+                               choices = c("covname ~ .","covname~paramname"),
+                               selected = c("covname ~ ."),
+                               multiple = FALSE),
+                 
+                 sliderInput("facettexty", "Facet Text Size Y",
+                             min = 0, max = 32, step = 1, value = 22),
+                 sliderInput("facettextx", "Facet Text Size X",
+                             min = 0, max = 32, step = 1, value = 22),
+                 selectizeInput(  "stripplacement", "Strip Placement:",
+                                  choices = c("inside","outside"),
+                                  options = list(  maxItems = 1 )  ),
+                 selectInput(  "facetswitch", "Facet Switch to Near Axis:",
+                               choices = c("both","y","x","none"),
+                               selected = c("both"),
+                               multiple = FALSE),
+                 selectInput(  "facetscales", "Facet Scales:",
+                               choices = c("free_y","fixed","free_x","free"),
+                               selected = c("free_y"),
+                               multiple = FALSE),
+                 selectInput('facetspace' ,'Facet Spaces:',
+                             c("fixed","free_x","free_y","free") )
+        ),
+        tabPanel(
+          "X/Y Axes",
+          sliderInput("ylablesize", "Y axis labels size", min=1, max=32, value=24,step=0.5),
+          sliderInput("xlablesize", "X axis labels size", min=1, max=32, value=24,step=0.5),
+          checkboxInput('customxticks', 'Custom X axis Ticks ?', value = FALSE),
+          conditionalPanel(
+            condition = "input.customxticks" ,
+            textInput("xaxisbreaks",label ="X axis major Breaks",
+                      value = as.character(paste(
+                        0,0.25,0.5,0.8,1,1.25,1.5,1.75,2
+                        ,sep=",") )
+            ),
+            textInput("xaxisminorbreaks",label ="X axis minor Breaks",
+                      value = as.character(paste(
+                        0.75,1.333
+                        ,sep=",") )
+            ),
+            hr()
+          ),
+          checkboxInput('userxzoom', 'Custom X axis Range ?', value = FALSE),
+          conditionalPanel(
+            condition = "input.userxzoom" ,
+            numericInput("lowerxin",label = "Lower X Limit",value = 0,min=NA,max=NA,width='100%'),
+            numericInput("upperxin",label = "Upper X Limit",value = 2,min=NA,max=NA,width='100%')
+          ),
+          textInput("yaxistitle", label = "Y axis Title", value = ""),
+          textInput("xaxistitle", label = "X axis Title", value = "")
+          
+        ),
         tabPanel(
           "How To",
           hr(),
@@ -100,42 +120,15 @@ fluidPage(
       2,
       tabsetPanel(
         tabPanel(
-          "Plot Options",
+          "Table/Other Options",
           fluidRow(
-
             column(
               12,
               hr(),
               numericInput("sigdigits",label = "Significant Digits",value = 2,min=NA,max=NA),
               sliderInput("tabletextsize", "Table Text Size", min=1, max=12,step=1, value=7),
-              checkboxInput('showrefarea', 'Show Reference Window ?', value = TRUE),
-              conditionalPanel(condition = "input.showrefarea" ,
-                               uiOutput("refarea")),
-              hr(),
+              
 
-              checkboxInput('customxticks', 'Custom X axis Ticks ?', value = FALSE),
-
-              conditionalPanel(
-                condition = "input.customxticks" ,
-                textInput("xaxisbreaks",label ="X axis major Breaks",
-                          value = as.character(paste(
-                            0,0.25,0.5,0.8,1,1.25,1.5,1.75,2
-                            ,sep=",") )
-                ),
-                textInput("xaxisminorbreaks",label ="X axis minor Breaks",
-                          value = as.character(paste(
-                            0.75,1.333
-                            ,sep=",") )
-                ),
-                hr()
-              ),
-              checkboxInput('userxzoom', 'Custom X axis Range ?', value = FALSE),
-              conditionalPanel(
-                condition = "input.userxzoom" ,
-                numericInput("lowerxin",label = "Lower X Limit",value = 0,min=NA,max=NA,width='100%'),
-                numericInput("upperxin",label = "Upper X Limit",value = 2,min=NA,max=NA,width='100%')
-              ),
-              hr(),
               sliderInput("plottotableratio", "Plot to Table Ratio", min=1, max=5, value=4,step=0.5, animate = FALSE),
 
               selectInput('tableposition','Table Position:',
@@ -143,10 +136,10 @@ fluidPage(
               checkboxInput('showtablefacetstrips', 'Show Table Facet Strip ?', value = FALSE),
 
               hr(),
-              sliderInput("ylablesize", "Y axis labels size", min=1, max=32, value=24,step=0.5),
-              sliderInput("xlablesize", "X axis labels size", min=1, max=32, value=24,step=0.5),
-              sliderInput("height", "Plot Height", min=1080/4, max=1080, value=900, animate = FALSE),
-              checkboxInput('shapebyparamname', 'Map Symbol to Parameter(s) ?', value = TRUE)
+              checkboxInput('showrefarea', 'Show Reference Area?', value = TRUE),
+              conditionalPanel(condition = "input.showrefarea" ,
+                               uiOutput("refarea")),
+              sliderInput("height", "Plot Height", min=1080/4, max=1080, value=900, animate = FALSE)
             )
 
           )

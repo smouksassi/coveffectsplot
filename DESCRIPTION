@@ -1,4 +1,4 @@
-Package: interactiveforestplot
+Package: coveffectsplot
 Title: Produce Forest Plots to Visualize Covariate Effects
 Version: 0.0.0.9000
 Authors@R: c(
@@ -32,4 +32,4 @@ License: MIT + file LICENSE
 SystemRequirements: pandoc with https support
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0

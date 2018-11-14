@@ -6,17 +6,19 @@
 \usage{
 forest_plot(data, facet_formula = "covname~paramname", xlabel = "",
   ylabel = "", x_facet_text_size = 13, y_facet_text_size = 13,
-  x_label_text_size = 16, y_label_text_size = 16, table_text_size = 7,
-  ref_legend_text = "", area_legend_text = "", interval_legend_text = "",
-  legend_order = c("pointinterval", "ref", "area", "shape"),
-  combine_area_ref_legend = TRUE, show_ref_area = TRUE, ref_area = c(0.8,
-  1.25), ref_value = 1, ref_area_col = "#BEBEBE50", interval_col = "blue",
-  strip_col = "#E5E5E5", paramname_shape = FALSE, facet_switch = c("both",
-  "y", "x", "none"), facet_scales = c("fixed", "free_y", "free_x", "free"),
-  facet_space = c("fixed", "free_x", "free_y", "free"),
-  strip_placement = c("inside", "outside"), major_x_ticks = NULL,
-  minor_x_ticks = NULL, x_range = NULL, show_table_facet_strip = FALSE,
-  table_position = c("right", "below", "none"), plot_table_ratio = 4)
+  x_label_text_size = 16, y_label_text_size = 16,
+  table_text_size = 7, ref_legend_text = "", area_legend_text = "",
+  interval_legend_text = "", legend_order = c("pointinterval", "ref",
+  "area", "shape"), combine_area_ref_legend = TRUE,
+  show_ref_area = TRUE, ref_area = c(0.8, 1.25), ref_value = 1,
+  ref_area_col = "#BEBEBE50", interval_col = "blue",
+  strip_col = "#E5E5E5", paramname_shape = FALSE,
+  facet_switch = c("both", "y", "x", "none"), facet_scales = c("fixed",
+  "free_y", "free_x", "free"), facet_space = c("fixed", "free_x",
+  "free_y", "free"), strip_placement = c("inside", "outside"),
+  major_x_ticks = NULL, minor_x_ticks = NULL, x_range = NULL,
+  show_table_facet_strip = FALSE, table_position = c("right", "below",
+  "none"), plot_table_ratio = 4)
 }
 \arguments{
 \item{data}{Data to use.}

@@ -8,9 +8,9 @@
 #' }
 #' @export
 run_interactiveforestplot <- function() {
-  appDir <- system.file("shiny", package = "interactiveforestplot")
+  appDir <- system.file("shiny", package = "coveffectsplot")
   if (appDir == "") {
-    stop("Could not find shiny app directory. Try re-installing `interactiveforestplot`.",
+    stop("Could not find shiny app directory. Try re-installing `coveffectsplot`.",
          call. = FALSE)
   }
   shiny::runApp(appDir, display.mode = "normal")

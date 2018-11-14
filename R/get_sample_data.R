@@ -6,9 +6,9 @@
 #'
 #' @export
 get_sample_data <- function(dataset = "dfall.csv") {
-  data_dir <- system.file("sample_data", package = "interactiveforestplot")
+  data_dir <- system.file("sample_data", package = "coveffectsplot")
   if (data_dir == "") {
-    stop("Could not find data directory. Try re-installing `interactiveforestplot`.",
+    stop("Could not find data directory. Try re-installing `coveffectsplot`.",
          call. = FALSE)
   }
 

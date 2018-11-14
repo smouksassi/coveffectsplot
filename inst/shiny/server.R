@@ -16,6 +16,7 @@ function(input, output, session) {
     shinyjs::show("exposurevariables")
     shinyjs::show("covariates")
     shinyjs::show("covvalueorder")
+    shinyjs::show("shapebyparamname")
   })
 
   # Update the options in different inputs based on data
