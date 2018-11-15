@@ -1,12 +1,18 @@
-# coveffectsplot
+coveffectsplot
+========
+![CRAN](http://www.r-pkg.org/badges/version-last-release/coveffectsplot)
+[![Travis-CI Build Status](https://travis-ci.org/smouksassi/coveffectsplot.svg?branch=master)](https://travis-ci.org/smouksassi/coveffectsplot)
+![DOWNLOADS](http://cranlogs.r-pkg.org/badges/grand-total/coveffectsplot)
+
 A function and a Shiny App that Produce Forest Plots to Visualize Covariate Effects as commonly used in pharmacometrics population PK/PD reports.
 
-
-### Running Information
-Make sure to have all required packages installed code to install packages from CRAN and or github is below:
-
+### Installation and Running information
 ```
-install.packages("devtools")
+# Install from CRAN:
+install.packages("coveffectsplot")
+
+# Or the development version from GitHub:
+#install.packages("devtools")
 devtools::install_github('smouksassi/coveffectsplot')
 coveffectsplot::run_interactiveforestplot()
 ```
