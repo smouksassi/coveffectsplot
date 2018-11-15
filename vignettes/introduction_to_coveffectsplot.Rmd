@@ -35,7 +35,7 @@ Of interest as well is the observed distribution of the covariates Weight and SE
 
 Finally, showing the distribution of the unexplained between subject variability is important to contrast with the magnitude of the effects explained by the covariate.
 
-## Simulating data to mimick data and modeling outputs
+## Simulating data and modeling outputs
 We will assume that we have run a 1000 bootstrap that gave us a 1000 rows dataset (the five first rows are shown below). For simplicity, we will also assume that there were equal number of SEX = 1 (Man) and SEX = 0 (Woman) and that men and women had mean weights of 85 and 68 kg, respectively. The model had the between subject variability on CL variance estimated to be 0.09 which translate to apparent CV of sqrt (exp (0.09) -1) = 0.3069. A common way to report this BSV is to say we have 30.7% BSV. But what does this mean in practical terms ? If I take 50 patients (with the same covariate values) what are the chances that some of these patients will have very low or very high CL warranting dose intervention ?
 A more useful metric can be to compute the bounds where say 50% and 90% of the patients will be using simple quantile functions. For the 30.7% BSV case, we get 50% of the patients will be within the 0.82 to 1.23 interval (thick blue lines) while 90% of the patients will be within 0.61,1.63 (thin blue lines). A table showing the various quantiles is shown.
 
@@ -81,11 +81,11 @@ knitr::kable(dfbsv,row.names=FALSE)
 
 ```
 
-## Visualizing effects disributions
+## Visualizing effects distributions
 
 We will divide POPCL by its median to standardize it. This will give a standardized value of 1 and its uncertainty when all covariates are held at the reference value(s) here SEX = 0 and Weight = 70 kg.
 We will also compute the effects of Weight = 50 kg and 90 kg as compared to the 70 kg.
-We keep dSEXdCL as is, it represents the effects of SEX = 1 effects when weight is held at its reference value = 70 kg. Additionally we can compute the effects for any combination of covariates e.g. Weight = 90 kg and SEX = 1. A clinical relevance areas e.g. between 0.8 and 1.25 of the reference value is shown since this is often regarderd as the zone of PK equivalence. A covariate need to have lower or larger effects than this zone to trigger actions requiring dose changes.
+We keep dSEXdCL as is, it represents the effects of SEX = 1 effects when weight is held at its reference value = 70 kg. Additionally we can compute the effects for any combination of covariates e.g. Weight = 90 kg and SEX = 1. A clinical relevance areas e.g. between 0.8 and 1.25 of the reference value is shown since this is often regarded as the zone of PK equivalence. A covariate need to have lower or larger effects than this zone to trigger actions requiring dose changes.
 
 ```{r,fig.width= 7}
 dfeffects<- df
@@ -127,8 +127,8 @@ quantiles = c(0.025,0.5, 0.975)) +
 
 ```
 
-## Simplifying the effects disributions data
-The above plot might be overloading the reader with information. We will simplify it by removing unecessary details and by precomputing the desired stats.
+## Simplifying the effects distributions data
+The above plot might be overloading the reader with information. We will simplify it by removing unnecessary details and by computing the desired stats in adavance.
 
 ```{r,}
 dfeffects$SEX_Male_WT_90<- NULL
@@ -164,7 +164,7 @@ knitr::kable(plotdata)
 ```
 
 ## Plotting the Final Effects Data
-First we do a simple plot. Then we call `coveffectsplot::forest_plot`to make the final plot with annotations, a side table with values, and legends. For interactice reordering and editing export the data as a "csv" and launch the shiny app via `coveffectsplot::run_interactiveforestplot()`
+First we do a simple plot. Then we call `coveffectsplot::forest_plot`to make the final plot with annotations, a side table with values, and legends. For interactive reordering and editing export the data as a "csv" and launch the shiny app via `coveffectsplot::run_interactiveforestplot()`
 
 ```{r,fig.width=7}
 ggplot2::ggplot(data = plotdata, ggplot2::aes_string(

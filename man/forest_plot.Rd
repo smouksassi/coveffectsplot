@@ -2,7 +2,7 @@
 % Please edit documentation in R/forest_plot.R
 \name{forest_plot}
 \alias{forest_plot}
-\title{Foreset plot}
+\title{Forest plot}
 \usage{
 forest_plot(data, facet_formula = "covname~paramname", xlabel = "",
   ylabel = "", x_facet_text_size = 13, y_facet_text_size = 13,
@@ -149,7 +149,7 @@ forest_plot(plotdata,
             show_table_facet_strip = TRUE,
             table_position = "below",
             plot_table_ratio = 1)
-
+\dontrun{
 # Example 3
 
 plotdata <- get_sample_data("forestplotdatacpidata.csv")
@@ -168,7 +168,6 @@ forest_plot(plotdata,
             table_position = "below")
 
 # Example 4
-\dontrun{
 plotdata <- get_sample_data("dataforest.csv")
 plotdata <- plotdata \%>\%
   mutate(midlabel = format(round(mid,2), nsmall = 2),

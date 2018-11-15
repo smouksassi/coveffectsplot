@@ -8,7 +8,7 @@ which0 <- function(x) {
   result
 }
 
-#' Foreset plot
+#' Forest plot
 #'
 #' Produce forest plots to visualize covariate effects
 #'
@@ -108,7 +108,7 @@ which0 <- function(x) {
 #'             show_table_facet_strip = TRUE,
 #'             table_position = "below",
 #'             plot_table_ratio = 1)
-#'
+#'\dontrun{
 #' # Example 3
 #'
 #' plotdata <- get_sample_data("forestplotdatacpidata.csv")
@@ -127,7 +127,6 @@ which0 <- function(x) {
 #'             table_position = "below")
 #'
 #' # Example 4
-#'\dontrun{
 #' plotdata <- get_sample_data("dataforest.csv")
 #' plotdata <- plotdata %>%
 #'   mutate(midlabel = format(round(mid,2), nsmall = 2),
