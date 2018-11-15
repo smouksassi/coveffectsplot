@@ -64,6 +64,9 @@ which0 <- function(x) {
 #' plotdata <-  filter(plotdata,paramname==param)
 #' plotdata$covname <- reorder(plotdata$covname,plotdata$upper,FUN =max)
 #' plotdata$label <- reorder(plotdata$label,plotdata$scen)
+#' covs <- c("WEIGHT","AGE")
+#' plotdata <-  filter(plotdata,covname%in%covs)
+
 #' forest_plot(plotdata,
 #'             ref_legend_text = "Reference (vertical line)",
 #'             area_legend_text = "Reference (vertical line)",
@@ -92,13 +95,15 @@ which0 <- function(x) {
 #' forest_plot(plotdata,
 #'             ref_legend_text = "Reference (vertical line)",
 #'             area_legend_text = "Reference (vertical line)",
-#'             xlabel = paste("Fold Change in", param[1], "Relative to Reference"),
+#'             xlabel = paste("Fold Change of Parameter", "Relative to Reference"),
 #'             show_ref_area = FALSE,
 #'             facet_formula = "covname~paramname",
 #'             facet_scales = "free_y",
 #'             facet_space = "free_y",
-#'             x_facet_text_size = 14,
-#'             y_facet_text_size = 14,
+#'             x_facet_text_size = 10,
+#'             y_facet_text_size = 10,
+#'             y_label_text_size = 10,
+#'             x_label_text_size = 10,
 #'             facet_switch = "both",
 #'             show_table_facet_strip = TRUE,
 #'             table_position = "below",
@@ -109,8 +114,12 @@ which0 <- function(x) {
 #' plotdata <- get_sample_data("forestplotdatacpidata.csv")
 #' forest_plot(plotdata,
 #'             ref_area = c(0.8, 1.2),
-#'             x_facet_text_size = 13,
-#'             y_facet_text_size = 13,
+#'             x_facet_text_size = 12,
+#'             y_facet_text_size = 12,
+#'             y_label_text_size = 10,
+#'             x_label_text_size = 10,
+#'             table_text_size = 6,
+#'             plot_table_ratio = 1.5,
 #'             ref_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
 #'             area_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
 #'             xlabel = "Fold Change Relative to RHZE",
@@ -118,31 +127,7 @@ which0 <- function(x) {
 #'             table_position = "below")
 #'
 #' # Example 4
-#'
-#' plotdata <- get_sample_data("dfall.csv")
-#' plotdata <- plotdata %>%
-#'   mutate(midlabel = format(round(mid,2), nsmall = 2),
-#'          lowerlabel = format(round(lower,2), nsmall = 2),
-#'          upperlabel = format(round(upper,2), nsmall = 2),
-#'          LABEL = paste0(midlabel, " [", lowerlabel, "-", upperlabel, "]"))
-#' plotdata <- plotdata %>%
-#'   filter(paramname%in%c("CL"))
-#' forest_plot(plotdata,
-#'             ref_area = c(0.8, 1.2),
-#'             x_facet_text_size = 13,
-#'             y_facet_text_size = 13,
-#'             ref_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
-#'             area_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
-#'             xlabel = "Fold Change Relative to Ref",
-#'             facet_formula = "covname~.",
-#'             facet_switch = "none",
-#'             facet_scales = "free_y",
-#'             facet_space = "fixed",
-#'             table_position = "right",
-#'             plot_table_ratio = 4)
-#'
-#' # Example 5
-#'
+#'\dontrun{
 #' plotdata <- get_sample_data("dataforest.csv")
 #' plotdata <- plotdata %>%
 #'   mutate(midlabel = format(round(mid,2), nsmall = 2),
@@ -151,6 +136,8 @@ which0 <- function(x) {
 #'          LABEL = paste0(midlabel, " [", lowerlabel, "-", upperlabel, "]"))
 #' plotdata <- plotdata %>%
 #'   filter(covname%in%c("Weight"))
+#' plotdata$label <- as.factor(as.character(plotdata$label))
+#' plotdata$label <- factor(plotdata$label, c("36.2 kg","66 kg","110 kg"))
 #' forest_plot(plotdata,
 #'             ref_area = c(0.8, 1.2),
 #'             x_facet_text_size = 13,
@@ -165,7 +152,7 @@ which0 <- function(x) {
 #'             table_position = "below",
 #'             plot_table_ratio = 1)
 #'
-#' # Example 6
+#' # Example 5
 #'
 #' forest_plot(plotdata,
 #'             ref_area = c(0.8, 1.2),
@@ -181,6 +168,7 @@ which0 <- function(x) {
 #'             paramname_shape = TRUE,
 #'             table_position = "below",
 #'             plot_table_ratio = 1)
+#'}
 #' @export
 forest_plot <- function(
   data,

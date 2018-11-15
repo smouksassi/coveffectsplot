@@ -3,7 +3,7 @@ A function and a Shiny App that Produce Forest Plots to Visualize Covariate Effe
 
 
 ### Running Information
-Make sure to have all required packages installed code to install pacakges from CRAN and or github is below:
+Make sure to have all required packages installed code to install packages from CRAN and or github is below:
 
 ```
 install.packages("devtools")
@@ -25,7 +25,7 @@ lower: Lower value for the effects usually the 2.5% or 5% from the uncertainty d
 
 upper: Upper value for the effects usually the 97.5% or 95% from the uncertainty distribution
 
-You might choose to have a covname with value All to illustrate and show the uncertainty on the reference value in a separate facet. Additionally you might choose to have a covname with value BSV to illustrate and show the effects of the between subject variability (BSV). The example data show where does 90 and 50% of the patients will be given the model BSV estimate for the shown paramname.
+You might also choose to have a covname with value All (or other appropirate value) to illustrate and show the uncertainty on the reference value in a separate facet. Additionally, you might  want to have a covname with value BSV to illustrate and show the the between subject variability (BSV) spread. The example data show where does 90 and 50% of the patients will be given the model BSV estimate for the shown paramname. The vignette will walk you through how to compute and build the required data that the shiny app or the function `forest_plot`expects. There is some data management steps that the app does automatically chossing to call the function in script will require you to take responsibilty to build the table LABEL and to control the ordering of the variables
 
 When you load the app and press the button to load the example data you get:
 

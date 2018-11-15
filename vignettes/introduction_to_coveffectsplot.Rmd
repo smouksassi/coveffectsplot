@@ -18,25 +18,26 @@ knitr::opts_chunk$set(
 )
 ```
 
-The use of forest plots to summarize the impact of various intrinsic and extrinsic factors on the pharmacokinetics(PK) of drugs is becoming a standard practice and a key part of submission packages to the FDA. The forest plots format make it easier for clinicians to quickly find and interpret the information they need.^[Essential pharmacokinetic information for drug dosage decisions: a concise visual presentation in the drug label. Clin Pharmacol Ther. 2011 Sep;90(3):471-4.]
+The use of forest plots to summarize the impact of various intrinsic and extrinsic factors on the pharmacokinetics (PK) of drugs is becoming a standard practice and a key part of submission packages to the FDA. The forest plots format make it easier for clinicians to quickly find and interpret the information they need.^[Essential pharmacokinetic information for drug dosage decisions: a concise visual presentation in the drug label. Clin Pharmacol Ther. 2011 Sep;90(3):471-4.]
 
 ## Background for the studied example
 
-Given a first-order absorption one-compartment PK model with parameters absorption constant (Ka), Clearance (CL) and Volume of distribution (V). For simplicity let us also assume that the covariate modeling did not add any covariate on Ka and V and provided the following model for CL:
+Let us first assume that we have a drug following a first-order absorption one-compartment PK model with parameters absorption constant (Ka), Clearance (CL) and Volume of distribution (V). For simplicity, let us also assume that the covariate modeling did not add any covariate on Ka and V and provided the following model for CL:
 
 $$CL = {POPCL} \times \left( \frac { \color{blue}{Weight}} {70}\right)^{dWTdCL}\times \left( dSEXdCL\times \left( \color{blue}{SEX}== 1  \right) \right)\times \left(  exp(\eta{CL})\right)$$
 
 
-The above equation shows that we have two covariates on CL one is Weight (kg) a continuous variable with reference value of 70 (kg) and influencing CL with a power model with coefficient dWTdCL. The second is SEX which is an indicator variable taking the value of 0 (Woman) and 1 (Man) and which is influencing CL with a coefficient dSEXdCL when SEX equals 1 which means SEX equals 0 was chosen as the reference value. The last term denotes the individual deviations  from the population (random effects) and it is common to use this model which assumes that CL in the population is log normally distributed.
+The above equation shows that we have two covariates on CL one is Weight (kg) a continuous variable with reference value of 70 (kg) and influencing CL with a power model with coefficient dWTdCL. The second is SEX which is an indicator variable taking the value of 0 (Woman, used as the reference category) and 1 (Man) influencing CL with a coefficient dSEXdCL. The last term denotes the individual deviations from the population (random effects) which assumes that CL in the population is log normally distributed.
 
-The modeling output would give you the value of the fixed effects parameters (POPCL,dWTdCL and dSEXdCL) as well as the variance covariance matrix of the random effects. The associated uncertainty can be obtained from an estimated asymptotic variance covariance matrix or from the bootstrap.
+The modeling output would give you the value of the fixed effects parameters (POPCL,dWTdCL and dSEXdCL) as well as the variance covariance matrix of the random effects. The associated uncertainty can be obtained from an estimated asymptotic variance covariance matrix or from the bootstrap. Sometimes the uncertainty is simply reported as a standard error or relative standard error.
 
-Of interest as well is the observed distribution of the covariates Weight and SEX in the studied population since, as we will see later on, the effects plot would need to fill in a value for both and it is desirable to provide sensible values that would provide a good sense on where the bulk of the effects are.
+Of interest as well is the observed distribution of the covariates Weight and SEX in the studied population because to compute the effects we need to fill in a value for both. It is desirable to provide sensible values that would provide a good sense on where the bulk of the effects are. A good practice is to report the effects of the 75th percentile to the 25th percentile which will cover 50% of the population. Alternatively, we might be interested to compute effects for clinically meaningful difference e.g. 20 kg.
 
-Finally the distribution of the  unexplained between subject variability is important to contrast with the magnitude of variability explained by the covariate.
+Finally, showing the distribution of the unexplained between subject variability is important to contrast with the magnitude of the effects explained by the covariate.
 
 ## Simulating data to mimick data and modeling outputs
-We will assume that we have run a 1000 bootstrap that gave us a 1000 rows dataset: (the five first rows are shown below). For simplicity, we will also assume that there were equal number of SEX = 1 (Man) and SEX = 0 (Woman) and that men and women had mean weights of 85 and 68 kg, respectively. The model had the between subject variability on CL Standard deviation estimated to be 0.30 which translate to apparent CV of sqrt (exp (0.3^2) -1) = 0.3069. The resulting distribution is also shown. A 30 % BSV can be hard to interpret by a clinician. What does it really mean ? A more useful metric can be to compute the bounds where say 50 and 90% of the patients will be using simple quantile functions. For the above example, we get 50% of the patients will be within the 0.82 to 1.23 interval (thick blue lines) while 90% of the patients will be within 0.61,1.63 (thin blue lines).
+We will assume that we have run a 1000 bootstrap that gave us a 1000 rows dataset (the five first rows are shown below). For simplicity, we will also assume that there were equal number of SEX = 1 (Man) and SEX = 0 (Woman) and that men and women had mean weights of 85 and 68 kg, respectively. The model had the between subject variability on CL variance estimated to be 0.09 which translate to apparent CV of sqrt (exp (0.09) -1) = 0.3069. A common way to report this BSV is to say we have 30.7% BSV. But what does this mean in practical terms ? If I take 50 patients (with the same covariate values) what are the chances that some of these patients will have very low or very high CL warranting dose intervention ?
+A more useful metric can be to compute the bounds where say 50% and 90% of the patients will be using simple quantile functions. For the 30.7% BSV case, we get 50% of the patients will be within the 0.82 to 1.23 interval (thick blue lines) while 90% of the patients will be within 0.61,1.63 (thin blue lines). A table showing the various quantiles is shown.
 
 ```{r, echo=FALSE, results='asis'}
   set.seed(657687)
@@ -74,27 +75,17 @@ dfbsv$quantile<- rownames(dfbsv)
 ggplot2::ggplot(CLBSVdistribution,ggplot2::aes(x=CLBSV))+
   ggplot2::geom_density(,alpha=0.2)+
   ggplot2::geom_vline(xintercept = c(0.8179004,1.2271218),size=3,col="blue",alpha=0.6)+
-  ggplot2::geom_vline(xintercept = c(0.6073418,1.6259988),size=2,col="blue",alpha=0.3)#+
-  # ggplot2::annotate("segment", x = 0.8179004, xend =1.2271218, y = 0.5, yend = 0.5,
-  #          colour = "blue", size=2, alpha=0.6, arrow=ggplot2::arrow())+
-  # ggplot2::annotate("segment", x = 0.8179004, xend =0.8179004, y = 0.5, yend = 0.5,
-  #          colour = "blue", size=2,  alpha=0.6, arrow=ggplot2::arrow())+
-  # ggplot2::annotate("segment", x = 0.6073418, xend =1.6259988, y = 0.25, yend = 0.25,
-  #          colour = "blue", size=2, alpha=0.3, arrow=ggplot2::arrow())+
-  # ggplot2::annotate("segment", x = 0.6073418, xend =0.6073418, y = 0.25, yend = 0.25,
-  #          colour = "blue", size=2,  alpha=0.3, arrow=ggplot2::arrow())+
-  #ggplot2::annotate("text", x = 1, y = 0.15, label="50%",size=4,col="blue",alpha=1)+
-  #ggplot2::annotate("text", x = 1, y = 0.65, label="90%",size=5,col="blue",alpha=1)
-  
+  ggplot2::geom_vline(xintercept = c(0.6073418,1.6259988),size=2,col="blue",alpha=0.3)
 
-knitr::kable(dfbsv)
+knitr::kable(dfbsv,row.names=FALSE)
+
 ```
 
 ## Visualizing effects disributions
 
 We will divide POPCL by its median to standardize it. This will give a standardized value of 1 and its uncertainty when all covariates are held at the reference value(s) here SEX = 0 and Weight = 70 kg.
 We will also compute the effects of Weight = 50 kg and 90 kg as compared to the 70 kg.
-We keep dSEXdCL as is, it represents the effects of SEX=1 effects when weight is held at its reference value = 70 kg. Additionally we can compute the effects for any combination of covariates e.g. Weight =90 kg and SEX = 1. A clinical relevance areas e.g. between 0.8 and 1.25 of the reference value is shown since this is usually regarderd as the zone of equivalence. A covariate need to have lower or larger effects than this zone to trigger actions requiring dose changes.
+We keep dSEXdCL as is, it represents the effects of SEX = 1 effects when weight is held at its reference value = 70 kg. Additionally we can compute the effects for any combination of covariates e.g. Weight = 90 kg and SEX = 1. A clinical relevance areas e.g. between 0.8 and 1.25 of the reference value is shown since this is often regarderd as the zone of PK equivalence. A covariate need to have lower or larger effects than this zone to trigger actions requiring dose changes.
 
 ```{r,fig.width= 7}
 dfeffects<- df
@@ -173,7 +164,7 @@ knitr::kable(plotdata)
 ```
 
 ## Plotting the Final Effects Data
-First we do a simple plot. Then we call `coveffectsplot::forest_plot`to make the final plot with the annotations, and legends. For interactice reordering and editing export the data as a "csv" and lauch the shiny app via `coveffectsplot::run_interactiveforestplot()`
+First we do a simple plot. Then we call `coveffectsplot::forest_plot`to make the final plot with annotations, a side table with values, and legends. For interactice reordering and editing export the data as a "csv" and launch the shiny app via `coveffectsplot::run_interactiveforestplot()`
 
 ```{r,fig.width=7}
 ggplot2::ggplot(data = plotdata, ggplot2::aes_string(
@@ -189,7 +180,8 @@ ggplot2::ggplot(data = plotdata, ggplot2::aes_string(
       alpha = 1
     )+
   ggplot2::facet_grid(covname~.,scales="free_y",switch="y")+
-  ggplot2::labs(y="",x="Effects Relative to Reference Value")
+  ggplot2::labs(y="",x="Effects Relative to Reference Value",
+                colour="")
 
 png("coveffectsplot.png",width =9 ,height = 6,units = "in",res=72)
 coveffectsplot::forest_plot(plotdata,
