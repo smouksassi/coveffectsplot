@@ -128,7 +128,7 @@ quantiles = c(0.025,0.5, 0.975)) +
 ```
 
 ## Simplifying the effects distributions data
-The above plot might be overloading the reader with information. We will simplify it by removing unnecessary details and by computing the desired stats in adavance.
+The above plot might be overloading the reader with information. We will simplify it by removing unnecessary details and by computing the desired stats in advance.
 
 ```{r,}
 dfeffects$SEX_Male_WT_90<- NULL

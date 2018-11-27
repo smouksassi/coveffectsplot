@@ -1,5 +1,5 @@
 suppressPackageStartupMessages({
-  library(interactiveforestplot)
+  library(coveffectsplot)
   library(dplyr)
   library(tidyr)
   library(egg)
