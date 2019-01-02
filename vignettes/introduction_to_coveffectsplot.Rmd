@@ -33,10 +33,12 @@ The modeling output would give you the value of the fixed effects parameters (PO
 
 Of interest as well is the observed distribution of the covariates Weight and SEX in the studied population because to compute the effects we need to fill in a value for both. It is desirable to provide sensible values that would provide a good sense on where the bulk of the effects are. A good practice is to report the effects of the 75th percentile to the 25th percentile which will cover 50% of the population, some would also want to cover the 10th to the 90th percentiles. Alternatively, we might be interested to compute effects for clinically meaningful difference e.g. 20 kg.
 
-Finally, showing the distribution of the unexplained between subject variability is important to contrast with the magnitude of the effects explained by the covariate.
+Finally, showing the distribution of the unexplained between subject variability (BSV) is important to contrast with the magnitude of the effects explained by the covariate.
 
 ## Simulating data and modeling outputs
-We will assume that we have run a 1000 bootstrap that gave us a 1000 rows dataset (the five first rows are shown below). The parameters had a relative standard error of 10%. For simplicity, we will also assume that there were equal number of SEX = 1 (Man) and SEX = 0 (Woman) and that men and women had mean weights of 85 and 68 kg and the same standard deviation of 20 kg. 
+
+We will assume that the model fit had estimated parameters with relative standard errors of 10%. In practice, we can also get these relative standard errors from a bootstrap resampling procedure rather than relying on the asymptotic variance covariance matrix. For this vignette, a simulation from a multivariate normal distribution was used with n= 1000 was used. The five first rows are shown in the table below. 
+For simplicity, we will also assume that there were equal number of SEX = 1 (Man) and SEX = 0 (Woman) and that men and women had mean weights of 75 and 65 kg and the same standard deviation of 15 kg. 
 
 ```{r, echo=FALSE, results='asis',fig.align = "center",fig.width = 6}
   set.seed(657687)
@@ -51,8 +53,8 @@ names(df)<- c("POPCL","dWTdCL","dSEXdCL")
 knitr::kable(head(df,5))
 dfcov<- data.frame(
 MASS::mvrnorm(n=1000 ,
-                mu =c(68,85),
-                Sigma=matrix(c(20^2,0.01,0.01,20^2),2,2,byrow = TRUE) 
+                mu =c(65,75),
+                Sigma=matrix(c(15^2,0.01,0.01,15^2),2,2,byrow = TRUE) 
 ))
 names(dfcov)<- c("WTWOMAN","WTMAN")
 dfcovlong <- tidyr::gather(dfcov)
@@ -109,18 +111,20 @@ ggplot2::ggplot(data= CLBSVdistribution)+
   ggplot2::scale_x_continuous(breaks=c(0.25,0.5,0.8,1,1.25,1.5,2,3))+
   ggplot2::coord_cartesian(xlim=c(0.4,2))+
   ggplot2::labs(colour="",fill="BSV Coverage",x="BSVCL/Reference CL",
-                title="Illustrating 30% BSV Effects",subtitle = "Woman, 70 (kg)")
+                title="Illustrating 30% BSV Effects")+
+  ggplot2::guides(fill = ggplot2::guide_legend(override.aes =  list(alpha = 0.1)  ))
 
 
 
-knitr::kable(dfbsv,row.names=FALSE)
+
+knitr::kable(t(dfbsv),row.names=FALSE)
 ```
 
 ## Visualizing effects distributions
 
 We will divide POPCL by its median to standardize it. This will give a standardized value of 1 and its uncertainty when all covariates are held at the reference value(s) here SEX = 0 and Weight = 70 kg.
 We will also compute the effects of Weight = 50 kg and 90 kg as compared to the 70 kg.
-We keep dSEXdCL as is, it represents the effects of SEX = 1 effects when weight is held at its reference value = 70 kg. Additionally we can compute the effects for any combination of covariates e.g. Weight = 90 kg and SEX = 1. A clinical relevance areas e.g. between 0.8 and 1.25 of the reference value is shown since this is often regarded as the zone of PK equivalence. A covariate need to have lower or larger effects than this zone to trigger actions requiring dose changes.
+We keep dSEXdCL as is, it represents the effects of SEX = 1 effects when weight is held at its reference value = 70 kg. Additionally we can compute the effects for any combination of covariates e.g. Weight = 90 kg and SEX = 1. A clinical relevance areas e.g. between 0.8 and 1.25 of the reference value is shown since this is often regarded as the zone of PK equivalence. A covariate need to have lower or larger effects than this zone to trigger actions requiring dose changes. Finally we will make a plot that compare the magnitude of uncertainty, covariate distribution and between subject variability effects.
 
 ```{r,fig.width= 7}
 dfeffects<- df
@@ -130,7 +134,8 @@ dfeffects$SEX_FEMALE_WT_90 <-  dfeffects$REF*(90/70)^dfeffects$dWTdCL
 dfeffects$SEX_Male_WT_70 <- dfeffects$dSEXdCL
 dfeffects$SEX_Male_WT_90 <- dfeffects$dSEXdCL*dfeffects$REF*(90/70)^dfeffects$dWTdCL
 
-dfeffects<- dfeffects[,c("SEX_FEMALE_WT_50","SEX_FEMALE_WT_90","SEX_Male_WT_70","SEX_Male_WT_90","REF")]
+dfeffects<- dfeffects[,c("SEX_FEMALE_WT_50","SEX_FEMALE_WT_90","SEX_Male_WT_70",
+                         "SEX_Male_WT_90","REF")]
 dfeffects$BSV<-  CLBSVdistribution$CLBSV
 
 
@@ -161,9 +166,9 @@ quantiles = c(0.025,0.5, 0.975)) +
 
 ggplot2::ggplot(dfeffects)+
   ggplot2::geom_density(ggplot2::aes(x=REF,y=..scaled..,col="a.Uncertainty\nRSE=10%"))+
-  ggplot2::geom_density(data=dfcov,
-                        ggplot2::aes(x=WTMAN/ median(WTMAN),
-                                y=..scaled..,col="b.Weight\nMean=68 kg, sd=20 kg"))+
+  ggplot2::geom_density(data=dfcovlong,
+                        ggplot2::aes(x=(value/70)^0.75 ,
+                                y=..scaled..,col="b.Weight\nMean=70 kg, sd=15 kg"))+
   ggplot2::geom_density(data=CLBSVdistribution ,ggplot2::aes(x=CLBSV,
                                      y=..scaled..,col="c.Between subject variability\n(30%)"))+
   ggplot2::theme_bw(base_size = 16)+
@@ -188,7 +193,8 @@ dfeffectslongsummaries<- dplyr::summarise(dfeffectslong,mid=quantile(value,0.5),
 
 dfeffectslongsummaries$paramname <- "CL"
 dfeffectslongsummaries$covname <- c("BSV","REF","SEX","Weight","Weight")
-dfeffectslongsummaries$label <- c("95% of patients","70 kg/Woman","70 kg/Man","50 kg/Woman", "90 kg/Woman")
+dfeffectslongsummaries$label <- c("95% of patients","70 kg/Woman","70 kg/Man",
+                                  "50 kg/Woman", "90 kg/Woman")
 dfeffectslongsummaries<- rbind(dfeffectslongsummaries,
 data.frame(key=c("BSV","BSV"),
            mid=c(quantile(dfeffects$BSV,0.5), quantile(dfeffects$BSV,0.5)),
