@@ -29,38 +29,47 @@ $$CL = {POPCL} \times \left( \frac { \color{blue}{Weight}} {70}\right)^{dWTdCL}\
 
 The above equation shows that we have two covariates on CL one is Weight (kg) a continuous variable with reference value of 70 (kg) and influencing CL with a power model with coefficient dWTdCL. The second is SEX which is an indicator variable taking the value of 0 (Woman, used as the reference category) and 1 (Man) influencing CL with a coefficient dSEXdCL. The last term denotes the individual deviations from the population (random effects) which assumes that CL in the population is log normally distributed.
 
-The modeling output would give you the value of the fixed effects parameters (POPCL,dWTdCL and dSEXdCL) as well as the variance covariance matrix of the random effects. The associated uncertainty can be obtained from an estimated asymptotic variance covariance matrix or from the bootstrap. Sometimes the uncertainty is simply reported as a standard error or relative standard error.
+The modeling output would give you the value of the fixed effects parameters (POPCL,dWTdCL and dSEXdCL) as well as the variance covariance matrix of the random effects. The associated uncertainty can be obtained from an estimated asymptotic variance covariance matrix or from the bootstrap. Sometimes the uncertainty is simply reported as a standard error or relative standard error (%).
 
-Of interest as well is the observed distribution of the covariates Weight and SEX in the studied population because to compute the effects we need to fill in a value for both. It is desirable to provide sensible values that would provide a good sense on where the bulk of the effects are. A good practice is to report the effects of the 75th percentile to the 25th percentile which will cover 50% of the population. Alternatively, we might be interested to compute effects for clinically meaningful difference e.g. 20 kg.
+Of interest as well is the observed distribution of the covariates Weight and SEX in the studied population because to compute the effects we need to fill in a value for both. It is desirable to provide sensible values that would provide a good sense on where the bulk of the effects are. A good practice is to report the effects of the 75th percentile to the 25th percentile which will cover 50% of the population, some would also want to cover the 10th to the 90th percentiles. Alternatively, we might be interested to compute effects for clinically meaningful difference e.g. 20 kg.
 
 Finally, showing the distribution of the unexplained between subject variability is important to contrast with the magnitude of the effects explained by the covariate.
 
 ## Simulating data and modeling outputs
-We will assume that we have run a 1000 bootstrap that gave us a 1000 rows dataset (the five first rows are shown below). For simplicity, we will also assume that there were equal number of SEX = 1 (Man) and SEX = 0 (Woman) and that men and women had mean weights of 85 and 68 kg, respectively. The model had the between subject variability on CL variance estimated to be 0.09 which translate to apparent CV of sqrt (exp (0.09) -1) = 0.3069. A common way to report this BSV is to say we have 30.7% BSV. But what does this mean in practical terms ? If I take 50 patients (with the same covariate values) what are the chances that some of these patients will have very low or very high CL warranting dose intervention ?
-A more useful metric can be to compute the bounds where say 50% and 90% of the patients will be using simple quantile functions. For the 30.7% BSV case, we get 50% of the patients will be within the 0.82 to 1.23 interval (thick blue lines) while 90% of the patients will be within 0.61,1.63 (thin blue lines). A table showing the various quantiles is shown.
+We will assume that we have run a 1000 bootstrap that gave us a 1000 rows dataset (the five first rows are shown below). The parameters had a relative standard error of 10%. For simplicity, we will also assume that there were equal number of SEX = 1 (Man) and SEX = 0 (Woman) and that men and women had mean weights of 85 and 68 kg and the same standard deviation of 20 kg. 
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=FALSE, results='asis',fig.align = "center",fig.width = 6}
   set.seed(657687)
   df<- data.frame(
 MASS::mvrnorm(n=1000 ,
                 mu =c(10,0.75,1.5),
-                Sigma=matrix(c(0.2,0.01,0.01,0.01,0.0225,0.01,0.01,0.01,0.0225),3,3,byrow = TRUE) 
+                Sigma=matrix(c((10*0.10)^2,
+                               0.01,0.01,0.01,(0.75*0.10)^2,
+                               0.01,0.01,0.01,(1.5*0.10)^2),3,3,byrow = TRUE) 
 ))
 names(df)<- c("POPCL","dWTdCL","dSEXdCL")
 knitr::kable(head(df,5))
 dfcov<- data.frame(
 MASS::mvrnorm(n=1000 ,
                 mu =c(68,85),
-                Sigma=matrix(c(15,0.01,0.01,20),2,2,byrow = TRUE) 
+                Sigma=matrix(c(20^2,0.01,0.01,20^2),2,2,byrow = TRUE) 
 ))
 names(dfcov)<- c("WTWOMAN","WTMAN")
 dfcovlong <- tidyr::gather(dfcov)
 ggplot2::ggplot(dfcovlong,ggplot2::aes(x=value,fill=key))+
-  ggplot2::geom_density(,alpha=0.2)+
+  ggplot2::geom_density(alpha=0.2)+
   ggplot2::labs(fill="",x="Weight (kg)")+
-  ggplot2::theme(legend.position = c(0.65,0.95),legend.background = 
+  ggplot2::theme(legend.position = "right",legend.background = 
                    ggplot2::element_rect(fill="transparent"))+
   ggplot2::guides(fill=ggplot2::guide_legend(reverse = TRUE))
+
+
+```
+
+The model had the between subject variability on CL variance estimated to be 0.09 which translate to apparent CV of sqrt (exp (0.09) -1) = 0.3069. A common way to report this BSV is to say we have 30.7% BSV. But what does this mean in practical terms? If I take 50 patients (with the same covariate values) what are the chances that some of these patients will have very low or very high CL warranting dose changes?
+A more useful metric can be to compute the bounds where say 50% and 90% of the patients will be located using simple quantile functions on simulated distributions. For the 30.7% BSV case, we compute that 50% of the patients will be within the 0.82 to 1.23 interval (blue area) while 90% of the patients will be within the 0.61 to 1.63 interval (red area). A table showing the various quantiles is also shown.
+```{r, echo=FALSE,fig.align = "center",fig.width = 6}
+
 
 CLBSVdistribution <- data.frame(CL= 10*exp(rnorm(1000,0,sd=0.30)))
 CLBSVdistribution$CLBSV<- CLBSVdistribution$CL/10
@@ -72,13 +81,39 @@ names(dfbsv)<- "BSVquantilevalue"
 dfbsv$quantile<- rownames(dfbsv)
 
 
-ggplot2::ggplot(CLBSVdistribution,ggplot2::aes(x=CLBSV))+
-  ggplot2::geom_density(,alpha=0.2)+
-  ggplot2::geom_vline(xintercept = c(0.8179004,1.2271218),size=3,col="blue",alpha=0.6)+
-  ggplot2::geom_vline(xintercept = c(0.6073418,1.6259988),size=2,col="blue",alpha=0.3)
+BSVLINE1<- data.frame(
+                       mid = 1,
+                       lower=quantile(CLBSVdistribution$CLBSV,c(0.05)),
+                       upper=quantile(CLBSVdistribution$CLBSV,c(0.95)),
+                       extent="BSV90%")
+
+BSVLINE2<- data.frame( 
+                       mid = 1,
+                       lower=quantile(CLBSVdistribution$CLBSV,c(0.25)),
+                       upper=quantile(CLBSVdistribution$CLBSV,c(0.75)),
+                       extent="BSV50%")
+
+BSVLINE <- rbind(BSVLINE1,BSVLINE2)
+ggplot2::ggplot(data= CLBSVdistribution)+
+ ggplot2:: geom_density(ggplot2::aes(x=CLBSV,
+                   col="simomega")) +
+   ggplot2::geom_rect(data=BSVLINE,
+            ggplot2::aes(xmin=lower,xmax=upper  ,
+                fill=extent),ymin=-Inf,ymax=Inf ,
+           alpha=0.1)+
+  ggplot2::geom_vline(xintercept=c(0.8,1,1.25))+
+  ggplot2::theme_bw(base_size = 16)+
+  ggplot2::theme(axis.text.y = ggplot2::element_blank(),
+        axis.ticks.y = ggplot2::element_blank(),
+        axis.text.x=ggplot2::element_text(size=12))+
+  ggplot2::scale_x_continuous(breaks=c(0.25,0.5,0.8,1,1.25,1.5,2,3))+
+  ggplot2::coord_cartesian(xlim=c(0.4,2))+
+  ggplot2::labs(colour="",fill="BSV Coverage",x="BSVCL/Reference CL",
+                title="Illustrating 30% BSV Effects",subtitle = "Woman, 70 (kg)")
+
+
 
 knitr::kable(dfbsv,row.names=FALSE)
-
 ```
 
 ## Visualizing effects distributions
@@ -90,14 +125,12 @@ We keep dSEXdCL as is, it represents the effects of SEX = 1 effects when weight 
 ```{r,fig.width= 7}
 dfeffects<- df
 dfeffects$REF <- dfeffects$POPCL/ median(dfeffects$POPCL)
-dfeffects$WT_50 <- dfeffects$REF*(50/70)^dfeffects$dWTdCL
-dfeffects$WT_90 <-  dfeffects$REF*(90/70)^dfeffects$dWTdCL
-dfeffects$SEX_Male <- dfeffects$dSEXdCL
+dfeffects$SEX_FEMALE_WT_50 <- dfeffects$REF*(50/70)^dfeffects$dWTdCL
+dfeffects$SEX_FEMALE_WT_90 <-  dfeffects$REF*(90/70)^dfeffects$dWTdCL
+dfeffects$SEX_Male_WT_70 <- dfeffects$dSEXdCL
 dfeffects$SEX_Male_WT_90 <- dfeffects$dSEXdCL*dfeffects$REF*(90/70)^dfeffects$dWTdCL
 
-dfeffects$SEX_Male <- dfeffects$dSEXdCL
-
-dfeffects<- dfeffects[,c("WT_50","WT_90","SEX_Male","SEX_Male_WT_90","REF")]
+dfeffects<- dfeffects[,c("SEX_FEMALE_WT_50","SEX_FEMALE_WT_90","SEX_Male_WT_70","SEX_Male_WT_90","REF")]
 dfeffects$BSV<-  CLBSVdistribution$CLBSV
 
 
@@ -125,10 +158,25 @@ quantiles = c(0.025,0.5, 0.975)) +
   ggplot2::theme_bw()+
   ggplot2::labs(x="Effects Relative to parameter reference value",y="")
 
+
+ggplot2::ggplot(dfeffects)+
+  ggplot2::geom_density(ggplot2::aes(x=REF,y=..scaled..,col="a.Uncertainty\nRSE=10%"))+
+  ggplot2::geom_density(data=dfcov,
+                        ggplot2::aes(x=WTMAN/ median(WTMAN),
+                                y=..scaled..,col="b.Weight\nMean=68 kg, sd=20 kg"))+
+  ggplot2::geom_density(data=CLBSVdistribution ,ggplot2::aes(x=CLBSV,
+                                     y=..scaled..,col="c.Between subject variability\n(30%)"))+
+  ggplot2::theme_bw(base_size = 16)+
+  ggplot2::theme(axis.text.y = ggplot2::element_blank(),
+        axis.ticks.y = ggplot2::element_blank())+
+  ggplot2::scale_x_continuous(breaks=c(0.25,0.5,0.8,1,1.25,1.5,2,3))+
+  ggplot2::coord_cartesian(xlim=c(0.25,2))+
+  ggplot2::labs(color="",x="Effects Relative to parameter reference value",y= "Scaled Density")
+
 ```
 
 ## Simplifying the effects distributions data
-The above plot might be overloading the reader with information. We will simplify it by removing unnecessary details and by computing the desired stats in advance.
+The above plots might be overloading the reader with information. We will simplify it by removing unnecessary details and by computing the desired stats in advance.
 
 ```{r,}
 dfeffects$SEX_Male_WT_90<- NULL
@@ -140,7 +188,7 @@ dfeffectslongsummaries<- dplyr::summarise(dfeffectslong,mid=quantile(value,0.5),
 
 dfeffectslongsummaries$paramname <- "CL"
 dfeffectslongsummaries$covname <- c("BSV","REF","SEX","Weight","Weight")
-dfeffectslongsummaries$label <- c("95% of patients","70 kg/Woman","Man","50 kg", "90 kg")
+dfeffectslongsummaries$label <- c("95% of patients","70 kg/Woman","70 kg/Man","50 kg/Woman", "90 kg/Woman")
 dfeffectslongsummaries<- rbind(dfeffectslongsummaries,
 data.frame(key=c("BSV","BSV"),
            mid=c(quantile(dfeffects$BSV,0.5), quantile(dfeffects$BSV,0.5)),
