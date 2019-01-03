@@ -171,10 +171,10 @@ ggplot2::ggplot(dflong,ggplot2::aes(x=value,y=key,fill=factor(..quantile..)))+
 ggridges::stat_density_ridges(
   geom = "density_ridges_gradient", calc_ecdf = TRUE,
   quantile_lines = TRUE, rel_min_height = 0.01,
-  quantiles = c(0.025,0.5, 0.975)) +
+  quantiles = c(0.05,0.5, 0.95)) +
   ggplot2::scale_fill_manual(
     name = "Probability", values = c("#FF0000A0", "white","white", "#0000FFA0"),
-    labels = c("(0, 0.025]", "(0.025, 0.5]","(0.5, 0.975]", "(0.975, 1]")
+    labels = c("(0, 0.05]", "(0.05, 0.5]","(0.5, 0.95]", "(0.95, 1]")
   )+
       ggplot2::annotate(
         "rect",
@@ -217,8 +217,8 @@ dfeffects$SEX_Male_WT_90<- NULL
 dfeffectslong<- tidyr::gather(dfeffects)
 dfeffectslong<- dplyr::group_by(dfeffectslong,key)
 dfeffectslongsummaries<- dplyr::summarise(dfeffectslong,mid=quantile(value,0.5),
-                                   lower=quantile(value,0.025),
-                                   upper=quantile(value,0.975))
+                                   lower=quantile(value,0.05),
+                                   upper=quantile(value,0.95))
 
 dfeffectslongsummaries$paramname <- "CL"
 dfeffectslongsummaries$covname <- c("BSV","REF","Weight","Weight","Sex")
@@ -246,16 +246,15 @@ knitr::kable(plotdata)
 
 ```
 
-## Plotting the Final Effects Data
-First we do a simple plot. Then we call `coveffectsplot::forest_plot`to make the final plot with annotations, a side table with values, and legends. For interactive reordering and editing export the data as a "csv" and launch the shiny app via `coveffectsplot::run_interactiveforestplot()`
+## Plotting the Effects Data
+First we do a customized `ggplot`. Then we do an interactive `plotly` version and finally we show how to use `coveffectsplot::forest_plot`to make the final plot with annotations, a side table with values, and legends. For interactive reordering of categories, editing of labels and more, export the data as a "csv" and launch the shiny app via `coveffectsplot::run_interactiveforestplot()`
 
 ```{r,fig.width=7}
 plotdata$covname <- as.factor(plotdata$covname)
 plotdata$covname <- reorder(plotdata$covname , c(3,4,4,2,1,1))
 
 plotdata$label <- reorder(as.factor(plotdata$label) , c(1,3,2,4,5,6))
-
-ggplot2::ggplot(data = plotdata, ggplot2::aes_string(
+  ggplot2::ggplot(data = plotdata, ggplot2::aes_string(
       y = "label",
       x = "mid",
       xmin = "lower",
@@ -263,19 +262,89 @@ ggplot2::ggplot(data = plotdata, ggplot2::aes_string(
     )) +
     ggstance::geom_pointrangeh(
       position = ggstance::position_dodgev(height = 0.75),
-      ggplot2::aes(color = "95 %CI\nCovariate Effects"),
+      ggplot2::aes(color = "90 %CI\nCovariate Effects"),
       size = 1,
       alpha = 1
     )+
+  ggplot2::annotate("rect", xmin = min(0.8), 
+      xmax = max(1.25), ymin = -Inf, ymax = Inf, fill = "gray",alpha=0.1)+
+  ggplot2::geom_vline(ggplot2::aes(xintercept = 1,linetype="Reference"))+ 
   ggplot2::facet_grid(covname~.,scales="free_y",switch="y")+
   ggplot2::labs(y="",x="Effects Relative to Reference Value",
-                colour="")
+                colour="",linetype="")+
+  ggplot2::theme_bw()
+
+  
+  
+  suppressPackageStartupMessages( require(dplyr) )
+  plotdata<- plotdata[ c(3,2,1,4,5,6),]
+
+  plotly::plot_ly(plotdata) %>%
+  plotly::add_segments(
+  x = ~ round(lower, 2),
+  xend = ~ round(upper, 2),
+  y = ~ label,
+  yend = ~ label,
+  name = '90%CI',
+  line = list(color = plotly::toRGB("blue", alpha = 0.5), width = 5),
+  hoverinfo = "text",
+  text = ~ paste("</br> 90%CI: ",
+  paste(round(lower, 2), round(upper, 2)))
+  ) %>%
+  
+  plotly::add_markers(
+  x = ~ round(mid, 2),
+  y = ~ label,
+  name = "Median",
+  marker  = list(
+  color = plotly::toRGB("black", alpha = 0.3),
+  size = 20,
+  symbol = "diamond"
+  ),
+  hoverinfo = "text",
+  text = ~ paste("</br> Mean: ",
+  paste(round(mid, 2)))
+  ) %>%
+  plotly::layout(
+  xaxis = list(
+  title = 'Effects Relative to Reference',
+  ticks = "outside",
+  autotick = TRUE,
+  ticklen = 5,
+  gridcolor = plotly::toRGB("gray50"),
+  showline = TRUE
+  ) ,
+  yaxis = list (
+  title = '' ,
+  autorange = TRUE, 
+  type = "category",
+  categoryorder = "trace", 
+  ticks = "outside",
+  autotick = TRUE,
+  ticklen = 5,
+  gridcolor = plotly::toRGB("gray50"),
+  showline = TRUE
+  ),
+     shapes =list(
+      type = "rect", 
+      x0 = 0.8, 
+      x1 = 1.25, 
+      xref = "x",
+      yref = "paper",
+      y0 = 0, 
+      y1 = 1, 
+      line = list(width = 0),
+      fillcolor =  plotly::toRGB("black", alpha = 0.3)
+  
+  )
+  )
 
 png("coveffectsplot.png",width =9 ,height = 6,units = "in",res=72)
 coveffectsplot::forest_plot(plotdata,
             ref_area = c(0.8, 1/0.8),
             x_facet_text_size = 13,
             y_facet_text_size = 13,
+            interval_legend_text = "Median (points)\n90% CI (horizontal lines)",
             ref_legend_text = "Reference (vertical line)\n+/- 20% ratios (gray area)",
             area_legend_text = "Reference (vertical line)\n+/- 20% ratios (gray area)",
             xlabel = "Fold Change Relative to Parameter",
