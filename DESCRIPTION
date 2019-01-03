@@ -29,7 +29,8 @@ Suggests:
     MASS,
     knitr,
     rmarkdown,
-    ggridges
+    ggridges,
+    plotly
 License: MIT + file LICENSE
 SystemRequirements: pandoc with https support
 LazyData: true
