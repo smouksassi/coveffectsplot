@@ -6,7 +6,7 @@
 \title{Prezista Drug Label Data}
 \format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 33 rows and 6 columns.}
 \source{
-Table 15 from https://aidsinfo.nih.gov/drugs/397/darunavir/28/professional
+Table 15 from \url{ https://aidsinfo.nih.gov/drugs/397/darunavir/28/professional/}
 }
 \usage{
 prezista
