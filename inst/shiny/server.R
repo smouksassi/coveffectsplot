@@ -174,7 +174,9 @@ function(input, output, session) {
       x_range = if (input$userxzoom) c(input$lowerxin, input$upperxin),
       show_table_facet_strip = input$showtablefacetstrips,
       table_position = input$tableposition,
-      plot_table_ratio = input$plottotableratio
+      plot_table_ratio = input$plottotableratio,
+      vertical_dodge_height = input$vdodgeheight,
+      legend_space_x_mult = input$legendspacex
     )
     plot
   }, height = function() {

@@ -139,8 +139,10 @@ fluidPage(
               checkboxInput('showrefarea', 'Show Reference Area?', value = TRUE),
               conditionalPanel(condition = "input.showrefarea" ,
                                uiOutput("refarea")),
-              sliderInput("height", "Plot Height", min=1080/4, max=1080, value=900, animate = FALSE)
-            )
+              sliderInput("height", "Plot Height", min=1080/4, max=1080, value=900, animate = FALSE),
+              sliderInput("vdodgeheight", "Vertical Dodging Height", min=0.5, max=2, value=0.8, animate = FALSE)
+              
+              )
 
           )
         ),#tabpanel
@@ -165,7 +167,8 @@ fluidPage(
                                     showColour = "both",allowTransparent=TRUE),
           div( actionButton("fillrefareareset", "Reset Reference Area Fill"),
                style="text-align: right"),
-
+          sliderInput("legendspacex", "Multiplier for Space between Legends",
+                      min = 0, max = 1.5, step = 0.1, value = 1),
           checkboxInput('customlegendtitle', 'Customization of Legend items and ordering ?',value = FALSE),
           conditionalPanel(
             condition = "input.customlegendtitle",
