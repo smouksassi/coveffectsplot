@@ -247,7 +247,7 @@ forest_plot <- function(
   guide_fill <- ggplot2::guide_legend("", order = fill_pos)
   guide_linetype <- ggplot2::guide_legend("", order = linetype_pos)
   guide_shape <- ggplot2::guide_legend("", order = shape_pos,
-                                       override.aes = list(linetype = 0, colour = "gray"))
+                                       override.aes = list(linetype = 0, colour = "gray"),reverse = TRUE)
 
   data$label <- factor(data$label)
 
@@ -259,7 +259,7 @@ forest_plot <- function(
       xmax = "upper"
     )) +
     ggstance::geom_pointrangeh(
-      position = ggstance::position_dodgev(height = 0.75),
+      position = ggstance::position_dodgev(height = 0.8),
       ggplot2::aes(color = interval_legend_text),
       size = 1,
       alpha = 1
@@ -376,7 +376,7 @@ forest_plot <- function(
           hjust = 0.5
         ),
         size = table_text_size,
-        position = ggstance::position_dodgev(height = 0.75)
+        position = ggstance::position_dodgev(height = 0.8)
       )
 
     if (facet_switch != "none") {

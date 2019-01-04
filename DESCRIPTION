@@ -3,7 +3,7 @@ Title: Produce Forest Plots to Visualize Covariate Effects
 Version: 0.0.2
 Authors@R: c(
     person("Samer", "Mouksassi", email = "samermouksassi@gmail.com",
-      role = c("aut", "cre")),
+      role = c("aut", "cre"),comment = c(ORCID = "https://orcid.org/0000-0002-7152-6654")),
     person("Dean", "Attali", email = "daattali@gmail.com",
       role = c("ctb"))
     )
@@ -35,4 +35,4 @@ License: MIT + file LICENSE
 SystemRequirements: pandoc with https support
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
