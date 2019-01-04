@@ -26,6 +26,7 @@ which0 <- function(x) {
 #' @param interval_legend_text Pointinterval Legend text.
 #' @param legend_order Legend order. A four-element vector with the following
 #' items ordered in your desired order: "pointinterval", "ref", "area", "shape".
+#' if an item is absent the legend will be omitted.
 #' @param combine_area_ref_legend Combine reference and area legends if they
 #' share the same text?
 #' @param show_ref_area Show reference window?
@@ -355,8 +356,8 @@ forest_plot <- function(
       panel.grid.major = ggplot2::element_line(colour = "gray", linetype = "solid"),
       strip.background = ggplot2::element_rect(fill = strip_col),
       strip.placement  = strip_placement,
-      legend.spacing.x = unit(legend_space_x_mult*11, "pt"),
-      legend.margin = margin(t = 0, r = 0.1, l = -0.1, b = 0, unit='cm')
+      legend.spacing.x = ggplot2::unit(legend_space_x_mult*11, "pt"),
+      legend.margin = ggplot2::margin(t = 0, r = 0.1, l = -0.1, b = 0, unit='cm')
     ) +
     ggplot2::ggtitle("\n") +
     ggplot2::xlab(xlabel) +

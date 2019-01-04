@@ -18,7 +18,8 @@ forest_plot(data, facet_formula = "covname~paramname", xlabel = "",
   "free_y", "free"), strip_placement = c("inside", "outside"),
   major_x_ticks = NULL, minor_x_ticks = NULL, x_range = NULL,
   show_table_facet_strip = FALSE, table_position = c("right", "below",
-  "none"), plot_table_ratio = 4)
+  "none"), plot_table_ratio = 4, vertical_dodge_height = 0.8,
+  legend_space_x_mult = 1)
 }
 \arguments{
 \item{data}{Data to use.}
@@ -46,7 +47,8 @@ forest_plot(data, facet_formula = "covname~paramname", xlabel = "",
 \item{interval_legend_text}{Pointinterval Legend text.}
 
 \item{legend_order}{Legend order. A four-element vector with the following
-items ordered in your desired order: "pointinterval", "ref", "area", "shape".}
+items ordered in your desired order: "pointinterval", "ref", "area", "shape".
+if an item is absent the legend will be omitted.}
 
 \item{combine_area_ref_legend}{Combine reference and area legends if they
 share the same text?}
@@ -87,6 +89,10 @@ share the same text?}
 \item{table_position}{Table position. Possible values: "right", "below", "none".}
 
 \item{plot_table_ratio}{Plot-to-table ratio. Suggested value between 1-5.}
+
+\item{vertical_dodge_height}{Amount of vertical dodging to apply on segments and table text.}
+
+\item{legend_space_x_mult}{Multiplier to adjust the spacing between legend items.}
 }
 \description{
 Produce forest plots to visualize covariate effects
