@@ -58,18 +58,19 @@ coveffectsplot::forest_plot(plotdata,
             interval_legend_text = "Median (points)\n90% CI (horizontal lines)",
             ref_legend_text = "Reference (vertical line)\n+/- 50% (gray area)",
             area_legend_text = "Reference (vertical line)\n+/- 50% (gray area)",
-            xlabel = "Fold Change Relative to Parameter",
+            xlabel = "Median 90%CI Fold Change Relative to Parameter",
             facet_formula = "covname~.",
             facet_switch = "both",
             facet_scales = "free",
             facet_space = "fixed",
             paramname_shape = TRUE,
             table_position = "right",
-            table_text_size = 5,
+            table_text_size = 4,
             plot_table_ratio = 4,
             vertical_dodge_height = 0.8,
             legend_space_x_mult = 0.1,
-            legend_order = c("ref", "area", "shape"))
+            legend_order = c("ref", "area", "shape"),
+            return_list = FALSE)
 ```
 ![example plot with the prezista dataset](./inst/shiny/img/prezista.png)
 

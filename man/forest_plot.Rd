@@ -19,7 +19,7 @@ forest_plot(data, facet_formula = "covname~paramname", xlabel = "",
   major_x_ticks = NULL, minor_x_ticks = NULL, x_range = NULL,
   show_table_facet_strip = FALSE, table_position = c("right", "below",
   "none"), plot_table_ratio = 4, vertical_dodge_height = 0.8,
-  legend_space_x_mult = 1)
+  legend_space_x_mult = 1, return_list = FALSE)
 }
 \arguments{
 \item{data}{Data to use.}
@@ -93,6 +93,9 @@ share the same text?}
 \item{vertical_dodge_height}{Amount of vertical dodging to apply on segments and table text.}
 
 \item{legend_space_x_mult}{Multiplier to adjust the spacing between legend items.}
+
+\item{return_list}{What to return if True a list of the main and table plots is returned
+instead of the gtable/plot.}
 }
 \description{
 Produce forest plots to visualize covariate effects
@@ -171,7 +174,8 @@ forest_plot(plotdata,
             area_legend_text = "Reference (vertical line)\\n+/- 20\% limits (colored area)",
             xlabel = "Fold Change Relative to RHZE",
             facet_formula = "covname~paramname",
-            table_position = "below")
+            table_position = "below",
+            show_table_facet_strip = TRUE)
 
 # Example 4
 plotdata <- get_sample_data("dataforest.csv")
@@ -196,7 +200,8 @@ forest_plot(plotdata,
             facet_scales = "free",
             facet_space = "fixed",
             table_position = "below",
-            plot_table_ratio = 1)
+            plot_table_ratio = 1,
+            show_table_facet_strip = TRUE)
 
 # Example 5
 
@@ -212,7 +217,7 @@ forest_plot(plotdata,
             facet_scales = "free",
             facet_space = "fixed",
             paramname_shape = TRUE,
-            table_position = "below",
+            table_position = "none",
             plot_table_ratio = 1)
 }
 }

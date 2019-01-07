@@ -51,6 +51,9 @@ which0 <- function(x) {
 #' @param plot_table_ratio Plot-to-table ratio. Suggested value between 1-5.
 #' @param vertical_dodge_height Amount of vertical dodging to apply on segments and table text.
 #' @param legend_space_x_mult Multiplier to adjust the spacing between legend items.
+#' @param return_list What to return if True a list of the main and table plots is returned
+#' instead of the gtable/plot.
+
 
 #' @examples
 #' library(dplyr)
@@ -127,7 +130,8 @@ which0 <- function(x) {
 #'             area_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
 #'             xlabel = "Fold Change Relative to RHZE",
 #'             facet_formula = "covname~paramname",
-#'             table_position = "below")
+#'             table_position = "below",
+#'             show_table_facet_strip = TRUE)
 #'
 #' # Example 4
 #' plotdata <- get_sample_data("dataforest.csv")
@@ -152,7 +156,8 @@ which0 <- function(x) {
 #'             facet_scales = "free",
 #'             facet_space = "fixed",
 #'             table_position = "below",
-#'             plot_table_ratio = 1)
+#'             plot_table_ratio = 1,
+#'             show_table_facet_strip = TRUE)
 #'
 #' # Example 5
 #'
@@ -168,7 +173,7 @@ which0 <- function(x) {
 #'             facet_scales = "free",
 #'             facet_space = "fixed",
 #'             paramname_shape = TRUE,
-#'             table_position = "below",
+#'             table_position = "none",
 #'             plot_table_ratio = 1)
 #'}
 #' @export
@@ -205,7 +210,8 @@ forest_plot <- function(
   table_position = c("right", "below", "none"),
   plot_table_ratio = 4,
   vertical_dodge_height = 0.8,
-  legend_space_x_mult = 1)
+  legend_space_x_mult = 1,
+  return_list = FALSE)
 {
 
   table_position <- match.arg(table_position)
@@ -451,7 +457,12 @@ forest_plot <- function(
       heights = c(plot_table_ratio, 1)
     )
   }
-
+if (return_list){
+  result <-  list(main_plot,table_plot)
+}
+  if (!return_list){
+  result <- result
+  }
   result
 }
 
