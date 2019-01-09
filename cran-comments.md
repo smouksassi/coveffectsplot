@@ -7,9 +7,7 @@
 
 0 errors | 0 warnings | 0 note
 
-* This is a new submission
-
-* I could not reproduce the warning locally or on win-builder
+* This is a prelease to cran
 
 ## Reverse dependencies
 

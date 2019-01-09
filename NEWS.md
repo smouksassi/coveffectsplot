@@ -1,3 +1,7 @@
+# coveffectsplot 0.0.2.9000
+
+* added an option to return a list of plots to enable further modification to the ggplot(s) if need be
+
 # coveffectsplot 0.0.2
 
 * Removed reference to the old name of the package
@@ -5,7 +9,6 @@
 * tweaked the order of the shape legends to reverse
 * modified default height of vertical dodging and added an option
 * added an option to control legend item x spacing
-* added an option to return a list of plots to enable further modification to the ggplot(s) if need be
 
 
 # coveffectsplot 0.0.1
