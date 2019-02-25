@@ -222,7 +222,7 @@ forest_plot <- function(
   legend_space_x_mult = 1,
   return_list = FALSE)
 {
-
+  ymax = ymin = x = fill = NULL
   table_position <- match.arg(table_position)
   legend_order <- match.arg(legend_order, several.ok = TRUE)
   facet_switch <- match.arg(facet_switch)
@@ -301,12 +301,12 @@ forest_plot <- function(
         fill = ref_area_col
       ) +
     ggplot2::geom_ribbon(
-      data = data.frame(x = 1, ymax = 1, ymin = 1),
+      data = data.frame(x = 1, ymax = 1, ymin = 1 ,fill = area_legend_text),
       ggplot2::aes(
         x = x,
         ymax = ymax,
         ymin = ymin,
-        fill = area_legend_text
+        fill = fill
       ),
       size = 1,
       inherit.aes = FALSE
