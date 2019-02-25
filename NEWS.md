@@ -2,8 +2,8 @@
 
 * added an option to return a list of plots to enable further modification to the ggplot(s) if need be
 * updated the vignette and examples to demo the new options
-* added possibility to choose on which facet to show stripts for the table
-* fixed a bug that showed up with ggplot dev version by explictly defining a data.frame to the data argument
+* added possibility to choose on which facet to show strips for the table
+* fixed a bug that showed up with ggplot dev version by explicitly defining a data.frame to the data argument
 * minor ui tweaks to enable named colors in colourpicker
 
 # coveffectsplot 0.0.2

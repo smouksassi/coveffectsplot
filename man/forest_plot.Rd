@@ -17,9 +17,10 @@ forest_plot(data, facet_formula = "covname~paramname", xlabel = "",
   "free_y", "free_x", "free"), facet_space = c("fixed", "free_x",
   "free_y", "free"), strip_placement = c("inside", "outside"),
   major_x_ticks = NULL, minor_x_ticks = NULL, x_range = NULL,
-  show_table_facet_strip = FALSE, table_position = c("right", "below",
-  "none"), plot_table_ratio = 4, vertical_dodge_height = 0.8,
-  legend_space_x_mult = 1, return_list = FALSE)
+  show_table_facet_strip = FALSE, show_table_yaxis_tick_label = FALSE,
+  table_position = c("right", "below", "none"), plot_table_ratio = 4,
+  vertical_dodge_height = 0.8, legend_space_x_mult = 1,
+  return_list = FALSE)
 }
 \arguments{
 \item{data}{Data to use.}
@@ -84,7 +85,9 @@ share the same text?}
 
 \item{x_range}{Range of X values. Two-element numeric vector.}
 
-\item{show_table_facet_strip}{Show table facet strip?}
+\item{show_table_facet_strip}{Possible values: "none", "both", "y", "x"}
+
+\item{show_table_yaxis_tick_label}{Show table y axis ticks and labels?}
 
 \item{table_position}{Table position. Possible values: "right", "below", "none".}
 
@@ -125,7 +128,7 @@ forest_plot(plotdata,
             facet_formula = "covname~.",
             facet_scales = "free_y",
             facet_space = "free_y",
-            show_table_facet_strip = FALSE,
+            show_table_facet_strip = "none",
             table_position = "right",
             plot_table_ratio = 4)
 
@@ -155,7 +158,8 @@ forest_plot(plotdata,
             y_label_text_size = 10,
             x_label_text_size = 10,
             facet_switch = "both",
-            show_table_facet_strip = TRUE,
+            show_table_facet_strip = "both",
+            show_table_yaxis_tick_label = TRUE,
             table_position = "below",
             plot_table_ratio = 1)
 \dontrun{
@@ -175,7 +179,8 @@ forest_plot(plotdata,
             xlabel = "Fold Change Relative to RHZE",
             facet_formula = "covname~paramname",
             table_position = "below",
-            show_table_facet_strip = TRUE)
+            show_table_facet_strip = "both",
+            show_table_yaxis_tick_label = TRUE)
 
 # Example 4
 plotdata <- get_sample_data("dataforest.csv")
@@ -201,7 +206,8 @@ forest_plot(plotdata,
             facet_space = "fixed",
             table_position = "below",
             plot_table_ratio = 1,
-            show_table_facet_strip = TRUE)
+            show_table_facet_strip = "both",
+            show_table_yaxis_tick_label = TRUE)
 
 # Example 5
 
@@ -218,6 +224,10 @@ forest_plot(plotdata,
             facet_space = "fixed",
             paramname_shape = TRUE,
             table_position = "none",
+            ref_area_col = rgb( col2rgb("gray50")[1], col2rgb("gray50")[2],col2rgb("gray50")[3],
+            max = 255, alpha = 0.1*255 ) ,
+            interval_col = "steelblue",
+            strip_col = "lightblue",
             plot_table_ratio = 1)
 }
 }
