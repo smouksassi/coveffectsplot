@@ -173,6 +173,7 @@ function(input, output, session) {
       minor_x_ticks = minor_x_ticks,
       x_range = if (input$userxzoom) c(input$lowerxin, input$upperxin),
       show_table_facet_strip = input$showtablefacetstrips,
+      show_table_yaxis_tick_label = input$showtableyaxisticklabel,
       table_position = input$tableposition,
       plot_table_ratio = input$plottotableratio,
       vertical_dodge_height = input$vdodgeheight,

@@ -276,7 +276,7 @@ plotdata$label <- reorder(as.factor(plotdata$label) , c(1,3,2,4,5,6))
 
   
   
-  suppressPackageStartupMessages( require(dplyr) )
+  suppressPackageStartupMessages( library(dplyr) )
   plotdata<- plotdata[ c(3,2,1,4,5,6),]
 
   plotly::plot_ly(plotdata) %>%
@@ -362,6 +362,44 @@ png("./coveffectsplot.png",width =9 ,height = 6,units = "in",res=72)
             return_list = FALSE)
 dev.off()
 ```
-#![Covariate Effects Plot.](coveffectsplot.png)
+![Covariate Effects Plot.](coveffectsplot.png)
+
+The `return_list` option allows you to choose to return a list of ggplot objects that can be further manipulated.
+
+```{r,dpi = 72}
+png("./coveffectsplot2.png",width =9 ,height = 6,units = "in",res=72)
+ plotlist<- coveffectsplot::forest_plot(plotdata,
+            ref_area = c(0.8, 1/0.8),
+            x_facet_text_size = 13,
+            y_facet_text_size = 13,
+            interval_legend_text = "Median (points)\n90% CI (horizontal lines)",
+            ref_legend_text = "Reference (vertical line)\n+/- 20% ratios (gray area)",
+            area_legend_text = "Reference (vertical line)\n+/- 20% ratios (gray area)",
+            xlabel = "Fold Change Relative to Parameter",
+            facet_formula = "covname~.",
+            facet_switch = "both",
+            facet_scales = "free",
+            facet_space = "fixed",
+            paramname_shape = FALSE,
+            table_position = "right",
+            table_text_size=4,
+            plot_table_ratio = 4,
+            legend_space_x_mult = 0.5,
+            ref_area_col = rgb( col2rgb("gray50")[1], col2rgb("gray50")[2],col2rgb("gray50")[3],
+             max = 255, alpha = 0.1*255 ) ,
+             interval_col = "steelblue",
+            return_list = TRUE)
+egg::ggarrange(
+      plotlist[[1]]+ 
+   ggplot2::labs(x= expression(paste("Changes Relative to ",CL["subscript"]^alpha["beta"], " Reference"),sep=""))+
+      ggplot2::theme(strip.text.y =  ggplot2::element_text(colour="blue")),
+       plotlist[[2]] ,
+      nrow = 1,
+      widths = c(4, 1)
+    )
 
 
+ 
+dev.off()
+```
+![Covariate Effects Plot2.](coveffectsplot2.png)
