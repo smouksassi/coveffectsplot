@@ -302,7 +302,7 @@ plotdata$label <- reorder(as.factor(plotdata$label) , c(1,3,2,4,5,6))
   symbol = "diamond"
   ),
   hoverinfo = "text",
-  text = ~ paste("</br> Mean: ",
+  text = ~ paste("</br> Median: ",
   paste(round(mid, 2)))
   ) %>%
   plotly::layout(
