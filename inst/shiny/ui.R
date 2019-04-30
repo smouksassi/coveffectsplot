@@ -193,7 +193,9 @@ fluidPage(
               multiple=TRUE,  options = list(
                 plugins = list('drag_drop')
               )),
-            checkboxInput('combineareareflegend', 'Combine Ref and Area Legends if they share the same text ?',value = TRUE)
+            checkboxInput('combineareareflegend', 'Combine Ref and Area Legends if they share the same text ?',value = TRUE),
+            checkboxInput('legendshapereverse', 'Reverse the order of shape legend items ?',value = FALSE)
+            
 
           )
         )

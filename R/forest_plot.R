@@ -36,6 +36,7 @@ which0 <- function(x) {
 #' @param interval_col Point range color.
 #' @param strip_col Strip background color.
 #' @param paramname_shape Map symbol to parameter(s)?
+#' @param legendshapereverse TRUE or FALSE. 
 #' @param facet_switch Facet switch to near axis. Possible values: "both", "y",
 #' "x", "none".
 #' @param facet_scales Facet scales. Possible values: "free_y", "fixed",
@@ -207,6 +208,7 @@ forest_plot <- function(
   interval_col = "blue",
   strip_col = "#E5E5E5",
   paramname_shape = FALSE,
+  legendshapereverse = FALSE,
   facet_switch = c("both", "y", "x", "none"),
   facet_scales = c("fixed", "free_y", "free_x", "free"),
   facet_space = c("fixed", "free_x", "free_y", "free"),
@@ -268,7 +270,7 @@ forest_plot <- function(
   guide_fill <- ggplot2::guide_legend("", order = fill_pos)
   guide_linetype <- ggplot2::guide_legend("", order = linetype_pos)
   guide_shape <- ggplot2::guide_legend("", order = shape_pos,
-                                       override.aes = list(linetype = 0, colour = "gray"),reverse = TRUE)
+                                       override.aes = list(linetype = 0, colour = "gray"),reverse = legendshapereverse)
   if( interval_pos==0) guide_interval = FALSE
   if( fill_pos==0) guide_fill = FALSE
   if( linetype_pos==0) guide_linetype = FALSE
