@@ -13,10 +13,11 @@ forest_plot(data, facet_formula = "covname~paramname", xlabel = "",
   show_ref_area = TRUE, ref_area = c(0.8, 1.25), ref_value = 1,
   ref_area_col = "#BEBEBE50", interval_col = "blue",
   strip_col = "#E5E5E5", paramname_shape = FALSE,
-  facet_switch = c("both", "y", "x", "none"), facet_scales = c("fixed",
-  "free_y", "free_x", "free"), facet_space = c("fixed", "free_x",
-  "free_y", "free"), strip_placement = c("inside", "outside"),
-  major_x_ticks = NULL, minor_x_ticks = NULL, x_range = NULL,
+  legend_shape_reverse = FALSE, facet_switch = c("both", "y", "x",
+  "none"), facet_scales = c("fixed", "free_y", "free_x", "free"),
+  facet_space = c("fixed", "free_x", "free_y", "free"),
+  strip_placement = c("inside", "outside"), major_x_ticks = NULL,
+  minor_x_ticks = NULL, x_range = NULL,
   show_table_facet_strip = FALSE, show_table_yaxis_tick_label = FALSE,
   table_position = c("right", "below", "none"), plot_table_ratio = 4,
   vertical_dodge_height = 0.8, legend_space_x_mult = 1,
@@ -67,6 +68,8 @@ share the same text?}
 \item{strip_col}{Strip background color.}
 
 \item{paramname_shape}{Map symbol to parameter(s)?}
+
+\item{legend_shape_reverse}{TRUE or FALSE.}
 
 \item{facet_switch}{Facet switch to near axis. Possible values: "both", "y",
 "x", "none".}

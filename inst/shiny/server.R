@@ -165,7 +165,7 @@ function(input, output, session) {
       interval_col = input$colourpointrange,
       strip_col = input$stripbackgroundfill,
       paramname_shape = input$shapebyparamname,
-      legendshapereverse = input$legendshapereverse,
+      legend_shape_reverse = input$legendshapereverse,
       facet_switch = input$facetswitch,
       facet_scales = input$facetscales,
       facet_space = input$facetspace,
