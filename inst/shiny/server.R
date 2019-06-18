@@ -172,6 +172,7 @@ function(input, output, session) {
       strip_placement = input$stripplacement,
       major_x_ticks = major_x_ticks,
       minor_x_ticks = minor_x_ticks,
+      logxscale = input$logxscale,
       x_range = if (input$userxzoom) c(input$lowerxin, input$upperxin),
       show_table_facet_strip = input$showtablefacetstrips,
       show_table_yaxis_tick_label = input$showtableyaxisticklabel,

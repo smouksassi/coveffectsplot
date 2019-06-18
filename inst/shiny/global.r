@@ -1,4 +1,5 @@
 suppressPackageStartupMessages({
+  library(scales)
   library(coveffectsplot)
   library(dplyr)
   library(tidyr)
@@ -38,4 +39,12 @@ signif_pad <- function(x, digits = 3, round.integers = TRUE, round5up = TRUE) {
 
 escape_newline <- function(s) {
   gsub("\\\\n", "\\\n", s)
+}
+
+which0 <- function(x) {
+  result <- which(x)
+  if (length(result) == 0) {
+    result <- 0
+  }
+  result
 }

@@ -46,6 +46,7 @@ which0 <- function(x) {
 #' @param strip_placement Strip placement. Possible values: "inside", "outside".
 #' @param major_x_ticks X axis major ticks. Numeric vector.
 #' @param minor_x_ticks X axis minor ticks. Numeric vector.
+#' @param logxscale Log-scale the x axis
 #' @param x_range Range of X values. Two-element numeric vector.
 #' @param show_table_facet_strip Possible values: "none", "both", "y", "x"
 #' @param show_table_yaxis_tick_label Show table y axis ticks and labels?
@@ -215,6 +216,7 @@ forest_plot <- function(
   strip_placement = c("inside", "outside"),
   major_x_ticks = NULL,
   minor_x_ticks = NULL,
+  logxscale = FALSE,
   x_range = NULL,
   show_table_facet_strip = FALSE,
   show_table_yaxis_tick_label = FALSE,
@@ -396,7 +398,12 @@ forest_plot <- function(
     main_plot <- main_plot +
       ggplot2::coord_cartesian(xlim = x_range)
   }
-
+  
+  if(logxscale){
+    main_plot <- main_plot +
+      ggplot2::coord_trans(x = "log")
+  }
+  
   if (table_position != "none") {
     table_plot <- ggplot2::ggplot(data = data,
                                   ggplot2::aes_string(y = "label"))
@@ -511,4 +518,3 @@ if (return_list){
   }
   result
 }
-

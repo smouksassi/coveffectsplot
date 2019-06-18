@@ -97,7 +97,8 @@ fluidPage(
           conditionalPanel(
             condition = "input.userxzoom" ,
             numericInput("lowerxin",label = "Lower X Limit",value = 0,min=NA,max=NA,width='100%'),
-            numericInput("upperxin",label = "Upper X Limit",value = 2,min=NA,max=NA,width='100%')
+            numericInput("upperxin",label = "Upper X Limit",value = 2,min=NA,max=NA,width='100%'),
+            checkboxInput('logxscale', 'Log-scale X axis ?', value = FALSE)
           ),
           textInput("yaxistitle", label = "Y axis Title", value = ""),
           textInput("xaxistitle", label = "X axis Title", value = "")
@@ -162,14 +163,14 @@ fluidPage(
           colourpicker::colourInput("colourpointrange",
                                     "Point Range Colour:",
                                     value="blue",
-                                    showColour = "both",allowTransparent=TRUE, , returnName = TRUE),
+                                    showColour = "both",allowTransparent=TRUE, returnName = TRUE),
           div( actionButton("colourpointrangereset", "Reset Point Range Colour"),
                style="text-align: right"),
 
           colourpicker::colourInput("fillrefarea",
                                     "Reference Area Fill:",
                                     value= "#BEBEBE50",
-                                    showColour = "both",allowTransparent=TRUE, , returnName = TRUE),
+                                    showColour = "both",allowTransparent=TRUE, returnName = TRUE),
           div( actionButton("fillrefareareset", "Reset Reference Area Fill"),
                style="text-align: right"),
           sliderInput("legendspacex", "Multiplier for Space between Legends",
