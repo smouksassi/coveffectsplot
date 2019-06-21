@@ -355,6 +355,7 @@ png("./coveffectsplot.png",width =9 ,height = 6,units = "in",res=72)
             facet_scales = "free",
             facet_space = "fixed",
             paramname_shape = TRUE,
+            show_table_facet_strip = "none",
             table_position = "right",
             table_text_size=4,
             plot_table_ratio = 4,
@@ -393,7 +394,8 @@ png("./coveffectsplot2.png",width =9 ,height = 6,units = "in",res=72)
 egg::ggarrange(
       plotlist[[1]]+ 
    ggplot2::labs(x= expression(paste("Changes Relative to ",CL["subscript"]^alpha["beta"], " Reference"),sep=""))+
-      ggplot2::theme(strip.text.y =  ggplot2::element_text(colour="blue")),
+      ggplot2::theme(strip.text.y =  ggplot2::element_text(colour="blue"))+
+     ggplot2::scale_x_log10(),
        plotlist[[2]] ,
       nrow = 1,
       widths = c(4, 1)
