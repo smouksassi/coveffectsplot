@@ -1,3 +1,8 @@
+# coveffectsplot 0.0.4
+* added an option to have a log x axis
+* added more control on the table strips
+
+
 # coveffectsplot 0.0.3
 
 * added an option to return a list of plots to enable further modification to the ggplot(s) if need be
