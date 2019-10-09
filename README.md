@@ -38,7 +38,7 @@ Additionally, you might  want to have a covname with value BSV to illustrate and
 
 The example data show where does 90 and 50% of the patients will be based on the model BSV estimate for the selected paramname(s).
 
-The vignette [Introduction to coveffectsplot](https://cran.r-project.org/web/packages/coveffectsplot/vignettes/introduction_to_coveffectsplot.html) will walk you through the background and  how to compute and build the required data that the shiny app or the function `forest_plot`expects. There is some data management steps that the app does automatically. Choosing to call the function will expect that you will take the responsibility to build the table LABEL and to control the ordering of the variables.
+The vignette [Introduction to coveffectsplot](https://cran.r-project.org/package=coveffectsplot/vignettes/introduction_to_coveffectsplot.html) will walk you through the background and  how to compute and build the required data that the shiny app or the function `forest_plot`expects. There is some data management steps that the app does automatically. Choosing to call the function will expect that you will take the responsibility to build the table LABEL and to control the ordering of the variables.
 
 ### Example using a real drug label data
 The prezista drug label data was extracted from the FDA label and calling the `forest_plot` function gives:
