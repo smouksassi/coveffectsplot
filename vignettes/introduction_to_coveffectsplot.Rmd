@@ -406,3 +406,5 @@ egg::ggarrange(
 dev.off()
 ```
 ![Covariate Effects Plot2.](coveffectsplot2.png)
+
+For this vignette we only covered univariate covariate effects where we vary one at a time. Similarly one can use a set of correlated covariates based on real data and simulate joint covariate effects. This might be covered in a future update and vignette.
