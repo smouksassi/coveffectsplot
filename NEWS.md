@@ -1,4 +1,5 @@
 # coveffectsplot 0.0.4
+
 * added an option to have a log x axis
 * added more control on the table strips
 
