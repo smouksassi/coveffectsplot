@@ -170,6 +170,12 @@ fluidPage(
                                     showColour = "both",allowTransparent=TRUE, returnName = TRUE),
           div( actionButton("colourpointrangereset", "Reset Point Range Colour"),
                style="text-align: right"),
+          colourpicker::colourInput("colourbsvrange",
+                                    "BSV Range Colour:",
+                                    value="red",
+                                    showColour = "both",allowTransparent=TRUE, returnName = TRUE),
+          div( actionButton("colourbsvrangereset", "Reset BSV Range Colour"),
+               style="text-align: right"),
 
           colourpicker::colourInput("fillrefarea",
                                     "Reference Area Fill:",
@@ -185,6 +191,8 @@ fluidPage(
 
             textInput("customcolourtitle", label ="Pointinterval Legend text",
                       value="Median (points)\\n95% CI (horizontal lines)"),
+            textInput("custombsvtitle", label ="BSV Legend text",
+                      value="BSV (points)\nPrediction Intervals (horizontal lines)"),
             textInput("customlinetypetitle", label ="Ref Legend text",
                       value="Reference (vertical line)\\nClinically relevant limits (colored area)"),
             textInput("customfilltitle", label ="Area Legend text",

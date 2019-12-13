@@ -1,3 +1,7 @@
+# coveffectsplot 0.0.5
+
+* added an option to have different color and text for BSV (issue submitted by France Mentré over the phone)
+
 # coveffectsplot 0.0.4
 
 * added an option to have a log x axis

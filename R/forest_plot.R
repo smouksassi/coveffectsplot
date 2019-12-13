@@ -33,7 +33,9 @@ which0 <- function(x) {
 #' @param ref_area Reference area. Two-element numeric vector.
 #' @param ref_value X intercept of reference line.
 #' @param ref_area_col Reference area background color.
-#' @param interval_col Point range color.
+#' @param interval_col Point range color. One value.
+#' @param bsv_col  BSV pointrange color. One value.
+#' @param interval_bsv_text BSV legend text.
 #' @param strip_col Strip background color.
 #' @param paramname_shape Map symbol to parameter(s)?
 #' @param legend_shape_reverse TRUE or FALSE. 
@@ -210,6 +212,8 @@ forest_plot <- function(
   ref_value = 1,
   ref_area_col = "#BEBEBE50",
   interval_col = "blue",
+  bsv_col = "red",
+  interval_bsv_text = "",
   strip_col = "#E5E5E5",
   paramname_shape = FALSE,
   legend_shape_reverse = FALSE,
@@ -265,7 +269,10 @@ forest_plot <- function(
   if (interval_legend_text == "") {
     interval_legend_text <- "Median (points)\n95% CI (horizontal lines)"
   }
-
+  if (interval_bsv_text == "") {
+    interval_bsv_text <- "BSV (points)\nPrediction Intervals (horizontal lines)"
+  }
+  
   interval_pos <-  which0(legend_order == "pointinterval")[1]
   fill_pos <- which0(legend_order == "area")[1]
   linetype_pos <- which0(legend_order == "ref")[1]
@@ -274,7 +281,7 @@ forest_plot <- function(
     fill_pos <- linetype_pos
   }
   
-  guide_interval <- ggplot2::guide_legend("", order = interval_pos)
+  guide_interval <- ggplot2::guide_legend("", order = interval_pos, nrow = 2)
   guide_fill <- ggplot2::guide_legend("", order = fill_pos)
   guide_linetype <- ggplot2::guide_legend("", order = linetype_pos)
   guide_shape <- ggplot2::guide_legend("", order = shape_pos,
@@ -285,6 +292,16 @@ forest_plot <- function(
   if( shape_pos==0) guide_shape = FALSE
   
   data$label <- factor(data$label)
+  data$pointintervalcolor <-  ifelse( !data$covname%in% c("BSV","bsv","IIV"),
+                                      interval_legend_text,
+                                      interval_bsv_text)
+  data$pointintervalcolor <- factor(data$pointintervalcolor,
+                                    levels =c(interval_legend_text,
+                                              interval_bsv_text)[!duplicated(c(interval_legend_text,
+                                                                               interval_bsv_text))]
+                                    )
+ colbreakvalues<- c(interval_legend_text, interval_bsv_text)
+
 
   main_plot <-
     ggplot2::ggplot(data = data, ggplot2::aes_string(
@@ -295,7 +312,7 @@ forest_plot <- function(
     )) +
     ggstance::geom_pointrangeh(
       position = ggstance::position_dodgev(height = vertical_dodge_height),
-      ggplot2::aes(color = interval_legend_text),
+      ggplot2::aes_string(color = "pointintervalcolor"),
       size = 1,
       alpha = 1
     )
@@ -328,7 +345,8 @@ forest_plot <- function(
       ggplot2::aes(xintercept = ref_value, linetype = ref_legend_text),
       size = 1
     ) +
-    ggplot2::scale_colour_manual("", breaks = interval_legend_text, values = interval_col) +
+    ggplot2::scale_colour_manual("", breaks = colbreakvalues,
+                                 values = c(interval_col,bsv_col)) +
     ggplot2::scale_linetype_manual("", breaks = ref_legend_text, values = 2) +
     ggplot2::scale_fill_manual("", breaks = area_legend_text, values = ref_area_col)+
     ggplot2::guides(colour = guide_interval,

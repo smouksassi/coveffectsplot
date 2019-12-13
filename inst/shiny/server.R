@@ -104,7 +104,9 @@ function(input, output, session) {
   observeEvent(input$colourpointrangereset, {
     shinyjs::reset("colourpointrange")
   })
-
+  observeEvent(input$colourbsvrangereset, {
+    shinyjs::reset("colourbsvrange")
+  })
   observeEvent(input$stripbackfillreset, {
     shinyjs::reset("stripbackgroundfill")
   })
@@ -156,6 +158,7 @@ function(input, output, session) {
       ref_legend_text = escape_newline(input$customlinetypetitle),
       area_legend_text = escape_newline(input$customfilltitle),
       interval_legend_text = escape_newline(input$customcolourtitle),
+      interval_bsv_text = escape_newline(input$custombsvtitle),
       legend_order = input$legendordering,
       combine_area_ref_legend = input$combineareareflegend,
       show_ref_area = input$showrefarea,
@@ -163,6 +166,7 @@ function(input, output, session) {
       ref_value = 1,
       ref_area_col = input$fillrefarea,
       interval_col = input$colourpointrange,
+      bsv_col      = input$colourbsvrange,
       strip_col = input$stripbackgroundfill,
       paramname_shape = input$shapebyparamname,
       legend_shape_reverse = input$legendshapereverse,
