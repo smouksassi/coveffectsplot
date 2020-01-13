@@ -152,6 +152,8 @@ function(input, output, session) {
       ylabel = input$yaxistitle,
       x_facet_text_size = input$facettextx,
       y_facet_text_size = input$facettexty,
+      x_facet_text_angle = input$facettextxangle,
+      y_facet_text_angle = input$facettextyangle,
       x_label_text_size = input$xlablesize,
       y_label_text_size = input$ylablesize,
       table_text_size = input$tabletextsize,

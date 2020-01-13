@@ -18,6 +18,8 @@ which0 <- function(x) {
 #' @param ylabel Y axis title.
 #' @param x_facet_text_size Facet text size X.
 #' @param y_facet_text_size Facet text size Y.
+#' @param x_facet_text_angle Facet text angle X.
+#' @param y_facet_text_angle Facet text angle Y.
 #' @param x_label_text_size X axis labels size.
 #' @param y_label_text_size Y axis labels size.
 #' @param table_text_size Table text size.
@@ -199,6 +201,8 @@ forest_plot <- function(
   ylabel = "",
   x_facet_text_size = 13,
   y_facet_text_size = 13,
+  x_facet_text_angle = 0,
+  y_facet_text_angle = 180,
   x_label_text_size = 16,
   y_label_text_size = 16,
   table_text_size = 7,
@@ -248,12 +252,14 @@ forest_plot <- function(
   if (x_facet_text_size <= 0) {
     x.strip.text <- ggplot2::element_blank()
   } else {
-    x.strip.text <- ggplot2::element_text(size = x_facet_text_size)
+    x.strip.text <- ggplot2::element_text(size = x_facet_text_size,
+                                          angle= x_facet_text_angle)
   }
   if (y_facet_text_size <= 0) {
     y.strip.text <- ggplot2::element_blank()
   } else {
-    y.strip.text <- ggplot2::element_text(size = y_facet_text_size)
+    y.strip.text <- ggplot2::element_text(size = y_facet_text_size,
+                                          angle= y_facet_text_angle)
   }
 
   if (xlabel == "") {
