@@ -196,7 +196,7 @@ fluidPage(
             textInput("customcolourtitle", label ="Pointinterval Legend text",
                       value="Median (points)\\n95% CI (horizontal lines)"),
             textInput("custombsvtitle", label ="BSV Legend text",
-                      value="BSV (points)\nPrediction Intervals (horizontal lines)"),
+                      value="BSV (points)\\nPrediction Intervals (horizontal lines)"),
             textInput("customlinetypetitle", label ="Ref Legend text",
                       value="Reference (vertical line)\\nClinically relevant limits (colored area)"),
             textInput("customfilltitle", label ="Area Legend text",

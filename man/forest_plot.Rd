@@ -4,25 +4,50 @@
 \alias{forest_plot}
 \title{Forest plot}
 \usage{
-forest_plot(data, facet_formula = "covname~paramname", xlabel = "",
-  ylabel = "", x_facet_text_size = 13, y_facet_text_size = 13,
-  x_label_text_size = 16, y_label_text_size = 16,
-  table_text_size = 7, ref_legend_text = "", area_legend_text = "",
-  interval_legend_text = "", legend_order = c("pointinterval", "ref",
-  "area", "shape"), combine_area_ref_legend = TRUE,
-  show_ref_area = TRUE, ref_area = c(0.8, 1.25), ref_value = 1,
-  ref_area_col = "#BEBEBE50", interval_col = "blue",
-  strip_col = "#E5E5E5", paramname_shape = FALSE,
-  legend_shape_reverse = FALSE, facet_switch = c("both", "y", "x",
-  "none"), facet_scales = c("fixed", "free_y", "free_x", "free"),
+forest_plot(
+  data,
+  facet_formula = "covname~paramname",
+  xlabel = "",
+  ylabel = "",
+  x_facet_text_size = 13,
+  y_facet_text_size = 13,
+  x_facet_text_angle = 0,
+  y_facet_text_angle = 180,
+  x_label_text_size = 16,
+  y_label_text_size = 16,
+  table_text_size = 7,
+  ref_legend_text = "",
+  area_legend_text = "",
+  interval_legend_text = "",
+  legend_order = c("pointinterval", "ref", "area", "shape"),
+  combine_area_ref_legend = TRUE,
+  show_ref_area = TRUE,
+  ref_area = c(0.8, 1.25),
+  ref_value = 1,
+  ref_area_col = "#BEBEBE50",
+  interval_col = "blue",
+  bsv_col = "red",
+  interval_bsv_text = "",
+  strip_col = "#E5E5E5",
+  paramname_shape = FALSE,
+  legend_shape_reverse = FALSE,
+  facet_switch = c("both", "y", "x", "none"),
+  facet_scales = c("fixed", "free_y", "free_x", "free"),
   facet_space = c("fixed", "free_x", "free_y", "free"),
-  strip_placement = c("inside", "outside"), major_x_ticks = NULL,
-  minor_x_ticks = NULL, x_range = NULL, logxscale = FALSE,
-  show_table_facet_strip = "none", table_facet_switch = c("both", "y",
-  "x", "none"), show_table_yaxis_tick_label = FALSE,
-  table_position = c("right", "below", "none"), plot_table_ratio = 4,
-  vertical_dodge_height = 0.8, legend_space_x_mult = 1,
-  return_list = FALSE)
+  strip_placement = c("inside", "outside"),
+  major_x_ticks = NULL,
+  minor_x_ticks = NULL,
+  x_range = NULL,
+  logxscale = FALSE,
+  show_table_facet_strip = "none",
+  table_facet_switch = c("both", "y", "x", "none"),
+  show_table_yaxis_tick_label = FALSE,
+  table_position = c("right", "below", "none"),
+  plot_table_ratio = 4,
+  vertical_dodge_height = 0.8,
+  legend_space_x_mult = 1,
+  return_list = FALSE
+)
 }
 \arguments{
 \item{data}{Data to use.}
@@ -36,6 +61,10 @@ forest_plot(data, facet_formula = "covname~paramname", xlabel = "",
 \item{x_facet_text_size}{Facet text size X.}
 
 \item{y_facet_text_size}{Facet text size Y.}
+
+\item{x_facet_text_angle}{Facet text angle X.}
+
+\item{y_facet_text_angle}{Facet text angle Y.}
 
 \item{x_label_text_size}{X axis labels size.}
 
@@ -64,7 +93,11 @@ share the same text?}
 
 \item{ref_area_col}{Reference area background color.}
 
-\item{interval_col}{Point range color.}
+\item{interval_col}{Point range color. One value.}
+
+\item{bsv_col}{BSV pointrange color. One value.}
+
+\item{interval_bsv_text}{BSV legend text.}
 
 \item{strip_col}{Strip background color.}
 
@@ -184,8 +217,8 @@ forest_plot(plotdata,
             x_label_text_size = 10,
             table_text_size = 6,
             plot_table_ratio = 1.5,
-            ref_legend_text = "Reference (vertical line)\\n+/- 20\% limits (colored area)",
-            area_legend_text = "Reference (vertical line)\\n+/- 20\% limits (colored area)",
+            ref_legend_text = "Reference (vertical line)\n+/- 20\% limits (colored area)",
+            area_legend_text = "Reference (vertical line)\n+/- 20\% limits (colored area)",
             xlabel = "Fold Change Relative to RHZE",
             facet_formula = "covname~paramname",
             table_position = "below",
@@ -207,8 +240,8 @@ forest_plot(plotdata,
             ref_area = c(0.8, 1.2),
             x_facet_text_size = 13,
             y_facet_text_size = 13,
-            ref_legend_text = "Reference (vertical line)\\n+/- 20\% limits (colored area)",
-            area_legend_text = "Reference (vertical line)\\n+/- 20\% limits (colored area)",
+            ref_legend_text = "Reference (vertical line)\n+/- 20\% limits (colored area)",
+            area_legend_text = "Reference (vertical line)\n+/- 20\% limits (colored area)",
             xlabel = "Fold Change Relative to Parameter",
             facet_formula = "covname~paramname",
             facet_switch = "both",
@@ -225,8 +258,8 @@ forest_plot(plotdata,
             ref_area = c(0.8, 1.2),
             x_facet_text_size = 13,
             y_facet_text_size = 13,
-            ref_legend_text = "Reference (vertical line)\\n+/- 20\% limits (colored area)",
-            area_legend_text = "Reference (vertical line)\\n+/- 20\% limits (colored area)",
+            ref_legend_text = "Reference (vertical line)\n+/- 20\% limits (colored area)",
+            area_legend_text = "Reference (vertical line)\n+/- 20\% limits (colored area)",
             xlabel = "Fold Change Relative to Parameter",
             facet_formula = "covname~.",
             facet_switch = "both",
