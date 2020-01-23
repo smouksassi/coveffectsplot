@@ -16,6 +16,8 @@ forest_plot(
   x_label_text_size = 16,
   y_label_text_size = 16,
   table_text_size = 7,
+  base_size = 16,
+  theme_benrich = FALSE,
   ref_legend_text = "",
   area_legend_text = "",
   interval_legend_text = "",
@@ -71,6 +73,10 @@ forest_plot(
 \item{y_label_text_size}{Y axis labels size.}
 
 \item{table_text_size}{Table text size.}
+
+\item{base_size}{theme_bw base_size for the plot and table.}
+
+\item{theme_benrich}{apply Benjamin Rich's theming.}
 
 \item{ref_legend_text}{Reference legend text.}
 

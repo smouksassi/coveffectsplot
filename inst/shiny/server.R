@@ -157,6 +157,8 @@ function(input, output, session) {
       x_label_text_size = input$xlablesize,
       y_label_text_size = input$ylablesize,
       table_text_size = input$tabletextsize,
+      base_size = input$base_size,
+      theme_benrich = input$theme_benrich,
       ref_legend_text = escape_newline(input$customlinetypetitle),
       area_legend_text = escape_newline(input$customfilltitle),
       interval_legend_text = escape_newline(input$customcolourtitle),

@@ -23,6 +23,8 @@ which0 <- function(x) {
 #' @param x_label_text_size X axis labels size.
 #' @param y_label_text_size Y axis labels size.
 #' @param table_text_size Table text size.
+#' @param base_size theme_bw base_size for the plot and table.
+#' @param theme_benrich apply Benjamin Rich's theming.
 #' @param ref_legend_text Reference legend text.
 #' @param area_legend_text Area legend text.
 #' @param interval_legend_text Pointinterval Legend text.
@@ -206,6 +208,8 @@ forest_plot <- function(
   x_label_text_size = 16,
   y_label_text_size = 16,
   table_text_size = 7,
+  base_size = 22,
+  theme_benrich = FALSE,
   ref_legend_text = "",
   area_legend_text = "",
   interval_legend_text = "",
@@ -351,6 +355,12 @@ forest_plot <- function(
       ggplot2::aes(xintercept = ref_value, linetype = ref_legend_text),
       size = 1
     ) +
+    ggstance::geom_pointrangeh(
+      position = ggstance::position_dodgev(height = vertical_dodge_height),
+      ggplot2::aes_string(color = "pointintervalcolor"),
+      size = 1,
+      alpha = 1
+    )+
     ggplot2::scale_colour_manual("", breaks = colbreakvalues,
                                  values = c(interval_col,bsv_col)) +
     ggplot2::scale_linetype_manual("", breaks = ref_legend_text, values = 2) +
@@ -392,7 +402,7 @@ forest_plot <- function(
 
   main_plot <- main_plot +
     ggplot2::ylab("") +
-    ggplot2::theme_bw(base_size = 22) +
+    ggplot2::theme_bw(base_size = base_size) +
     ggplot2::theme(
       axis.text.y = ggplot2::element_text(
         angle = 0,
@@ -431,6 +441,22 @@ forest_plot <- function(
     main_plot <- main_plot +
       ggplot2::coord_cartesian(xlim = x_range)
   }
+  
+  if (theme_benrich){
+    main_plot <- main_plot + ggplot2::theme(
+      panel.spacing=ggplot2::unit(0, "pt"),
+      panel.grid=ggplot2::element_blank(),
+      panel.grid.minor=ggplot2::element_blank(),
+      strip.background.y=ggplot2::element_blank(),
+      strip.text.y=ggplot2::element_text(
+        hjust=1,
+        vjust=1,
+        face="bold",
+        size=y_facet_text_size,
+        angle=y_facet_text_angle
+      ),
+      plot.margin = ggplot2::margin(t=0,r=6,b=0,l=0,unit="pt"))
+  }
 
   if (table_position != "none") {
     table_plot <- ggplot2::ggplot(data = data,
@@ -462,7 +488,7 @@ forest_plot <- function(
     }
 
     table_plot <- table_plot +
-      ggplot2::theme_bw(base_size = 26) +
+      ggplot2::theme_bw(base_size = base_size) +
       ggplot2::theme(
         axis.text.y = ggplot2::element_text(
           angle = 0,
@@ -518,7 +544,25 @@ forest_plot <- function(
           axis.ticks.y = ggplot2::element_blank()
         )
     }
-    
+    if (theme_benrich){
+      table_plot <- table_plot +
+        ggplot2::ggtitle("Median [95% CI]")+
+        ggplot2::theme(
+          plot.title=ggplot2::element_text(
+            size=15,
+            hjust=0.5, 
+            vjust=1,
+            margin=ggplot2::margin(b=ggplot2::unit(6, "pt"))),
+          panel.border = ggplot2::element_blank(),
+          panel.spacing = ggplot2::unit(0, "pt"),
+          axis.ticks.y = ggplot2::element_blank(),
+          strip.background.y=ggplot2::element_blank(),
+          plot.margin = ggplot2::margin(t=0,r=0,b=0,l=6,
+                                        unit="pt")
+          
+        )
+      
+    }
   }
 
   if (table_position == "none") {

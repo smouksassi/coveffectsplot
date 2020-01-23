@@ -66,6 +66,7 @@ fluidPage(
                              min = 0, max = 90, step = 90, value = 0),
                  selectizeInput(  "stripplacement", "Strip Placement:",
                                   choices = c("inside","outside"),
+                                  selected = c("outside"),
                                   options = list(  maxItems = 1 )  ),
                  selectInput(  "facetswitch", "Facet Switch to Near Axis:",
                                choices = c("both","y","x","none"),
@@ -161,7 +162,7 @@ fluidPage(
           )
         ),#tabpanel
         tabPanel(
-          "Colour/Legend Options",
+          "Colour/Legend Options/theme",
           colourpicker::colourInput("stripbackgroundfill",
                                     "Strip Background Fill:",
                                     value="#E5E5E5",
@@ -189,6 +190,11 @@ fluidPage(
                style="text-align: right"),
           sliderInput("legendspacex", "Multiplier for Space between Legends",
                       min = 0, max = 1.5, step = 0.1, value = 1),
+          sliderInput("base_size", "Base size for the theme",
+                      min = 1, max = 30, step = 0.1, value = 22),
+          
+          checkboxInput('theme_benrich', "Apply Ben's Theme",value = FALSE),
+          
           checkboxInput('customlegendtitle', 'Customization of Legend items and ordering ?',value = FALSE),
           conditionalPanel(
             condition = "input.customlegendtitle",

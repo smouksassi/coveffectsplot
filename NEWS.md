@@ -1,6 +1,8 @@
 # coveffectsplot 0.0.5
 
 * added an option to have different color and text for BSV (issue submitted by France Mentré over the phone)
+* added a new vignette showing how to simulate a PK model from scratch
+* added a switch to control theme_bw base_size
 
 # coveffectsplot 0.0.4
 

@@ -1,6 +1,6 @@
 Package: coveffectsplot
 Title: Produce Forest Plots to Visualize Covariate Effects
-Version: 0.0.4
+Version: 0.0.4.9999
 Authors@R: c(
     person("Samer", "Mouksassi", email = "samermouksassi@gmail.com",
       role = c("aut", "cre"),comment = c(ORCID = "https://orcid.org/0000-0002-7152-6654")),
@@ -19,6 +19,7 @@ Imports:
     egg,
     ggplot2,
     ggstance,
+    ggridges,
     markdown,
     shiny,
     shinyjs,
@@ -29,7 +30,10 @@ Suggests:
     MASS,
     knitr,
     rmarkdown,
-    ggridges,
+    mrgsolve,
+    ggrepel,
+    table1,
+    patchwork,
     bayestestR,
     plotly
 License: MIT + file LICENSE
