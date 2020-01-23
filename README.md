@@ -69,7 +69,7 @@ coveffectsplot::forest_plot(plotdata,
             plot_table_ratio = 4,
             vertical_dodge_height = 0.8,
             legend_space_x_mult = 0.1,
-            legend_order = c("ref", "area", "shape"),
+            legend_order = c("ref", "area", "shape"),#pointinterval legend omitted
             show_table_facet_strip = "none",
             return_list = FALSE)
 ```
