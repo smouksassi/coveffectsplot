@@ -33,6 +33,7 @@ which0 <- function(x) {
 #' if an item is absent the legend will be omitted.
 #' @param combine_area_ref_legend Combine reference and area legends if they
 #' share the same text?
+#' @param legend_position where to put the legend: "top", "bottom", "none"
 #' @param show_ref_area Show reference window?
 #' @param ref_area Reference area. Two-element numeric vector.
 #' @param ref_value X intercept of reference line.
@@ -215,6 +216,7 @@ forest_plot <- function(
   interval_legend_text = "",
   legend_order = c("pointinterval", "ref", "area", "shape"),
   combine_area_ref_legend = TRUE,
+  legend_position = "top",
   show_ref_area = TRUE,
   ref_area = c(0.8, 1.25),
   ref_value = 1,
@@ -302,7 +304,8 @@ forest_plot <- function(
   if( shape_pos==0) guide_shape = FALSE
   
   data$label <- factor(data$label)
-  data$pointintervalcolor <-  ifelse( !data$covname%in% c("BSV","bsv","IIV"),
+  data$pointintervalcolor <-  ifelse( !data$covname%in%
+                                        c("BSV","bsv","IIV","Bsv"),
                                       interval_legend_text,
                                       interval_bsv_text)
   data$pointintervalcolor <- factor(data$pointintervalcolor,
@@ -409,7 +412,7 @@ forest_plot <- function(
         size = y_label_text_size
       ),
       axis.text.x = ggplot2::element_text(size = x_label_text_size),
-      legend.position = "top",
+      legend.position = legend_position,
       legend.justification = c(0.5, 0.5),
       legend.direction = "horizontal",
       legend.key.width = ggplot2::unit(3, "line"),

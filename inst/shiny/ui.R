@@ -207,7 +207,13 @@ fluidPage(
                       value="Reference (vertical line)\\nClinically relevant limits (colored area)"),
             textInput("customfilltitle", label ="Area Legend text",
                       value="Reference (vertical line)\\nClinically relevant limits (colored area)"),
-
+            selectizeInput(
+              'legendposition',
+              label = "Legend Position",
+              choices = c("top","bottom","none"),
+              selected = c("top"),
+              multiple=FALSE),
+            
             selectizeInput(
               'legendordering',
               label = paste("Drag/Drop to reorder","Colour, Ref, Area Legends"),

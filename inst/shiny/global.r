@@ -39,3 +39,8 @@ signif_pad <- function(x, digits = 3, round.integers = TRUE, round5up = TRUE) {
 escape_newline <- function(s) {
   gsub("\\\\n", "\\\n", s)
 }
+
+round_pad <- function (x, digits=2, round5up=TRUE) {
+  eps <- if (round5up) x * (10^(-(digits + 3))) else 0
+  formatC(round(x + eps, digits), digits=digits, format="f", flag="0")
+}

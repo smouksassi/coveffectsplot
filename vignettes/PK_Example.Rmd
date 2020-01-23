@@ -1,5 +1,5 @@
 ---
-title: "PK_Example"
+title: "PK Example"
 output: 
   rmarkdown::html_vignette:
     toc: true
@@ -524,7 +524,7 @@ dev.off()
 
 
 ```
-![Covariate Effects Plot.](.\coveffectsplot3.png)
+![Covariate Effects Plot.](./coveffectsplot3.png)
 
 ### Customization of the plots
 
@@ -547,6 +547,7 @@ plotlists <- coveffectsplot::forest_plot(coveffectsdatacovrepbsv
                             logxscale = TRUE,
                             major_x_ticks = c(0.25,0.5,0.8,1/0.8,1/0.5,1/0.25),
                             return_list = TRUE)
+plotlists
 dev.off()
 
 ``` 
@@ -585,7 +586,7 @@ dev.off()
 
 ```
 
-![Covariate Effects Plot.](.\coveffectsplot4.png)
+![Covariate Effects Plot.](./coveffectsplot4.png)
 
 
 ### Plots with more than one PK parameter
@@ -614,7 +615,7 @@ dev.off()
 ```
 
 
-![Covariate Effects Plot.](.\coveffectsplot5.png)
+![Covariate Effects Plot.](./coveffectsplot5.png)
 
 
 ### Plots with more than one PK parameter

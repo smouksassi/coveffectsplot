@@ -1,4 +1,6 @@
 function(input, output, session) {
+
+  
   maindata <- reactiveVal(NULL)
 
   # Set the data source
@@ -69,9 +71,9 @@ function(input, output, session) {
         MEANEXP = mid,
         LOWCI = lower,
         UPCI =  upper,
-        MEANLABEL = signif_pad(MEANEXP, sigdigits),
-        LOWCILABEL = signif_pad(LOWCI, sigdigits),
-        UPCILABEL = signif_pad(UPCI, sigdigits),
+        MEANLABEL = round_pad(MEANEXP, sigdigits),
+        LOWCILABEL = round_pad(LOWCI, sigdigits),
+        UPCILABEL = round_pad(UPCI, sigdigits),
         LABEL = paste0(MEANLABEL, " [", LOWCILABEL, "-", UPCILABEL, "]")
       )
 
@@ -165,6 +167,7 @@ function(input, output, session) {
       interval_bsv_text = escape_newline(input$custombsvtitle),
       legend_order = input$legendordering,
       combine_area_ref_legend = input$combineareareflegend,
+      legend_position = input$legendposition,
       show_ref_area = input$showrefarea,
       ref_area = input$refareain,
       ref_value = 1,

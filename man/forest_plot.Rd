@@ -16,13 +16,14 @@ forest_plot(
   x_label_text_size = 16,
   y_label_text_size = 16,
   table_text_size = 7,
-  base_size = 16,
+  base_size = 22,
   theme_benrich = FALSE,
   ref_legend_text = "",
   area_legend_text = "",
   interval_legend_text = "",
   legend_order = c("pointinterval", "ref", "area", "shape"),
   combine_area_ref_legend = TRUE,
+  legend_position = "top",
   show_ref_area = TRUE,
   ref_area = c(0.8, 1.25),
   ref_value = 1,
@@ -90,6 +91,8 @@ if an item is absent the legend will be omitted.}
 
 \item{combine_area_ref_legend}{Combine reference and area legends if they
 share the same text?}
+
+\item{legend_position}{where to put the legend: "top", "bottom", "none"}
 
 \item{show_ref_area}{Show reference window?}
 
