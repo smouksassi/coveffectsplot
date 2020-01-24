@@ -25,6 +25,8 @@ which0 <- function(x) {
 #' @param table_text_size Table text size.
 #' @param base_size theme_bw base_size for the plot and table.
 #' @param theme_benrich apply Benjamin Rich's theming.
+#' @param table_title with theme_benrich on what text to use for table title.
+#' @param table_title_size table title size.
 #' @param ref_legend_text Reference legend text.
 #' @param area_legend_text Area legend text.
 #' @param interval_legend_text Pointinterval Legend text.
@@ -212,6 +214,8 @@ forest_plot <- function(
   table_text_size = 7,
   base_size = 22,
   theme_benrich = FALSE,
+  table_title = "",
+  table_title_size = 15,
   ref_legend_text = "",
   area_legend_text = "",
   interval_legend_text = "",
@@ -303,7 +307,9 @@ forest_plot <- function(
   if (xlabel == "") {
     xlabel <- paste("Changes of Parameter Relative to Reference")
   }
-
+  if (table_title == "") {
+    table_title <- "Median [95% CI]"
+  }
   if (ref_legend_text == "") {
     ref_legend_text <- "Reference (vertical line)\nClinically relevant limits (colored area)"
   }
@@ -590,10 +596,10 @@ forest_plot <- function(
     
     if (theme_benrich){
       table_plot <- table_plot +
-        ggplot2::ggtitle("Median [95% CI]")+
+        ggplot2::ggtitle(table_title)+
          ggplot2::theme(
            plot.title=ggplot2::element_text(
-             size=15,hjust=0.5, vjust=1,margin=
+             size=table_title_size,hjust=0.5, vjust=1,margin=
                ggplot2::margin(b=ggplot2::unit(6, "pt"))),
            strip.background=ggplot2::element_blank(),
            panel.border = ggplot2::element_blank(),

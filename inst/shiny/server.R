@@ -161,6 +161,8 @@ function(input, output, session) {
       table_text_size = input$tabletextsize,
       base_size = input$base_size,
       theme_benrich = input$theme_benrich,
+      table_title = escape_newline(input$custom_table_title),
+      table_title_size = input$table_title_size,
       ref_legend_text = escape_newline(input$customlinetypetitle),
       area_legend_text = escape_newline(input$customfilltitle),
       interval_legend_text = escape_newline(input$customcolourtitle),

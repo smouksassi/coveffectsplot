@@ -194,7 +194,13 @@ fluidPage(
                       min = 1, max = 30, step = 0.1, value = 22),
           
           checkboxInput('theme_benrich', "Apply Ben's Theme",value = FALSE),
-          
+          conditionalPanel(
+            condition = "input.theme_benrich",
+          textInput("custom_table_title", label ="Table Title",
+                    value="Median [95% CI]"),
+          sliderInput("table_title_size", "Size for Table Title",
+                      min = 1, max = 30, step = 0.1, value = 15)
+          ) ,
           checkboxInput('customlegendtitle', 'Customization of Legend items and ordering ?',value = FALSE),
           conditionalPanel(
             condition = "input.customlegendtitle",
