@@ -268,14 +268,16 @@ forest_plot <- function(
     table.y.strip.text <- y.strip.text
   } else {
     y.strip.text <- ggplot2::element_text(size = y_facet_text_size,
-                                          angle= ifelse(facet_switch %in% c("x","none"), y_facet_text_angle-180,
+                                          angle= ifelse(facet_switch %in% c("x","none"),
+                                                        y_facet_text_angle-180,
                                                         y_facet_text_angle))
    table.y.strip.text <- ggplot2::element_text(size = y_facet_text_size,
-                                               angle= ifelse(table_facet_switch %in% c("x","none"), y_facet_text_angle-180,
+                                               angle= ifelse(table_facet_switch %in% c("x","none"),
+                                                             y_facet_text_angle-180,
                                                              y_facet_text_angle)) 
   }
   
-  if (theme_benrich & y_facet_text_size >0){
+  if (theme_benrich && y_facet_text_size >0){
     y.strip.text <- ggplot2::element_text(
       hjust=1,
       vjust=1,
@@ -285,6 +287,7 @@ forest_plot <- function(
                     y_facet_text_angle-180,
                     y_facet_text_angle)
     )
+    
     table.y.strip.text <- ggplot2::element_text(
       hjust=1,
       vjust=1,
