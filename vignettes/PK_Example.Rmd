@@ -4,6 +4,7 @@ output:
   rmarkdown::html_vignette:
     toc: true
     df_print: kable
+    
 vignette: >
   %\VignetteIndexEntry{PK_Example}
   %\VignetteEngine{knitr::rmarkdown}
@@ -38,8 +39,9 @@ expand.modelframe <- function(..., rv, covcol="covname") {
 }
 ```
 ## Specifying a PK Model using mrgsolve
+Here we illustrate the approach with a two-compartment PK model defined with an ODE and covariates on Clearance and Volume 
 
-```{r pkmodel }
+```{r pkmodel, collapse=TRUE }
 codepkmodelcov <- '
 $PARAM
 CL = 4, V=10 , KA=0.5, Vp =50, Qp= 10,
@@ -80,7 +82,8 @@ $CAPTURE CP CPER KAi CLi Vi Vpi Qpi
 '
 modcovsim <- mcode("codepkmodelcov", codepkmodelcov)
 ```
-### Simulate the reference subject with between subject variability
+### Simulate a thousand reference subject with BSV
+We simulate with between subject variability (BSV) and provide a plot of concentrations on linear and log linear scales.
 
 ```{r pksimulation, fig.width=6 }
 idata <- tibble(
@@ -122,9 +125,10 @@ p2 <- ggplot(data = outputsim[outputsim$ID %in% sample(unique(outputsim$ID), 500
 p1+p2
 ```
 
-### Compute Typical Subject NCA PK parameters
+### Compute NCA PK parameters, Plot and Summarize BSV
+We then compute simple NCA parameters, provide a plot of the parameters as well as of the standardised ones. We also summarize and report the BSV as ranges of 50 and 90% of patients for each NCA parameter.
 
-```{r computenca , fig.width=6 }
+```{r computenca , fig.width=6 , message=FALSE }
 NCATYPICAL <- outputsim %>%
   group_by(ID, ALB, WT, SEX) %>%
   summarise (
@@ -188,7 +192,7 @@ BSVRANGES
 ```
 
 ## Construct combination of covariate of interest
-Based on your observed covariate data we compute percentiles that we will use in this section.
+Based on our observed covariate data we compute percentiles that we will use to simulate data at. Common practice is to compute the 5,25,75,95 percentiles (the median being the reference). In some cases we might want to explore the min, max or extreme case scenarios. This approach might provide unrealistic combination of covriates that can nver appear in a real patient so care should be taken.
 
 ```{r covcomb , fig.width=6 }
 reference.values <- data.frame(WT = 85, ALB = 45, SEX = 0 )   
@@ -204,15 +208,10 @@ covcomb <- covcomb[!duplicated(
 covcomb
 ```
 
-### Simulate without uncertainty and without BSV
+### Simulation at unique combination of covariates
+For this first step we simulate without uncertainty and without BSV at unique combination of covariates generated above. We then plot the results to appreciate the effects.
 
-```{r, fig.width=6}
-idata <- as.data.frame(covcomb)
-ev1 <- ev(time=0,amt=100, cmt=1)
-data.dose <- ev(ev1)
-data.dose<-as.data.frame(data.dose)
-data.all<-merge(idata,data.dose)
-
+```{r, fig.width=6 , include=FALSE}
 codepkmodelcovcomb <- '
 $PARAM
 CL = 4, V=10 , KA=0.5, Vp =50, Qp= 10,
@@ -247,7 +246,14 @@ double CPER =  PER/Vpi;
 $CAPTURE CP CPER KAi CLi Vi Vpi Qpi 
 '
 modcovcombsim <- mcode("codepkmodelcovcomb", codepkmodelcovcomb)
+```
 
+```{r, fig.width=6}
+idata <- as.data.frame(covcomb)
+ev1 <- ev(time=0,amt=100, cmt=1)
+data.dose <- ev(ev1)
+data.dose<-as.data.frame(data.dose)
+data.all<-merge(idata,data.dose)
 outcovcomb<- modcovcombsim %>%
   data_set(data.all) %>%
   carry.out(WT,AGE,SEX,ALB,CLi) %>%
@@ -262,12 +268,10 @@ ggplot(outcovcomb, aes(time,CP,col=factor(WT),linetype=factor(SEX)) )+
   facet_grid(ALB~ WT,labeller = label_both)+
   labs(linetype="Sex",colour="Weight",caption ="Simulation without Uncertainty\nwithout BSV")+
   coord_cartesian(ylim=c(0,6))
-
-
 ```
 
-### Adding Uncertainty from a varcov matrix
-We will invent a varcov matrix by assuming 15% relative standard errors and 0.2 correlations across the board.
+## Adding Uncertainty from a varcov matrix
+We will invent a varcov matrix by assuming 15% relative standard errors and 0.2 correlations across the board. We then simulate a 100 set of parameters using a multivariate normal (kept at 100 for the vignette, use more for a real project). Also, unless the model was written in a way to allow unconstrained parameter values, care should be taken to make sure the simulated parameters make sense or ,when available, use the set of parameters from a bootstrap run.
 
 ```{r, fig.width=6}
 thmeans <- c(4,10,0.5,50,10,
@@ -280,9 +284,10 @@ thecorrelations[lower.tri(thecorrelations, diag = FALSE)]<- 0.2
 thecorrelations[upper.tri(thecorrelations, diag = FALSE)]<- 0.2
 thevarcovmatrix<- diag(sqrt(thvariances))%*%thecorrelations%*%diag(sqrt(thvariances))
 thevarcovmatrix
-
 ```
-We then simulate a 1000 set of parameters using a multivariate normal. Unless the model was written in a way to allow unconstrained parameter values, care should be taken to make sure the simulated parameters make sense. Alternatively you can use the set of parameters from a bootstrap run.
+
+### Generating a set of parameters with uncertainty
+Here we generate the sim_parameters dataset that we will plug in the uncertainty simulation by using a set of paramters (row) for each replicate.
 
 ```{r, fig.width=6}
 nsim <- 100 # for vignette to make it run faster otherwise increase to 1000
@@ -297,6 +302,9 @@ colnames(sim_parameters) <- colnames(thevarcovmatrix) <- c("CL","V","KA","Vp","Q
 sim_parameters<- as.data.frame(sim_parameters)
 head(sim_parameters)
 ```
+
+### Simulation at unique combination of covariates with uncertainty
+Illustrating how you can iterate over a set of parameters value. Then we overlay the previous simulation witout uncertainty on the one with uncertainty.
 
 ```{r, fig.width=6}
 iter_sims <- NULL
@@ -337,10 +345,10 @@ ggplot(iter_sims, aes(time,CP,col=factor(WT),linetype=factor(SEX) ) )+
 
 ```
 
-### Compute and Plot NCA PK parameters
+### Compute NCA PK parameters and boxplots   
+Similar to the above we compute the NCA parameters, standardize by the median and provide a plot. Since the code is similar it is not shown refer to the source of the vignette to look at it. We should how to do some data manipulation that will help in the plotting.
 
-```{r, fig.width=6}
-
+```{r, fig.width=6, include=FALSE,message=FALSE}
 out.df.univariatecov <- as.data.frame(iter_sims)
 out.df.univariatecov <- out.df.univariatecov %>% 
   arrange(rep,ID,time)
@@ -412,14 +420,21 @@ out.df.univariatecov.nca.long$covvalue <-factor(as.factor(out.df.univariatecov.n
 ggplot(out.df.univariatecov.nca.long,
        aes(paramname,paramvalue,col=factor(paramname),shape=factor(SEX) ))+
   geom_point(alpha=0.1,size=1)+
+  geom_hline(yintercept = 1)+
   geom_boxplot()+
-  facet_grid(ALB~ WT,labeller = label_both)
+  facet_grid(ALB~ WT,labeller = label_both)+
+  theme(axis.text.x=element_text(angle=30))+
+  labs(y="PK Parameter Value",x="",shape="Sex",col="")
+
+
 
 ```
 
-### Compute summaries and present the results
+### A different view of the data with distributions and intervals 
+Here we provide a visual summary of the PK parameters. It shows the distribution, quantiles of interest and a simpler median, 90% pointinterval summary right below it.
+It is exactly the same data as the boxplots above but including AUC only. Which visual presentation do you prefer? Which one enables you to clearly see the covariate effects ?
 
-```{r, fig.width=6}
+```{r, fig.width=6,message=FALSE}
 ggplot(out.df.univariatecov.nca.long[out.df.univariatecov.nca.long$paramname=="AUC",],
        aes(x=paramvalue,y=covvalue,fill=factor(..quantile..),height=..ndensity..))+
   facet_grid(covname~paramname,scales="free",space="free")+
@@ -447,11 +462,10 @@ ggplot(out.df.univariatecov.nca.long[out.df.univariatecov.nca.long$paramname=="A
   labs(x="Effects Relative to parameter reference value",y="")+
   scale_x_continuous(breaks=c(0.25,0.5,0.8,1/0.8,1/0.5,1/0.25))+
   scale_x_log10()
-
-
 ```
 
-### Adding the BSV and Fine tuning
+### Adding the BSV and using the forest_plot function
+To contrast the covariate effects with random unexplained variability we add to the data the BSV intervals computed in an earlier section. We then do some data manipulation and formatting to produce a plot from the package function forest_plot. It can be overwhelming to understans what each argument does. For that reason we provide a shinyapp that will help you in setting all the options you might need.
 
 ```{r, fig.width=6, fig.height=6}
 out.df.univariatecov.nca.long$covname<- as.character(out.df.univariatecov.nca.long$covname)
@@ -507,7 +521,13 @@ png("./coveffectsplot3.png",width =9 ,height = 6,units = "in",res=72)
 
 coveffectsplot::forest_plot(coveffectsdatacovrepbsv[coveffectsdatacovrepbsv$paramname=="AUC",],
                             ref_area = c(0.8, 1/0.8),
+                            x_range = c(0.5,2),
+                            strip_placement = "inside",
+                            base_size = 18,
+                            y_label_text_size = 12,
                             xlabel = "Fold Change Relative to Reference",
+                            ref_legend_text = "Reference (vertical line)\nClinically relevant limits\n(gray area)",
+                            area_legend_text = "Reference (vertical line)\nClinically relevant limits\n(gray area)",
                             facet_formula = "covname~paramname",
                             facet_switch = "y",
                             facet_scales = "free_y",
@@ -515,10 +535,10 @@ coveffectsplot::forest_plot(coveffectsdatacovrepbsv[coveffectsdatacovrepbsv$para
                             paramname_shape = FALSE,
                             table_position = "right",
                             table_text_size=4,
-                            plot_table_ratio = 4,
+                            plot_table_ratio = 3,
                             show_table_facet_strip = "none",
                             logxscale = TRUE,
-                            major_x_ticks = c(0.25,0.5,0.8,1/0.8,1/0.5,1/0.25),
+                            major_x_ticks = c(0.5,0.8,1/0.8,1/0.5),
                             return_list = FALSE)
 dev.off()
 
@@ -527,6 +547,7 @@ dev.off()
 ![Covariate Effects Plot.](./coveffectsplot3.png)
 
 ### Customization of the plots
+Here we illustrate how you can flexibly edit the plots using ggplot code or you can save the data and lauch the app for point and click edits.
 
 ```{r, echo=FALSE, message=FALSE, results='hide', include=FALSE}
 png("./coveffectsplot0.png",width =9 ,height = 6,units = "in",res=72)
@@ -597,19 +618,20 @@ png("./coveffectsplot5.png",width =9 ,height = 6,units = "in",res=72)
 
 forest_plot(coveffectsdatacovrepbsv,
                             ref_area = c(0.8, 1/0.8),
+                            x_range = c(0.5,2),
                             xlabel = "Fold Change Relative to Reference",
                             facet_formula = "covname~paramname",
                             facet_switch = "y",
                             facet_scales = "free_y",
                             facet_space = "free",
                             paramname_shape = FALSE,
-                            table_position = "below",
+                            table_position = "none",
                             table_text_size=4,
-                            base_size = 14,
+                            base_size = 11,
                             plot_table_ratio = 4,
                             show_table_facet_strip = "none",
                             logxscale = TRUE,
-                            major_x_ticks = c(0.25,0.5,0.8,1/0.8,1/0.5,1/0.25),
+                            major_x_ticks = c(0.5,0.8,1/0.8,1/0.5),
                             return_list = FALSE)
 dev.off()
 ```
@@ -617,7 +639,3 @@ dev.off()
 
 ![Covariate Effects Plot.](./coveffectsplot5.png)
 
-
-### Plots with more than one PK parameter
-```{r, fig.width=6, fig.height=6}
-```

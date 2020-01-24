@@ -18,6 +18,8 @@ forest_plot(
   table_text_size = 7,
   base_size = 22,
   theme_benrich = FALSE,
+  table_title = "",
+  table_title_size = 15,
   ref_legend_text = "",
   area_legend_text = "",
   interval_legend_text = "",
@@ -45,6 +47,7 @@ forest_plot(
   show_table_facet_strip = "none",
   table_facet_switch = c("both", "y", "x", "none"),
   show_table_yaxis_tick_label = FALSE,
+  reserve_table_xaxis_label_space = FALSE,
   table_position = c("right", "below", "none"),
   plot_table_ratio = 4,
   vertical_dodge_height = 0.8,
@@ -78,6 +81,10 @@ forest_plot(
 \item{base_size}{theme_bw base_size for the plot and table.}
 
 \item{theme_benrich}{apply Benjamin Rich's theming.}
+
+\item{table_title}{with theme_benrich on what text to use for table title.}
+
+\item{table_title_size}{table title size.}
 
 \item{ref_legend_text}{Reference legend text.}
 
@@ -139,6 +146,8 @@ share the same text?}
 "x", "none".}
 
 \item{show_table_yaxis_tick_label}{Show table y axis ticks and labels?}
+
+\item{reserve_table_xaxis_label_space}{keep space for the x axis label to keep alignement.}
 
 \item{table_position}{Table position. Possible values: "right", "below", "none".}
 

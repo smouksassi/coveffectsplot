@@ -24,14 +24,14 @@ function(input, output, session) {
   # Update the options in different inputs based on data
   observe({
     df <- maindata()
-    req(df)
+    shiny::req(df)
     choices <- unique(df[["paramname"]])
     updateSelectizeInput(session, "exposurevariables",
                          choices = choices, selected = choices[1])
   })
   observe({
     df <- maindata()
-    req(df)
+    shiny::req(df)
     df <- df %>%
       filter(paramname %in% c(input$exposurevariables))
     choices <- unique(df[["covname"]])
@@ -40,7 +40,7 @@ function(input, output, session) {
   })
   observe({
     df <- maindata()
-    req(df)
+    shiny::req(df)
     df <- df %>%
       filter(paramname %in% c(input$exposurevariables)) %>%
       filter(covname %in% c(input$covariates))
@@ -51,7 +51,7 @@ function(input, output, session) {
 
   formatstats  <- reactive({
     df <- maindata()
-    req(df)
+    shiny::req(df)
     validate(need(
       length(input$covariates) >= 1,
       "Please select a least one covariate or All"
@@ -117,7 +117,7 @@ function(input, output, session) {
   })
 
   plotdataprepare  <- reactive({
-    req(formatstats())
+    shiny::req(formatstats())
     summarydata <-  formatstats()
     summarydata [, "covname"] <-
       factor(summarydata [, "covname"], levels = c(input$covariates))
@@ -134,7 +134,7 @@ function(input, output, session) {
 
   output$plot <- renderPlot({
     summarydata <- plotdataprepare()
-    req(summarydata)
+    shiny::req(summarydata)
 
     major_x_ticks <- NULL
     minor_x_ticks <- NULL
