@@ -59,6 +59,7 @@ which0 <- function(x) {
 #' @param table_facet_switch Table facet switch to near axis. Possible values: "both", "y",
 #' "x", "none". 
 #' @param show_table_yaxis_tick_label Show table y axis ticks and labels?
+#' @param reserve_table_xaxis_label_space keep space for the x axis label to keep alignement.
 #' @param table_position Table position. Possible values: "right", "below", "none".
 #' @param plot_table_ratio Plot-to-table ratio. Suggested value between 1-5.
 #' @param vertical_dodge_height Amount of vertical dodging to apply on segments and table text.
@@ -238,6 +239,7 @@ forest_plot <- function(
   show_table_facet_strip = "none",
   table_facet_switch = c("both", "y", "x", "none"),
   show_table_yaxis_tick_label = FALSE,
+  reserve_table_xaxis_label_space = FALSE,
   table_position = c("right", "below", "none"),
   plot_table_ratio = 4,
   vertical_dodge_height = 0.8,
@@ -263,11 +265,38 @@ forest_plot <- function(
   }
   if (y_facet_text_size <= 0) {
     y.strip.text <- ggplot2::element_blank()
+    table.y.strip.text <- y.strip.text
   } else {
     y.strip.text <- ggplot2::element_text(size = y_facet_text_size,
-                                          angle= y_facet_text_angle)
+                                          angle= ifelse(facet_switch %in% c("x","none"), y_facet_text_angle-180,
+                                                        y_facet_text_angle))
+   table.y.strip.text <- ggplot2::element_text(size = y_facet_text_size,
+                                               angle= ifelse(table_facet_switch %in% c("x","none"), y_facet_text_angle-180,
+                                                             y_facet_text_angle)) 
+  }
+  
+  if (theme_benrich & y_facet_text_size >0){
+    y.strip.text <- ggplot2::element_text(
+      hjust=1,
+      vjust=1,
+      face="bold",
+      size=y_facet_text_size,
+      angle= ifelse(facet_switch %in% c("x","none"),
+                    y_facet_text_angle-180,
+                    y_facet_text_angle)
+    )
+    table.y.strip.text <- ggplot2::element_text(
+      hjust=1,
+      vjust=1,
+      face="bold",
+      size=y_facet_text_size,
+      angle= ifelse(table_facet_switch %in% c("x","none"),
+                    y_facet_text_angle-180,
+                    y_facet_text_angle)
+    )
   }
 
+  
   if (xlabel == "") {
     xlabel <- paste("Changes of Parameter Relative to Reference")
   }
@@ -446,19 +475,20 @@ forest_plot <- function(
   }
   
   if (theme_benrich){
-    main_plot <- main_plot + ggplot2::theme(
-      panel.spacing=ggplot2::unit(0, "pt"),
-      panel.grid=ggplot2::element_blank(),
-      panel.grid.minor=ggplot2::element_blank(),
-      strip.background.y=ggplot2::element_blank(),
-      strip.text.y=ggplot2::element_text(
-        hjust=1,
-        vjust=1,
-        face="bold",
-        size=y_facet_text_size,
-        angle=y_facet_text_angle
-      ),
-      plot.margin = ggplot2::margin(t=0,r=6,b=0,l=0,unit="pt"))
+    main_plot <- main_plot +
+      ggplot2::theme(
+       panel.spacing=ggplot2::unit(0, "pt"),
+       panel.grid=ggplot2::element_blank(),
+       panel.grid.minor=ggplot2::element_blank(),
+       strip.background=ggplot2::element_blank(),
+       strip.text.y = y.strip.text,
+       strip.text.x=ggplot2::element_text(
+         face="bold",
+         size =x_facet_text_size,
+         angle=x_facet_text_angle
+       ),
+       plot.margin = ggplot2::margin(t=3,r=3,b=3,l=3,unit="pt")
+       )
   }
 
   if (table_position != "none") {
@@ -498,20 +528,20 @@ forest_plot <- function(
           size = y_label_text_size
         ),
         strip.text.x = x.strip.text,
-        strip.text.y = y.strip.text,
+        axis.text.x = ggplot2::element_text(size = x_label_text_size),
+        strip.text.y = table.y.strip.text,
         axis.title.x = ggplot2::element_blank(),
-        axis.text.x= ggplot2::element_blank(),
-        axis.ticks.x = ggplot2::element_blank(),
         panel.grid.major.x = ggplot2::element_blank(),
         panel.grid.minor.x = ggplot2::element_blank(),
         panel.grid.major.y = ggplot2::element_blank(),
         panel.grid.minor.y = ggplot2::element_blank(),
-        strip.background = ggplot2::element_rect(fill = strip_col)
+        strip.background = ggplot2::element_rect(fill = strip_col),
+        strip.placement  = strip_placement,
       ) +
       ggplot2::ylab("") +
       ggplot2::xlab("") +
-      ggplot2::xlim(c(0.99, 1.01)) +
-      ggplot2::theme(legend.position = "none")
+      ggplot2::theme(legend.position = "none")+
+      ggplot2::scale_x_continuous(breaks=c(1),label="",limits =c(0.99, 1.01) )
 
 
     if (show_table_facet_strip=="none") {
@@ -547,23 +577,54 @@ forest_plot <- function(
           axis.ticks.y = ggplot2::element_blank()
         )
     }
+    if (!reserve_table_xaxis_label_space) {
+      table_plot <- table_plot +
+        ggplot2::theme(
+          axis.text.x= ggplot2::element_blank(),
+          axis.ticks.x= ggplot2::element_blank()
+        )
+    }
+    
     if (theme_benrich){
       table_plot <- table_plot +
         ggplot2::ggtitle("Median [95% CI]")+
-        ggplot2::theme(
-          plot.title=ggplot2::element_text(
-            size=15,
-            hjust=0.5, 
-            vjust=1,
-            margin=ggplot2::margin(b=ggplot2::unit(6, "pt"))),
-          panel.border = ggplot2::element_blank(),
-          panel.spacing = ggplot2::unit(0, "pt"),
-          axis.ticks.y = ggplot2::element_blank(),
-          strip.background.y=ggplot2::element_blank(),
-          plot.margin = ggplot2::margin(t=0,r=0,b=0,l=6,
-                                        unit="pt")
-          
-        )
+         ggplot2::theme(
+           plot.title=ggplot2::element_text(
+             size=15,hjust=0.5, vjust=1,margin=
+               ggplot2::margin(b=ggplot2::unit(6, "pt"))),
+           strip.background=ggplot2::element_blank(),
+           panel.border = ggplot2::element_blank(),
+           panel.spacing = ggplot2::unit(0, "pt"),
+           axis.ticks = ggplot2::element_blank() ,
+           plot.margin = ggplot2::margin(t=3,r=3,b=3,l=3,unit="pt")
+         )
+      if (show_table_facet_strip %in% c("y")) {
+        table_plot <- table_plot +
+          ggplot2::theme(
+            strip.text.y= y.strip.text
+          )
+      }
+      if (show_table_facet_strip %in% c("x")) {
+        table_plot <- table_plot +
+          ggplot2::theme(
+            strip.text.x=ggplot2::element_text(
+               face="bold",size=x_facet_text_size,
+               angle=y_facet_text_angle
+            )
+          )
+      }  
+      if (show_table_facet_strip %in% c("both")) {
+        table_plot <- table_plot +
+          ggplot2::theme(
+            strip.text.y=y.strip.text,
+            strip.text.x=ggplot2::element_text(
+              face="bold",
+              size =x_facet_text_size,
+              angle=x_facet_text_angle
+            )
+          )
+      }    
+           
       
     }
   }

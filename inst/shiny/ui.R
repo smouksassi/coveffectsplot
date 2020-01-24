@@ -148,7 +148,7 @@ fluidPage(
                             selected = c("both"),
                             multiple = FALSE),
               checkboxInput('showtableyaxisticklabel', 'Show Table y axis ticks/labels ?', value = FALSE),
-              
+              checkboxInput('reservetablexaxislabelspace', 'Reserve Table x axis space ?', value = FALSE),
 
               hr(),
               checkboxInput('showrefarea', 'Show Reference Area?', value = TRUE),

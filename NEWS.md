@@ -4,6 +4,7 @@
 * added a new vignette showing how to simulate a PK model from scratch
 * added a switch to control theme_bw base_size
 * added theming proposed by Benjamin Rich
+* added an argument to ensure alignement of strips between table and plot.
 * chaging default rounding and padding for table numbers
 
 # coveffectsplot 0.0.4

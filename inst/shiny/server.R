@@ -188,6 +188,7 @@ function(input, output, session) {
       show_table_facet_strip = input$showtablefacetstrips,
       table_facet_switch = input$tablefacetswitch,
       show_table_yaxis_tick_label = input$showtableyaxisticklabel,
+      reserve_table_xaxis_label_space = input$reservetablexaxislabelspace,
       table_position = input$tableposition,
       plot_table_ratio = input$plottotableratio,
       vertical_dodge_height = input$vdodgeheight,
