@@ -551,8 +551,9 @@ Here we illustrate how you can use a built-in theme and then how you can return 
 Alternatively, you can save the data as a csv and launch the app for point and click edits.
 
 ### Using theme_benrich and other options to customize the look of the plots:
+This is achieved by setting `theme_benrich = TRUE`
 
-```{r, echo=FALSE, message=FALSE, results='hide', include=TRUE}
+```{r,message=FALSE,fig.width=6}
 
 png("./coveffectsplot4.png",width =9 ,height = 6,units = "in",res=72)
 coveffectsplot::forest_plot(coveffectsdatacovrepbsv
@@ -583,8 +584,9 @@ dev.off()
 
 
 ### Returning a list of the plots for further editing:
+This is achieved by setting `return_list = TRUE` and further editing of the plots using ggplot code.
 
-```{r, echo=FALSE, message=FALSE, results='hide', include=TRUE}
+```{r,message=FALSE,fig.width=6}
 png("./coveffectsplot0.png",width =9 ,height = 6,units = "in",res=72)
 
 plotlists <- coveffectsplot::forest_plot(coveffectsdatacovrepbsv
@@ -652,6 +654,7 @@ dev.off()
 You can also have plots with more than one PK parameter shown.You may want to facet by parameter, or use different shape by parameter.
 
 ### Facet by parameter
+This is achieved by setting `paramname_shape = FALSE` and `facet_formula = "covname~paramname"`
 
 ```{r, fig.width=6, fig.height=6,message=FALSE}
 png("./coveffectsplot6.png",width =9.5 ,height = 6,units = "in",res=72)
@@ -678,7 +681,8 @@ dev.off()
 
 ![Covariate Effects Plot.](./coveffectsplot6.png)
 
-### Facet by parameter
+### Shape by parameter
+This is achieved by setting `paramname_shape = TRUE`
 
 ```{r, fig.width=6, fig.height=6,message=FALSE}
 png("./coveffectsplot7.png",width =9.5 ,height = 6,units = "in",res=72)
