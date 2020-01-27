@@ -35,7 +35,7 @@ which0 <- function(x) {
 #' if an item is absent the legend will be omitted.
 #' @param combine_area_ref_legend Combine reference and area legends if they
 #' share the same text?
-#' @param legend_position where to put the legend: "top", "bottom", "none"
+#' @param legend_position where to put the legend: "top", "bottom","right","none"
 #' @param show_ref_area Show reference window?
 #' @param ref_area Reference area. Two-element numeric vector.
 #' @param ref_value X intercept of reference line.
@@ -66,6 +66,8 @@ which0 <- function(x) {
 #' @param plot_table_ratio Plot-to-table ratio. Suggested value between 1-5.
 #' @param vertical_dodge_height Amount of vertical dodging to apply on segments and table text.
 #' @param legend_space_x_mult Multiplier to adjust the spacing between legend items.
+#' @param legend_ncol_interval Control the number of columns for the pointinterval legend. 
+#' @param legend_ncol_shape Control the number of columns for the shape legend. 
 #' @param return_list What to return if True a list of the main and table plots is returned
 #' instead of the gtable/plot.
 
@@ -248,6 +250,8 @@ forest_plot <- function(
   plot_table_ratio = 4,
   vertical_dodge_height = 0.8,
   legend_space_x_mult = 1,
+  legend_ncol_interval = 1,
+  legend_ncol_shape = 1,
   return_list = FALSE)
 {
   ymax = ymin = x = fill = NULL
@@ -331,11 +335,15 @@ forest_plot <- function(
     fill_pos <- linetype_pos
   }
   
-  guide_interval <- ggplot2::guide_legend("", order = interval_pos, nrow = 2)
+  guide_interval <- ggplot2::guide_legend("", order = interval_pos,
+                                          ncol = legend_ncol_interval)
   guide_fill <- ggplot2::guide_legend("", order = fill_pos)
   guide_linetype <- ggplot2::guide_legend("", order = linetype_pos)
   guide_shape <- ggplot2::guide_legend("", order = shape_pos,
-                                       override.aes = list(linetype = 0, colour = "gray"),reverse = legend_shape_reverse)
+                                       override.aes = list(linetype = 0,
+                                      colour = "gray"),
+                                      reverse = legend_shape_reverse,
+                                      ncol = legend_ncol_shape)
   if( interval_pos==0) guide_interval = FALSE
   if( fill_pos==0) guide_fill = FALSE
   if( linetype_pos==0) guide_linetype = FALSE

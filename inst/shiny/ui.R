@@ -188,11 +188,8 @@ fluidPage(
                                     showColour = "both",allowTransparent=TRUE, , returnName = TRUE),
           div( actionButton("fillrefareareset", "Reset Reference Area Fill"),
                style="text-align: right"),
-          sliderInput("legendspacex", "Multiplier for Space between Legends",
-                      min = 0, max = 1.5, step = 0.1, value = 1),
           sliderInput("base_size", "Base size for the theme",
                       min = 1, max = 30, step = 0.1, value = 22),
-          
           checkboxInput('theme_benrich', "Apply Ben's Theme",value = FALSE),
           conditionalPanel(
             condition = "input.theme_benrich",
@@ -201,39 +198,46 @@ fluidPage(
           sliderInput("table_title_size", "Size for Table Title",
                       min = 1, max = 30, step = 0.1, value = 15)
           ) ,
-          checkboxInput('customlegendtitle', 'Customization of Legend items and ordering ?',value = FALSE),
-          conditionalPanel(
-            condition = "input.customlegendtitle",
-
-            textInput("customcolourtitle", label ="Pointinterval Legend text",
-                      value="Median (points)\\n95% CI (horizontal lines)"),
-            textInput("custombsvtitle", label ="BSV Legend text",
-                      value="BSV (points)\\nPrediction Intervals (horizontal lines)"),
-            textInput("customlinetypetitle", label ="Ref Legend text",
-                      value="Reference (vertical line)\\nClinically relevant limits (colored area)"),
-            textInput("customfilltitle", label ="Area Legend text",
-                      value="Reference (vertical line)\\nClinically relevant limits (colored area)"),
-            selectizeInput(
-              'legendposition',
-              label = "Legend Position",
-              choices = c("top","bottom","none"),
-              selected = c("top"),
-              multiple=FALSE),
-            
-            selectizeInput(
-              'legendordering',
-              label = paste("Drag/Drop to reorder","Colour, Ref, Area Legends"),
-              choices = c("pointinterval","ref","area","shape"),
-              selected = c("pointinterval","ref","area","shape"),
-              multiple=TRUE,  options = list(
-                plugins = list('drag_drop')
-              )),
-            checkboxInput('combineareareflegend', 'Combine Ref and Area Legends if they share the same text ?',value = TRUE),
-            checkboxInput('legendshapereverse', 'Reverse the order of shape legend items ?',value = FALSE)
-            
-
-          )
-        )
+          selectizeInput(
+            'legendposition',
+            label = "Legend Position",
+            choices = c("top","bottom","right","none"),
+            selected = c("top"),
+            multiple=FALSE)
+        ),#tabpanel
+        tabPanel(
+          "Custom Legend Ordering",
+          numericInput("ncolinterval",label = "Number of columns for the Interval legend",
+                       value = 1,min=NA,max=NA,width='100%'),
+          numericInput("ncolshape",label = "Number of columns for the shape legend",
+                       value = 1,min=NA,max=NA,width='100%'),
+          selectizeInput(
+            'legendordering',
+            label = paste("Drag/Drop to reorder","Colour, Ref, Area Legends"),
+            choices = c("pointinterval","ref","area","shape"),
+            selected = c("pointinterval","ref","area","shape"),
+            multiple=TRUE,  options = list(
+              plugins = list('drag_drop')
+            )),
+          checkboxInput('legendshapereverse',
+                        'Reverse the order of shape legend items ?',value = TRUE),
+          sliderInput("legendspacex", "Multiplier for Space between Legends",
+                      min = 0, max = 1.5, step = 0.1, value = 1)
+          
+        ),#tabpanel
+        tabPanel(
+          "Custom Legend Text",
+          textInput("customcolourtitle", label ="Pointinterval Legend text",
+                    value="Median (points)\\n95% CI (horizontal lines)"),
+          textInput("custombsvtitle", label ="BSV Legend text",
+                    value="BSV (points)\\nPrediction Intervals (horizontal lines)"),
+          textInput("customlinetypetitle", label ="Ref Legend text",
+                    value="Reference (vertical line)\\nClinically relevant limits (colored area)"),
+          textInput("customfilltitle", label ="Area Legend text",
+                    value="Reference (vertical line)\\nClinically relevant limits (colored area)"),
+          checkboxInput('combineareareflegend',
+                        'Combine Ref and Area Legends if they share the same text ?',value = TRUE)
+        )#tabpanel
       )  # tabsetpanel
     ) # closes the column 3
   )# fluidrow

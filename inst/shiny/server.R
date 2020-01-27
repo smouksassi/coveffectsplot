@@ -194,7 +194,9 @@ function(input, output, session) {
       table_position = input$tableposition,
       plot_table_ratio = input$plottotableratio,
       vertical_dodge_height = input$vdodgeheight,
-      legend_space_x_mult = input$legendspacex
+      legend_space_x_mult = input$legendspacex,
+      legend_ncol_interval = input$ncolinterval,
+      legend_ncol_shape = input$ncolshape
     )
     plot
   }, height = function() {

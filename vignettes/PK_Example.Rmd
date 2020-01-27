@@ -546,16 +546,53 @@ dev.off()
 ```
 ![Covariate Effects Plot.](./coveffectsplot3.png)
 
-### Customization of the plots
-Here we illustrate how you can flexibly edit the plots using ggplot code or you can save the data and lauch the app for point and click edits.
+## Customization of the plots
+Here we illustrate how you can use a built-in theme and then how you can return the ggplots as a list so you can edit the plots using ggplot code.
+Alternatively, you can save the data as a csv and launch the app for point and click edits.
 
-```{r, echo=FALSE, message=FALSE, results='hide', include=FALSE}
+### Using theme_benrich and other options to customize the look of the plots:
+
+```{r, echo=FALSE, message=FALSE, results='hide', include=TRUE}
+
+png("./coveffectsplot4.png",width =9 ,height = 6,units = "in",res=72)
+coveffectsplot::forest_plot(coveffectsdatacovrepbsv
+                            [coveffectsdatacovrepbsv$paramname=="AUC",],
+                            ref_area = c(0.8, 1/0.8),
+                            x_range = c(0.5,2),
+                            xlabel = "Fold Change Relative to Reference",
+                            x_label_text_size= 10,
+                            facet_formula = "covname~paramname",
+                            theme_benrich = TRUE,
+                            legend_position = "none",
+                            strip_placement = "outside",
+                            base_size = 12,
+                            facet_switch = "y",
+                            facet_scales = "free_y",
+                            facet_space = "free",
+                            paramname_shape = FALSE,
+                            table_position = "right",
+                            table_text_size=4,
+                            plot_table_ratio = 3,
+                            show_table_facet_strip = "none",
+                            logxscale = TRUE,
+                            major_x_ticks =    c(0.25,0.5,0.8,1/0.8,1/0.5,1/0.25),
+                            return_list = FALSE)
+dev.off()
+```
+![Covariate Effects Plot.](./coveffectsplot4.png)
+
+
+### Returning a list of the plots for further editing:
+
+```{r, echo=FALSE, message=FALSE, results='hide', include=TRUE}
 png("./coveffectsplot0.png",width =9 ,height = 6,units = "in",res=72)
 
 plotlists <- coveffectsplot::forest_plot(coveffectsdatacovrepbsv
                                          [coveffectsdatacovrepbsv$paramname=="AUC",],
                             ref_area = c(0.8, 1/0.8),
                             xlabel = "Fold Change Relative to Reference",
+                            ref_legend_text = "Reference (vertical line)\nClinically relevant limits\n(gray area)",
+                            area_legend_text = "Reference (vertical line)\nClinically relevant limits\n(gray area)",
                             facet_formula = "covname~paramname",
                             facet_switch = "y",
                             facet_scales = "free_y",
@@ -573,7 +610,8 @@ dev.off()
 
 ``` 
 
-```{r, fig.width=6, fig.height=6}
+
+```{r, fig.width=6, fig.height=6, warning=FALSE,message=FALSE}
 main_plot <- plotlists[[1]] + theme(
                panel.spacing=unit(0, "pt"),
                panel.grid=element_blank(),
@@ -587,16 +625,16 @@ main_plot <- plotlists[[1]] + theme(
                    face="bold",
                    size=rel(1)),
                legend.text = element_text(size=rel(0.5)),
-               plot.margin = margin(t=0,r=0,b=0,l=10,unit="pt"))
+               plot.margin = margin(t=0,r=0,b=0,l=5,unit="pt"))
 
 table_plot <- plotlists[[2]] + theme(
                panel.border=element_blank(),
                panel.spacing=unit(0, "pt"),
                strip.background.y=element_blank(),
                legend.text = element_text(size=rel(0.5)),
-               plot.margin = margin(t=0,r=10,b=0,l=0,unit="pt"))
+               plot.margin = margin(t=0,r=5,b=0,l=0,unit="pt"))
 
-png("./coveffectsplot4.png",width =8.5 ,height = 6,units = "in",res=72)
+png("./coveffectsplot5.png",width =8.5 ,height = 6,units = "in",res=72)
 egg::ggarrange(
   main_plot,
   table_plot,
@@ -607,15 +645,16 @@ dev.off()
 
 ```
 
-![Covariate Effects Plot.](./coveffectsplot4.png)
+![Covariate Effects Plot.](./coveffectsplot5.png)
 
 
-### Plots with more than one PK parameter
-```{r, fig.width=6, fig.height=6}
+## Plots with more than one PK parameter
+You can also have plots with more than one PK parameter shown.You may want to facet by parameter, or use different shape by parameter.
 
+### Facet by parameter
 
-png("./coveffectsplot5.png",width =9 ,height = 6,units = "in",res=72)
-
+```{r, fig.width=6, fig.height=6,message=FALSE}
+png("./coveffectsplot6.png",width =9.5 ,height = 6,units = "in",res=72)
 forest_plot(coveffectsdatacovrepbsv,
                             ref_area = c(0.8, 1/0.8),
                             x_range = c(0.5,2),
@@ -627,7 +666,7 @@ forest_plot(coveffectsdatacovrepbsv,
                             paramname_shape = FALSE,
                             table_position = "none",
                             table_text_size=4,
-                            base_size = 11,
+                            base_size = 9,
                             plot_table_ratio = 4,
                             show_table_facet_strip = "none",
                             logxscale = TRUE,
@@ -637,5 +676,42 @@ dev.off()
 ```
 
 
-![Covariate Effects Plot.](./coveffectsplot5.png)
+![Covariate Effects Plot.](./coveffectsplot6.png)
+
+### Facet by parameter
+
+```{r, fig.width=6, fig.height=6,message=FALSE}
+png("./coveffectsplot7.png",width =9.5 ,height = 6,units = "in",res=72)
+forest_plot(coveffectsdatacovrepbsv
+                            [coveffectsdatacovrepbsv$paramname!="AUC",],
+                            ref_area = c(0.8, 1/0.8),
+                            x_range = c(0.35,1/0.35),
+                            xlabel = "Fold Change Relative to Reference",
+            ref_legend_text = "Reference\nClinically relevant limits\n(0.8-1.25)",
+            area_legend_text = "Reference\nClinically relevant limits\n(0.8-1.25)",
+            interval_legend_text = "Median\n95% CI",
+            interval_bsv_text = "BSV\nPrediction Intervals", 
+                            facet_formula = "covname~.",
+                            paramname_shape = TRUE,
+            legend_order =c("shape","pointinterval","ref", "area"),
+                            legend_shape_reverse = TRUE,
+                            bsv_col = scales::muted("red"),
+                            interval_col = scales::muted("blue"),
+                            facet_switch = "y",
+                            facet_scales = "free_y",
+                            facet_space = "free",
+                            table_position = "none",
+                            table_text_size=4,
+                            base_size = 9,
+                            plot_table_ratio = 4,
+                            show_table_facet_strip = "none",
+                            logxscale = TRUE,
+                            major_x_ticks = c(0.5,0.8,1/0.8,1/0.5),
+                            legend_space_x_mult = 0.01,
+                            legend_position = "right",
+                            return_list = FALSE)
+dev.off()
+```
+
+![Covariate Effects Plot.](./coveffectsplot7.png)
 

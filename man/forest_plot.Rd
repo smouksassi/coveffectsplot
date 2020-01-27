@@ -52,6 +52,8 @@ forest_plot(
   plot_table_ratio = 4,
   vertical_dodge_height = 0.8,
   legend_space_x_mult = 1,
+  legend_ncol_interval = 1,
+  legend_ncol_shape = 1,
   return_list = FALSE
 )
 }
@@ -99,7 +101,7 @@ if an item is absent the legend will be omitted.}
 \item{combine_area_ref_legend}{Combine reference and area legends if they
 share the same text?}
 
-\item{legend_position}{where to put the legend: "top", "bottom", "none"}
+\item{legend_position}{where to put the legend: "top", "bottom","right","none"}
 
 \item{show_ref_area}{Show reference window?}
 
@@ -156,6 +158,10 @@ share the same text?}
 \item{vertical_dodge_height}{Amount of vertical dodging to apply on segments and table text.}
 
 \item{legend_space_x_mult}{Multiplier to adjust the spacing between legend items.}
+
+\item{legend_ncol_interval}{Control the number of columns for the pointinterval legend.}
+
+\item{legend_ncol_shape}{Control the number of columns for the shape legend.}
 
 \item{return_list}{What to return if True a list of the main and table plots is returned
 instead of the gtable/plot.}
