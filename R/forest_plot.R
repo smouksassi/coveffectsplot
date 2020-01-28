@@ -41,7 +41,7 @@ which0 <- function(x) {
 #' @param ref_value X intercept of reference line.
 #' @param ref_area_col Reference area background color.
 #' @param interval_col Point range color. One value.
-#' @param bsv_col  BSV pointrange color. One value.
+#' @param bsv_col  BSV pointinterval color. One value.
 #' @param interval_bsv_text BSV legend text.
 #' @param strip_col Strip background color.
 #' @param paramname_shape Map symbol to parameter(s)?
@@ -61,7 +61,7 @@ which0 <- function(x) {
 #' @param table_facet_switch Table facet switch to near axis. Possible values: "both", "y",
 #' "x", "none". 
 #' @param show_table_yaxis_tick_label Show table y axis ticks and labels?
-#' @param reserve_table_xaxis_label_space keep space for the x axis label to keep alignement.
+#' @param reserve_table_xaxis_label_space keep space for the x axis label to keep alignment.
 #' @param table_position Table position. Possible values: "right", "below", "none".
 #' @param plot_table_ratio Plot-to-table ratio. Suggested value between 1-5.
 #' @param vertical_dodge_height Amount of vertical dodging to apply on segments and table text.

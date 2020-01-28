@@ -113,7 +113,7 @@ share the same text?}
 
 \item{interval_col}{Point range color. One value.}
 
-\item{bsv_col}{BSV pointrange color. One value.}
+\item{bsv_col}{BSV pointinterval color. One value.}
 
 \item{interval_bsv_text}{BSV legend text.}
 
@@ -149,7 +149,7 @@ share the same text?}
 
 \item{show_table_yaxis_tick_label}{Show table y axis ticks and labels?}
 
-\item{reserve_table_xaxis_label_space}{keep space for the x axis label to keep alignement.}
+\item{reserve_table_xaxis_label_space}{keep space for the x axis label to keep alignment.}
 
 \item{table_position}{Table position. Possible values: "right", "below", "none".}
 
