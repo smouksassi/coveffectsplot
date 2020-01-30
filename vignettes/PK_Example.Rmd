@@ -13,7 +13,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  dev.args = list(png = list(type = "cairo"))
 )
 library(coveffectsplot)
 library(mrgsolve)
@@ -39,20 +40,19 @@ expand.modelframe <- function(..., rv, covcol="covname") {
 }
 ```
 ## Specifying a PK Model using `mrgsolve`
-Here we illustrate the approach with a two-compartment PK model defined with an ODE and covariates on Clearance and Volume 
+Here we illustrate the approach with a two-compartment PK model defined with an ODE and covariates on the PK parameters Clearance and Volume.
 
 ```{r pkmodel, collapse=TRUE }
 codepkmodelcov <- '
 $PARAM
 CL = 4, V=10 , KA=0.5, Vp =50, Qp= 10,
-CLAGE = 0.15, CLALB = -0.8, CLSEX = 0.2, CLWT = 1,
+CLALB = -0.8, CLSEX = 0.2, CLWT = 1,
 VSEX   = 0.07, VWT = 1,
 WT=85, SEX=0, AGE=45, ALB =45   
 
 $CMT GUT CENT PER
 $MAIN
 double CLi = CL *
-    pow((AGE/45.0), CLAGE)*
     pow((ALB/45.0), CLALB)*
     (SEX == 1.0 ? (1.0+CLSEX) : 1.0)*
     pow((WT/85.0), CLWT)*exp(ETA(1)); 
@@ -82,14 +82,13 @@ $CAPTURE CP CPER KAi CLi Vi Vpi Qpi
 '
 modcovsim <- mcode("codepkmodelcov", codepkmodelcov)
 ```
-### Simulate N=1000 Reference Subject with BSV
+### Simulate Reference Subjects with BSV
 We simulate with between subject variability (BSV) and provide a plot of concentrations on linear and log linear scales.
 
 ```{r pksimulation, fig.width=7, message=FALSE }
 idata <- tibble(
   ID = 1:1000,
   WT = 85,
-  AGE = 45,
   ALB = 45,
   SEX = 0
 )
@@ -214,44 +213,7 @@ covcomb
 ```
 
 ### Simulation at Unique Combinations of Covariates
-For this first step, we simulate without uncertainty and without BSV at unique combination of covariates generated in the previous section. We then plot the results to visualize the effects. 
-
-```{r, fig.width=7 , include=FALSE}
-codepkmodelcovcomb <- '
-$PARAM
-CL = 4, V=10 , KA=0.5, Vp =50, Qp= 10,
-CLALB = -0.8, CLSEX = 0.2, CLWT = 1,
-VSEX   = 0.07, VWT = 1,
-WT=85, SEX=0, ALB =45   
-
-$CMT GUT CENT PER
-$MAIN
-double CLi = CL *
-    pow((ALB/45.0), CLALB)*
-    (SEX == 1.0 ? (1.0+CLSEX) : 1.0)*
-    pow((WT/85.0), CLWT);
-double Vi = V *
-    (SEX == 1.0 ? (1.0+VSEX) : 1.0)*
-    pow((WT/85.0), VWT);
-
-double KAi = KA;
-double Vpi = Vp *pow((WT/70.0),    1);
-double Qpi = Qp *pow((WT/70.0), 0.75);
-double Keli = CLi/Vi    ;
-double Kpti = Qpi/Vi    ;
-double Ktpi = Qpi/Vpi   ;
-$ODE
-dxdt_GUT  = -KAi*GUT;
-dxdt_CENT =  KAi*GUT-Keli*CENT-Kpti*CENT+Ktpi*PER;
-dxdt_PER  =                    Kpti*CENT-Ktpi*PER;
-
-$TABLE
-double CP   = CENT/ Vi;
-double CPER =  PER/Vpi;
-$CAPTURE CP CPER KAi CLi Vi Vpi Qpi 
-'
-modcovcombsim <- mcode("codepkmodelcovcomb", codepkmodelcovcomb)
-```
+For this first step, we simulate without uncertainty and without BSV`zero_re()` at unique combination of covariates generated in the previous section. We then plot the results to visualize the effects. 
 
 ```{r, fig.width=7 ,message=FALSE}
 idata <- as.data.frame(covcomb)
@@ -259,9 +221,10 @@ ev1 <- ev(time=0,amt=100, cmt=1)
 data.dose <- ev(ev1)
 data.dose<-as.data.frame(data.dose)
 data.all<-merge(idata,data.dose)
-outcovcomb<- modcovcombsim %>%
+outcovcomb<- modcovsim %>%
   data_set(data.all) %>%
   carry.out(WT,AGE,SEX,ALB,CLi) %>%
+  zero_re() %>% 
   mrgsim(end=24, delta=1)
 outcovcomb<-as.data.frame(outcovcomb)
 outcovcomb <- outcovcomb %>% 
@@ -281,8 +244,8 @@ We will invent a varcov matrix by assuming 15% relative standard errors and  cor
 
 ```{r, fig.width=7}
 thmeans <- c(4,10,0.5,50,10,-0.8,0.2,1,0.07,1)
-thvariances<- (c(4,10,0.5,50,10,-0.8,0.2,1,0.07,1)*0.15)^2
-thecorrelations <- matrix(ncol=10,nrow=10)
+thvariances<- (thmeans*0.15)^2
+thecorrelations <- matrix(ncol=length(thmeans),nrow=length(thmeans))
 diag(thecorrelations)<- 1
 thecorrelations[lower.tri(thecorrelations, diag = FALSE)]<- 0.2
 thecorrelations[upper.tri(thecorrelations, diag = FALSE)]<- 0.2
@@ -291,7 +254,7 @@ as.data.frame(thevarcovmatrix)
 ```
 
 ### Generating Sets of Parameters with Uncertainty
-Here we generate the sim_parameters dataset using`mvrnorm`and then incorporate the uncertainty by simulate using a different set of parameters (row) for each replicate.
+Here we generate the sim_parameters dataset using`mvrnorm`and then incorporate the uncertainty by simulating using a different set of parameters (row) for each replicate.
 
 ```{r, fig.width=7}
 nsim <- 100 # for vignette to make it run faster otherwise increase to 1000
@@ -332,10 +295,10 @@ for(i in 1:nsim) {
   data.all$CLWT <- as.numeric(sim_parameters[i,8])
   data.all$VSEX <- as.numeric(sim_parameters[i,9])
   data.all$VWT <- as.numeric(sim_parameters[i,10])
-  
-  out <- modcovcombsim %>%
+  out <- modcovsim %>%
     data_set(data.all) %>%
     carry.out(ALB,WT,SEX,amt) %>%
+    zero_re() %>% 
     mrgsim(start=0,end=24,delta=0.5) 
   dfsimunc <- as.data.frame(out%>% mutate(rep = i) )
   iter_sims <- rbind(iter_sims,dfsimunc)
