@@ -4,7 +4,10 @@
 \alias{run_interactiveforestplot}
 \title{Run the interactiveforestplot application}
 \usage{
-run_interactiveforestplot()
+run_interactiveforestplot(data = NULL)
+}
+\arguments{
+\item{data}{optional data to load when the app is launched}
 }
 \description{
 Run the \code{interactiveforestplot} application.

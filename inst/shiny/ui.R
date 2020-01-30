@@ -83,6 +83,8 @@ fluidPage(
           "X/Y Axes",
           sliderInput("ylablesize", "Y axis labels size", min=1, max=32, value=24,step=0.5),
           sliderInput("xlablesize", "X axis labels size", min=1, max=32, value=24,step=0.5),
+          checkboxInput('showyaxisgridlines', "Keep Y axis Gridlines", value = TRUE),
+          checkboxInput('showxaxisgridlines', "Keep X axis Gridlines", value = TRUE),
           checkboxInput('customxticks', 'Custom X axis Ticks ?', value = FALSE),
           conditionalPanel(
             condition = "input.customxticks" ,
@@ -149,7 +151,7 @@ fluidPage(
                             multiple = FALSE),
               checkboxInput('showtableyaxisticklabel', 'Show Table y axis ticks/labels ?', value = FALSE),
               checkboxInput('reservetablexaxislabelspace', 'Reserve Table x axis space ?', value = FALSE),
-
+              checkboxInput('tablepanelborder', 'Draw Table Panel Borders ?', value = TRUE),
               hr(),
               checkboxInput('showrefarea', 'Show Reference Area?', value = TRUE),
               conditionalPanel(condition = "input.showrefarea" ,
@@ -169,6 +171,9 @@ fluidPage(
                                     showColour = "both",allowTransparent=TRUE, returnName = TRUE),
           div( actionButton("stripbackfillreset", "Reset Strip Background Fill"),
                style="text-align: right"),
+          checkboxInput('removestrip', "Remove Strip Background",value = FALSE),
+          numericInput("panelspacing",label = "Strip Panel Spacing",value = 5.5,min=0,step=0.1,
+                       max=10,width='100%'),
           colourpicker::colourInput("colourpointrange",
                                     "Point Range Colour:",
                                     value="blue",

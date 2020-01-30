@@ -1,8 +1,11 @@
 function(input, output, session) {
-
-  
   maindata <- reactiveVal(NULL)
 
+  # If this app was launched from a function that explicitly set an initial dataset
+  if (exists("coveffectsplot_initdata")) {
+    maindata(get("coveffectsplot_initdata"))
+  }
+  
   # Set the data source
   observeEvent(input$datafile, {
     file <- input$datafile$datapath
@@ -183,13 +186,18 @@ function(input, output, session) {
       facet_scales = input$facetscales,
       facet_space = input$facetspace,
       strip_placement = input$stripplacement,
+      strip_outline = input$removestrip,
+      facet_spacing = input$panelspacing,
       major_x_ticks = major_x_ticks,
       minor_x_ticks = minor_x_ticks,
       x_range = if (input$userxzoom) c(input$lowerxin, input$upperxin),
       logxscale = input$logxscale,
+      show_yaxis_gridlines = input$showyaxisgridlines,
+      show_xaxis_gridlines = input$showxaxisgridlines,
       show_table_facet_strip = input$showtablefacetstrips,
       table_facet_switch = input$tablefacetswitch,
       show_table_yaxis_tick_label = input$showtableyaxisticklabel,
+      table_panel_border = input$tablepanelborder,
       reserve_table_xaxis_label_space = input$reservetablexaxislabelspace,
       table_position = input$tableposition,
       plot_table_ratio = input$plottotableratio,

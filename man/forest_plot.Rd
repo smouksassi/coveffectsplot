@@ -40,14 +40,19 @@ forest_plot(
   facet_scales = c("fixed", "free_y", "free_x", "free"),
   facet_space = c("fixed", "free_x", "free_y", "free"),
   strip_placement = c("inside", "outside"),
+  strip_outline = TRUE,
+  facet_spacing = 5.5,
   major_x_ticks = NULL,
   minor_x_ticks = NULL,
   x_range = NULL,
   logxscale = FALSE,
+  show_yaxis_gridlines = TRUE,
+  show_xaxis_gridlines = TRUE,
   show_table_facet_strip = "none",
   table_facet_switch = c("both", "y", "x", "none"),
   show_table_yaxis_tick_label = FALSE,
   reserve_table_xaxis_label_space = FALSE,
+  table_panel_border = TRUE,
   table_position = c("right", "below", "none"),
   plot_table_ratio = 4,
   vertical_dodge_height = 0.8,
@@ -134,13 +139,21 @@ share the same text?}
 
 \item{strip_placement}{Strip placement. Possible values: "inside", "outside".}
 
+\item{strip_outline}{Draw rectangle around the Strip. Logical TRUE FALSE.}
+
+\item{facet_spacing}{Control the space between facets in points.}
+
 \item{major_x_ticks}{X axis major ticks. Numeric vector.}
 
 \item{minor_x_ticks}{X axis minor ticks. Numeric vector.}
 
 \item{x_range}{Range of X values. Two-element numeric vector.}
 
-\item{logxscale}{X axis log scale. Logical.}
+\item{logxscale}{X axis log scale. Logical TRUE FALSE.}
+
+\item{show_yaxis_gridlines}{Draw the y axis gridlines. Logical TRUE FALSE.}
+
+\item{show_xaxis_gridlines}{Draw the x axis gridlines. Logical TRUE FALSE.}
 
 \item{show_table_facet_strip}{Possible values: "none", "both", "y", "x".}
 
@@ -150,6 +163,8 @@ share the same text?}
 \item{show_table_yaxis_tick_label}{Show table y axis ticks and labels?}
 
 \item{reserve_table_xaxis_label_space}{keep space for the x axis label to keep alignment.}
+
+\item{table_panel_border}{Draw the panel border for the table. Logical TRUE FALSE.}
 
 \item{table_position}{Table position. Possible values: "right", "below", "none".}
 

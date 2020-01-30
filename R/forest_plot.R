@@ -53,15 +53,20 @@ which0 <- function(x) {
 #' @param facet_space Facet spaces. Possible values: "fixed", "free_x",
 #' "free_y", "free".
 #' @param strip_placement Strip placement. Possible values: "inside", "outside".
+#' @param strip_outline Draw rectangle around the Strip. Logical TRUE FALSE.
+#' @param facet_spacing Control the space between facets in points.
 #' @param major_x_ticks X axis major ticks. Numeric vector.
 #' @param minor_x_ticks X axis minor ticks. Numeric vector.
 #' @param x_range Range of X values. Two-element numeric vector.
-#' @param logxscale  X axis log scale. Logical.
+#' @param logxscale  X axis log scale. Logical TRUE FALSE.
+#' @param show_yaxis_gridlines Draw the y axis gridlines. Logical TRUE FALSE.
+#' @param show_xaxis_gridlines Draw the x axis gridlines. Logical TRUE FALSE.
 #' @param show_table_facet_strip Possible values: "none", "both", "y", "x".
 #' @param table_facet_switch Table facet switch to near axis. Possible values: "both", "y",
 #' "x", "none". 
 #' @param show_table_yaxis_tick_label Show table y axis ticks and labels?
 #' @param reserve_table_xaxis_label_space keep space for the x axis label to keep alignment.
+#' @param table_panel_border Draw the panel border for the table. Logical TRUE FALSE.
 #' @param table_position Table position. Possible values: "right", "below", "none".
 #' @param plot_table_ratio Plot-to-table ratio. Suggested value between 1-5.
 #' @param vertical_dodge_height Amount of vertical dodging to apply on segments and table text.
@@ -238,14 +243,19 @@ forest_plot <- function(
   facet_scales = c("fixed", "free_y", "free_x", "free"),
   facet_space = c("fixed", "free_x", "free_y", "free"),
   strip_placement = c("inside", "outside"),
+  strip_outline = TRUE,
+  facet_spacing = 5.5,
   major_x_ticks = NULL,
   minor_x_ticks = NULL,
   x_range = NULL,
   logxscale = FALSE,
+  show_yaxis_gridlines = TRUE,
+  show_xaxis_gridlines = TRUE,
   show_table_facet_strip = "none",
   table_facet_switch = c("both", "y", "x", "none"),
   show_table_yaxis_tick_label = FALSE,
   reserve_table_xaxis_label_space = FALSE,
+  table_panel_border = TRUE,
   table_position = c("right", "below", "none"),
   plot_table_ratio = 4,
   vertical_dodge_height = 0.8,
@@ -264,7 +274,7 @@ forest_plot <- function(
   facet_space <- match.arg(facet_space)
   strip_placement <- match.arg(strip_placement)
   facet_formula <- stats::as.formula(facet_formula)
-
+  
   if (x_facet_text_size <= 0) {
     x.strip.text <- ggplot2::element_blank()
   } else {
@@ -450,7 +460,6 @@ forest_plot <- function(
   }
 
   main_plot <- main_plot +
-    ggplot2::ylab("") +
     ggplot2::theme_bw(base_size = base_size) +
     ggplot2::theme(
       axis.text.y = ggplot2::element_text(
@@ -467,14 +476,46 @@ forest_plot <- function(
       panel.grid.minor = ggplot2::element_line(colour = "gray", linetype = "dotted"),
       panel.grid.major = ggplot2::element_line(colour = "gray", linetype = "solid"),
       strip.background = ggplot2::element_rect(fill = strip_col),
+      panel.spacing = ggplot2::unit(facet_spacing, "pt"),
       strip.placement  = strip_placement,
       legend.spacing.x = ggplot2::unit(legend_space_x_mult*11, "pt"),
       legend.margin = ggplot2::margin(t = 0, r = 0.1, l = -0.1, b = 0, unit='cm')
     ) +
-    ggplot2::ggtitle("\n") +
-    ggplot2::xlab(xlabel) +
+    ggplot2::ggtitle("\n") 
+  
+  
+  
+  if (strip_outline) {
+    main_plot <- main_plot +
+      ggplot2::theme(strip.background=ggplot2::element_blank())
+  }
+  
+  if (!show_yaxis_gridlines) {
+    main_plot <- main_plot +
+      ggplot2::theme(panel.grid.major.y = ggplot2::element_blank(),
+                     panel.grid.minor.y = ggplot2::element_blank())
+  }
+  if (!show_xaxis_gridlines) {
+    main_plot <- main_plot +
+      ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
+                     panel.grid.minor.x = ggplot2::element_blank())
+  }
+  
+  main_plot <- main_plot +
+    ggplot2::xlab(xlabel)
+  
+  main_plot <- main_plot +
     ggplot2::ylab(ylabel)
-
+  
+  if (grepl("^\\s+$", ylabel) ){
+    main_plot <- main_plot +
+      ggplot2::theme(axis.title.y=element_blank())
+    }
+  if (grepl("^\\s+$", xlabel) ){
+    main_plot <- main_plot +
+      ggplot2::theme(axis.title.x=element_blank())
+  }
+  
   main_plot <- main_plot +
     ggplot2::scale_x_continuous(trans = ifelse(logxscale,"log","identity"))
   
@@ -499,11 +540,7 @@ forest_plot <- function(
        panel.grid.minor=ggplot2::element_blank(),
        strip.background=ggplot2::element_blank(),
        strip.text.y = y.strip.text,
-       strip.text.x=ggplot2::element_text(
-         face="bold",
-         size =x_facet_text_size,
-         angle=x_facet_text_angle
-       ),
+       strip.text.x= x.strip.text,
        plot.margin = ggplot2::margin(t=3,r=3,b=3,l=3,unit="pt")
        )
   }
@@ -546,20 +583,25 @@ forest_plot <- function(
         ),
         strip.text.x = x.strip.text,
         axis.text.x = ggplot2::element_text(size = x_label_text_size),
+        axis.ticks.x= ggplot2::element_blank(),
         strip.text.y = table.y.strip.text,
         axis.title.x = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank(),
         panel.grid.major.x = ggplot2::element_blank(),
         panel.grid.minor.x = ggplot2::element_blank(),
         panel.grid.major.y = ggplot2::element_blank(),
         panel.grid.minor.y = ggplot2::element_blank(),
+        panel.spacing = ggplot2::unit(facet_spacing, "pt"),
         strip.background = ggplot2::element_rect(fill = strip_col),
         strip.placement  = strip_placement,
       ) +
-      ggplot2::ylab("") +
-      ggplot2::xlab("") +
       ggplot2::theme(legend.position = "none")+
       ggplot2::scale_x_continuous(breaks=c(1),label="",limits =c(0.99, 1.01) )
 
+    if (strip_outline) {
+      table_plot <- table_plot +
+        ggplot2::theme(strip.background=ggplot2::element_blank())
+    }
 
     if (show_table_facet_strip=="none") {
       table_plot <- table_plot +
@@ -601,6 +643,12 @@ forest_plot <- function(
           axis.ticks.x= ggplot2::element_blank()
         )
     }
+    if (!table_panel_border) {
+      table_plot <- table_plot +
+        ggplot2::theme(
+          panel.border = ggplot2::element_blank()
+        )
+    }
     
     if (theme_benrich){
       table_plot <- table_plot +
@@ -612,7 +660,7 @@ forest_plot <- function(
            strip.background=ggplot2::element_blank(),
            panel.border = ggplot2::element_blank(),
            panel.spacing = ggplot2::unit(0, "pt"),
-           axis.ticks = ggplot2::element_blank() ,
+           axis.ticks = ggplot2::element_blank(),
            plot.margin = ggplot2::margin(t=3,r=3,b=3,l=3,unit="pt")
          )
       if (show_table_facet_strip %in% c("y")) {
@@ -625,8 +673,9 @@ forest_plot <- function(
         table_plot <- table_plot +
           ggplot2::theme(
             strip.text.x=ggplot2::element_text(
-               face="bold",size=x_facet_text_size,
-               angle=y_facet_text_angle
+               face ="bold",
+               size = x_facet_text_size,
+               angle = x_facet_text_angle
             )
           )
       }  
@@ -635,7 +684,7 @@ forest_plot <- function(
           ggplot2::theme(
             strip.text.y=y.strip.text,
             strip.text.x=ggplot2::element_text(
-              face="bold",
+              face = "bold",
               size =x_facet_text_size,
               angle=x_facet_text_angle
             )
