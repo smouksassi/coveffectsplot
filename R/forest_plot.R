@@ -485,7 +485,7 @@ forest_plot <- function(
   
   
   
-  if (strip_outline) {
+  if (!strip_outline) {
     main_plot <- main_plot +
       ggplot2::theme(strip.background=ggplot2::element_blank())
   }
@@ -598,7 +598,7 @@ forest_plot <- function(
       ggplot2::theme(legend.position = "none")+
       ggplot2::scale_x_continuous(breaks=c(1),label="",limits =c(0.99, 1.01) )
 
-    if (strip_outline) {
+    if (!strip_outline) {
       table_plot <- table_plot +
         ggplot2::theme(strip.background=ggplot2::element_blank())
     }

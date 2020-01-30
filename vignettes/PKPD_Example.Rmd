@@ -124,7 +124,7 @@ sample(unique(outputpkpdsim$ID), 5), ] %>%
 
 ggplot(data =outputpkpdsimlong ,
        aes(time, value, group = ID)) +
-  geom_line(alpha = 0.2, size = 0.1) +
+  geom_line(alpha = 0.8, size = 0.3) +
   facet_grid(key ~ID,scales="free_y",switch="y",
              labeller = labeller(key=yvar_names)) +
   labs(y = "", color = "Sex", x = "Time (h)")+
@@ -420,7 +420,7 @@ png("./coveffectsplotpd.png",width =9 ,height = 9,units = "in",res=72)
 coveffectsplot::forest_plot(coveffectsdatacovrepbsv,
                             ref_area = c(0.5, 1/0.5),
                             x_range = c(0.25,4),
-                            strip_placement = "inside",
+                            strip_placement = "outside",
                             base_size = 16,
                             y_label_text_size = 12,
                             xlabel = "Fold Change Relative to Reference",

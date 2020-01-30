@@ -171,7 +171,7 @@ fluidPage(
                                     showColour = "both",allowTransparent=TRUE, returnName = TRUE),
           div( actionButton("stripbackfillreset", "Reset Strip Background Fill"),
                style="text-align: right"),
-          checkboxInput('removestrip', "Remove Strip Background",value = FALSE),
+          checkboxInput('removestrip', "Show Strip Background",value = TRUE),
           numericInput("panelspacing",label = "Strip Panel Spacing",value = 5.5,min=0,step=0.1,
                        max=10,width='100%'),
           colourpicker::colourInput("colourpointrange",

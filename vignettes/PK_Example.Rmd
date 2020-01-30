@@ -239,7 +239,7 @@ ggplot(outcovcomb, aes(time,CP,col=factor(WT),linetype=factor(SEX)) )+
   coord_cartesian(ylim=c(0,6))
 ```
 
-## Adding Uncertainty from a Varcov Matrix
+### Adding Uncertainty from a Varcov Matrix
 We will invent a varcov matrix by assuming 15% relative standard errors and  correlations of 0.2 across the board. We then simulate a 100 set of parameters using a multivariate normal (kept at 100 for the vignette, use more replicates for a real project). Also, unless the model was written in a way to allow unconstrained parameter values, care should be taken to make sure the simulated parameters are valid and make sense. When available, use the set of parameters from a bootstrap run.
 
 ```{r, fig.width=7}
@@ -253,7 +253,7 @@ thevarcovmatrix<- diag(sqrt(thvariances))%*%thecorrelations%*%diag(sqrt(thvarian
 as.data.frame(thevarcovmatrix)
 ```
 
-### Generating Sets of Parameters with Uncertainty
+### Generating Sets of Parameters
 Here we generate the sim_parameters dataset using`mvrnorm`and then incorporate the uncertainty by simulating using a different set of parameters (row) for each replicate.
 
 ```{r, fig.width=7}
@@ -271,7 +271,7 @@ sim_parameters<- as.data.frame(sim_parameters)
 head(sim_parameters)
 ```
 
-### Simulation at Unique Combinations of Covariates with Uncertainty
+### Simulation with Uncertainty
 We illustrate how you can iterate over a set of parameters value using a for loop. We then overlay the previous simulation without uncertainty on the one with uncertainty to visualize the effect of adding the uncertainty.
 
 ```{r, fig.width=7,fig.height=4}
@@ -705,3 +705,4 @@ dev.off()
 
 ![Covariate Effects Plot.](./coveffectsplot7.png)
 
+While we covered varying one at a time covariate value (marginal effects), we can use observed or simulated distribution of correlated covariates and simulate joint covariate effects.
