@@ -573,10 +573,8 @@ plotlists <- coveffectsplot::forest_plot(coveffectsdatacovrepbsv
                                          [coveffectsdatacovrepbsv$paramname=="AUC",],
                             ref_area = c(0.8, 1/0.8),
                             xlabel = "Fold Change Relative to Reference",
-                            ref_legend_text = "Reference (vertical line)\n
-                            Clinically relevant limits\n(gray area)",
-                            area_legend_text = "Reference (vertical line)\n
-                            Clinically relevant limits\n(gray area)",
+                            ref_legend_text = "Reference (vertical line)\nClinically relevant limits\n(gray area)",
+                            area_legend_text = "Reference (vertical line)\nClinically relevant limits\n(gray area)",
                             interval_legend_text = interval_legend_text,
                             interval_bsv_text = interval_bsv_text,
                             facet_formula = "covname~paramname",

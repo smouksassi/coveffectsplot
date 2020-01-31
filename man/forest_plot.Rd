@@ -13,6 +13,7 @@ forest_plot(
   y_facet_text_size = 13,
   x_facet_text_angle = 0,
   y_facet_text_angle = 180,
+  xy_facet_text_bold = TRUE,
   x_label_text_size = 16,
   y_label_text_size = 16,
   table_text_size = 7,
@@ -30,6 +31,7 @@ forest_plot(
   ref_area = c(0.8, 1.25),
   ref_value = 1,
   ref_area_col = "#BEBEBE50",
+  ref_value_col = "black",
   interval_col = "blue",
   bsv_col = "red",
   interval_bsv_text = "",
@@ -79,6 +81,8 @@ forest_plot(
 
 \item{y_facet_text_angle}{Facet text angle Y.}
 
+\item{xy_facet_text_bold}{Bold Facet text. Logical TRUE FALSE.}
+
 \item{x_label_text_size}{X axis labels size.}
 
 \item{y_label_text_size}{Y axis labels size.}
@@ -115,6 +119,8 @@ share the same text?}
 \item{ref_value}{X intercept of reference line.}
 
 \item{ref_area_col}{Reference area background color.}
+
+\item{ref_value_col}{Reference line color.}
 
 \item{interval_col}{Point range color. One value.}
 

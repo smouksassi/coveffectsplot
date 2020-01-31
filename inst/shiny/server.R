@@ -90,7 +90,7 @@ function(input, output, session) {
 
 
   output$refarea <- renderUI({
-    REF <- 1
+    REF <- input$refvalue
     ymin <- REF * 0.8
     ymax <- REF * 1.25
     ymaxmax <- REF * 5
@@ -117,6 +117,9 @@ function(input, output, session) {
   })
   observeEvent(input$fillrefareareset, {
     shinyjs::reset("fillrefarea")
+  })
+  observeEvent(input$colorrefvaluereset, {
+    shinyjs::reset("colorrefvalue")
   })
 
   plotdataprepare  <- reactive({
@@ -159,6 +162,7 @@ function(input, output, session) {
       y_facet_text_size = input$facettexty,
       x_facet_text_angle = input$facettextxangle,
       y_facet_text_angle = input$facettextyangle,
+      xy_facet_text_bold = input$boldfacettext,
       x_label_text_size = input$xlablesize,
       y_label_text_size = input$ylablesize,
       table_text_size = input$tabletextsize,
@@ -175,8 +179,9 @@ function(input, output, session) {
       legend_position = input$legendposition,
       show_ref_area = input$showrefarea,
       ref_area = input$refareain,
-      ref_value = 1,
+      ref_value = input$refvalue,
       ref_area_col = input$fillrefarea,
+      ref_value_col = input$colorrefvalue,
       interval_col = input$colourpointrange,
       bsv_col      = input$colourbsvrange,
       strip_col = input$stripbackgroundfill,

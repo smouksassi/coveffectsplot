@@ -20,6 +20,7 @@ which0 <- function(x) {
 #' @param y_facet_text_size Facet text size Y.
 #' @param x_facet_text_angle Facet text angle X.
 #' @param y_facet_text_angle Facet text angle Y.
+#' @param xy_facet_text_bold Bold Facet text. Logical TRUE FALSE.
 #' @param x_label_text_size X axis labels size.
 #' @param y_label_text_size Y axis labels size.
 #' @param table_text_size Table text size.
@@ -40,6 +41,7 @@ which0 <- function(x) {
 #' @param ref_area Reference area. Two-element numeric vector.
 #' @param ref_value X intercept of reference line.
 #' @param ref_area_col Reference area background color.
+#' @param ref_value_col Reference line color.
 #' @param interval_col Point range color. One value.
 #' @param bsv_col  BSV pointinterval color. One value.
 #' @param interval_bsv_text BSV legend text.
@@ -216,6 +218,7 @@ forest_plot <- function(
   y_facet_text_size = 13,
   x_facet_text_angle = 0,
   y_facet_text_angle = 180,
+  xy_facet_text_bold = TRUE,
   x_label_text_size = 16,
   y_label_text_size = 16,
   table_text_size = 7,
@@ -233,6 +236,7 @@ forest_plot <- function(
   ref_area = c(0.8, 1.25),
   ref_value = 1,
   ref_area_col = "#BEBEBE50",
+  ref_value_col = "black",
   interval_col = "blue",
   bsv_col = "red",
   interval_bsv_text = "",
@@ -279,7 +283,8 @@ forest_plot <- function(
     x.strip.text <- ggplot2::element_blank()
   } else {
     x.strip.text <- ggplot2::element_text(size = x_facet_text_size,
-                                          angle= x_facet_text_angle)
+                                          angle= x_facet_text_angle,
+                                          face = ifelse(xy_facet_text_bold,"bold","plain"))
   }
   if (y_facet_text_size <= 0) {
     y.strip.text <- ggplot2::element_blank()
@@ -288,11 +293,13 @@ forest_plot <- function(
     y.strip.text <- ggplot2::element_text(size = y_facet_text_size,
                                           angle= ifelse(facet_switch %in% c("x","none"),
                                                         y_facet_text_angle-180,
-                                                        y_facet_text_angle))
+                                                        y_facet_text_angle),
+                                          face = ifelse(xy_facet_text_bold,"bold","plain"))
    table.y.strip.text <- ggplot2::element_text(size = y_facet_text_size,
                                                angle= ifelse(table_facet_switch %in% c("x","none"),
                                                              y_facet_text_angle-180,
-                                                             y_facet_text_angle)) 
+                                                             y_facet_text_angle),
+                                               face = ifelse(xy_facet_text_bold,"bold","plain")) 
   }
   
   if (theme_benrich && y_facet_text_size >0){
@@ -412,7 +419,7 @@ forest_plot <- function(
   main_plot <- main_plot +
     ggplot2::geom_vline(
       ggplot2::aes(xintercept = ref_value, linetype = ref_legend_text),
-      size = 1
+      size = 1, color = ref_value_col 
     ) +
     ggstance::geom_pointrangeh(
       position = ggstance::position_dodgev(height = vertical_dodge_height),
