@@ -18,6 +18,8 @@ knitr::opts_chunk$set(
   dev.args = list(png = list(type = "cairo"))
 )
 library(coveffectsplot)
+suppressPackageStartupMessages( library(dplyr) )
+
 ```
 
 The use of forest plots to summarize the impact of various intrinsic and extrinsic factors on the pharmacokinetics (PK) of drugs is becoming a standard practice and a key part of submission packages to the FDA. The forest plots format make it easier for clinicians to quickly find and interpret the information they need.^[Essential pharmacokinetic information for drug dosage decisions: a concise visual presentation in the drug label. Clin Pharmacol Ther. 2011 Sep;90(3):471-4.]
@@ -255,9 +257,9 @@ knitr::kable(plotdata)
 ```
 
 ## Plotting the Effects Data
-First we do a customized `ggplot`. Then we do an interactive `plotly` version and finally we show how to use `coveffectsplot::forest_plot`to make the final plot with annotations, a side table with values, and legends. For interactive reordering of categories, editing of labels and more, export the data as a "csv" and launch the shiny app via `coveffectsplot::run_interactiveforestplot()`
+First we do a customized `ggplot` but we quickly notice that it has some issues like the lack of legend for the clinical reference area, vertical labels etc. We then show how using `coveffectsplot::forest_plot` can generate a plot annotations, a side table with values, and legends. For interactive reordering of categories, editing of labels and more, export the data as a "csv" and launch the shiny app via `coveffectsplot::run_interactiveforestplot()`.
 
-```{r,fig.width=7}
+```{r,fig.width=7 }
 plotdata$covname <- as.factor(plotdata$covname)
 plotdata$covname <- reorder(plotdata$covname , c(3,4,4,2,1,1))
 
@@ -281,8 +283,36 @@ plotdata$label <- reorder(as.factor(plotdata$label) , c(1,3,2,4,5,6))
   ggplot2::labs(y="",x="Effects Relative to Reference Value",
                 colour="",linetype="")+
   ggplot2::theme_bw()
+```
 
-  suppressPackageStartupMessages( library(dplyr) )
+```{r,dpi = 72}
+png("./coveffectsplot.png",width =9 ,height = 6,units = "in",res=72)
+ coveffectsplot::forest_plot(plotdata,
+            ref_area = c(0.8, 1/0.8),
+            x_facet_text_size = 13,
+            y_facet_text_size = 13,
+            interval_legend_text = "Median (points)\n90% CI (horizontal lines)",
+            ref_legend_text = "Reference (vertical line)\n+/- 20% ratios (gray area)",
+            area_legend_text = "Reference (vertical line)\n+/- 20% ratios (gray area)",
+            xlabel = "Fold Change Relative to Parameter",
+            facet_formula = "covname~.",
+            facet_switch = "both",
+            facet_scales = "free",
+            facet_space = "fixed",
+            paramname_shape = TRUE,
+            show_table_facet_strip = "none",
+            table_position = "right",
+            table_text_size=4,
+            plot_table_ratio = 4,
+            legend_space_x_mult = 0.5,
+            return_list = FALSE)
+dev.off()
+```
+![](coveffectsplot.png)
+ 
+Using interactive graphics with hover on-demand functionality would remove the need for a side table, this can be achieved using `plotly`. The code is included but not evaluated to keep the size of the vignette small.
+```{r,fig.width=7 ,eval=FALSE}
+
   plotdata<- plotdata[ c(3,2,1,4,5,6),]
   plotly::plot_ly(plotdata) %>%
   plotly::add_segments(
@@ -343,30 +373,7 @@ plotdata$label <- reorder(as.factor(plotdata$label) , c(1,3,2,4,5,6))
   )
 ```
   
-```{r,dpi = 72}
-png("./coveffectsplot.png",width =9 ,height = 6,units = "in",res=72)
- coveffectsplot::forest_plot(plotdata,
-            ref_area = c(0.8, 1/0.8),
-            x_facet_text_size = 13,
-            y_facet_text_size = 13,
-            interval_legend_text = "Median (points)\n90% CI (horizontal lines)",
-            ref_legend_text = "Reference (vertical line)\n+/- 20% ratios (gray area)",
-            area_legend_text = "Reference (vertical line)\n+/- 20% ratios (gray area)",
-            xlabel = "Fold Change Relative to Parameter",
-            facet_formula = "covname~.",
-            facet_switch = "both",
-            facet_scales = "free",
-            facet_space = "fixed",
-            paramname_shape = TRUE,
-            show_table_facet_strip = "none",
-            table_position = "right",
-            table_text_size=4,
-            plot_table_ratio = 4,
-            legend_space_x_mult = 0.5,
-            return_list = FALSE)
-dev.off()
-```
-![](coveffectsplot.png)
+
 
 The `return_list` option allows you to choose to return a list of ggplot objects that can be further manipulated.
 
