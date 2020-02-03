@@ -209,7 +209,11 @@ function(input, output, session) {
       vertical_dodge_height = input$vdodgeheight,
       legend_space_x_mult = input$legendspacex,
       legend_ncol_interval = input$ncolinterval,
-      legend_ncol_shape = input$ncolshape
+      legend_ncol_shape = input$ncolshape,
+      plot_margin = c(input$margintop,input$marginright,
+                      input$marginbottom,input$marginleft),
+      table_margin = c(input$tabletop,input$tableright,
+                      input$tablebottom,input$tableleft)
     )
     plot
   }, height = function() {

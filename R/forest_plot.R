@@ -74,7 +74,11 @@ which0 <- function(x) {
 #' @param vertical_dodge_height Amount of vertical dodging to apply on segments and table text.
 #' @param legend_space_x_mult Multiplier to adjust the spacing between legend items.
 #' @param legend_ncol_interval Control the number of columns for the pointinterval legend. 
-#' @param legend_ncol_shape Control the number of columns for the shape legend. 
+#' @param legend_ncol_shape Control the number of columns for the shape legend.
+#' @param plot_margin Control the white space around the main plot. Vector of four numeric values
+#' for the top, right, bottom and left sides.
+#' @param table_margin Control the white space around the table. Vector of four numeric values
+#' for the top, right, bottom and left sides.
 #' @param return_list What to return if True a list of the main and table plots is returned
 #' instead of the gtable/plot.
 
@@ -266,9 +270,15 @@ forest_plot <- function(
   legend_space_x_mult = 1,
   legend_ncol_interval = 1,
   legend_ncol_shape = 1,
+  plot_margin = c(5.5, 5.5, 5.5, 5.5),
+  table_margin = c(5.5, 5.5, 5.5, 5.5),
   return_list = FALSE)
 {
   ymax = ymin = x = fill = NULL
+  plot_margin[ which(is.na(plot_margin) ) ] <- 0
+  table_margin[ which(is.na(table_margin) ) ] <- 0
+  facet_spacing[ which(is.na(facet_spacing) ) ] <- 0
+  
   table_position <- match.arg(table_position)
   legend_order <- match.arg(legend_order, several.ok = TRUE)
   facet_switch <- match.arg(facet_switch)
@@ -279,6 +289,7 @@ forest_plot <- function(
   strip_placement <- match.arg(strip_placement)
   facet_formula <- stats::as.formula(facet_formula)
   
+
   if (x_facet_text_size <= 0) {
     x.strip.text <- ggplot2::element_blank()
   } else {
@@ -486,7 +497,12 @@ forest_plot <- function(
       panel.spacing = ggplot2::unit(facet_spacing, "pt"),
       strip.placement  = strip_placement,
       legend.spacing.x = ggplot2::unit(legend_space_x_mult*11, "pt"),
-      legend.margin = ggplot2::margin(t = 0, r = 0.1, l = -0.1, b = 0, unit='cm')
+      legend.margin = ggplot2::margin(t = 0, r = 0.1, l = -0.1, b = 0, unit='cm'),
+      plot.margin =  ggplot2::margin(t = plot_margin[1],
+                                     r = plot_margin[2],
+                                     b = plot_margin[3],
+                                     l = plot_margin[4],
+                                     unit='pt')
     ) +
     ggplot2::ggtitle("\n") 
   
@@ -601,6 +617,11 @@ forest_plot <- function(
         panel.spacing = ggplot2::unit(facet_spacing, "pt"),
         strip.background = ggplot2::element_rect(fill = strip_col),
         strip.placement  = strip_placement,
+        plot.margin =  ggplot2::margin(t = table_margin[1],
+                                       r = table_margin[2],
+                                       b = table_margin[3],
+                                       l = table_margin[4],
+                                       unit='pt')
       ) +
       ggplot2::theme(legend.position = "none")+
       ggplot2::scale_x_continuous(breaks=c(1),label="",limits =c(0.99, 1.01) )

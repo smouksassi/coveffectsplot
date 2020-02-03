@@ -135,10 +135,9 @@ fluidPage(
               12,
               hr(),
               numericInput("sigdigits",label = "Significant Digits",value = 2,min=NA,max=NA),
-              sliderInput("tabletextsize", "Table Text Size", min=1, max=12,step=1, value=7),
-              
-
-              sliderInput("plottotableratio", "Plot to Table Ratio", min=1, max=5, value=4,step=0.5, animate = FALSE),
+              sliderInput("tabletextsize", "Table Text Size", min=1, max=12,step=0.5, value=7),
+              sliderInput("plottotableratio", "Plot to Table Ratio", min=1, max=5, value=4,step=0.25,
+                          animate = FALSE),
 
               selectInput('tableposition','Table Position:',
                           c("on the right" = "right", "below" = "below", "none" = "none") ),
@@ -174,8 +173,6 @@ fluidPage(
           div( actionButton("stripbackfillreset", "Reset Strip Background Fill"),
                style="text-align: right"),
           checkboxInput('removestrip', "Show Strip Background",value = TRUE),
-          numericInput("panelspacing",label = "Strip Panel Spacing",value = 5.5,min=0,step=0.1,
-                       max=10,width='100%'),
           colourpicker::colourInput("colourpointrange",
                                     "Point Range Colour:",
                                     value="blue",
@@ -223,7 +220,7 @@ fluidPage(
             multiple=FALSE)
         ),#tabpanel
         tabPanel(
-          "Custom Legend Ordering",
+          "Custom Legend Ordering/Spacing",
           numericInput("ncolinterval",label = "Number of columns for the Interval legend",
                        value = 1,min=NA,max=NA,width='100%'),
           numericInput("ncolshape",label = "Number of columns for the shape legend",
@@ -239,7 +236,36 @@ fluidPage(
           checkboxInput('legendshapereverse',
                         'Reverse the order of shape legend items ?',value = TRUE),
           sliderInput("legendspacex", "Multiplier for Space between Legends",
-                      min = 0, max = 1.5, step = 0.1, value = 1)
+                      min = 0, max = 1.5, step = 0.1, value = 1),
+          numericInput("panelspacing",label = "Strip Panel Spacing",
+                       value = 5.5,min=0,step=0.1,
+                       max=20,width='100%'),
+          
+          div(style="display:inline-block",
+              numericInput("margintop",label = "Plot Top Margin",
+                           value = 0,min=0,max=NA,width='120px')),
+          div(style="display:inline-block",
+              numericInput("tabletop",label = "Table Top Margin",
+                           value = 0,min=0,max=NA,width='120px')),
+          div(style="display:inline-block",
+              numericInput("marginleft",label = "Plot Left Margin",
+                           value = 5.5,min=0,max=NA,width='120px')),
+          div(style="display:inline-block",
+              numericInput("tableleft",label = "Table Left Margin",
+                           value = 5.5,min=0,max=NA,width='120px')),
+          div(style="display:inline-block",
+              numericInput("marginright",label = "Plot Right Margin",
+                           value = 5.5,min=0,max=NA,width='120px')),
+         div(style="display:inline-block",
+              numericInput("tableright",label = "Table Right Margin",
+                           value = 5.5,min=0,max=NA,width='120px')),
+        div(style="display:inline-block",
+            numericInput("marginbottom",label = "Plot Bottom Margin",
+                         value = 0,min=0,max=NA,width='120px')),
+        div(style="display:inline-block",
+            numericInput("tablebottom",label = "Table Bottom Margin",
+                         value = 0,min=0,max=NA,width='120px'))
+        
           
         ),#tabpanel
         tabPanel(
