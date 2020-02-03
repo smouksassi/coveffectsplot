@@ -35,7 +35,8 @@ Suggests:
     table1,
     patchwork,
     bayestestR,
-    plotly
+    plotly,
+    scales
 License: MIT + file LICENSE
 SystemRequirements: pandoc with https support
 LazyData: true

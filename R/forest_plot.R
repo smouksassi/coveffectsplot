@@ -532,11 +532,11 @@ forest_plot <- function(
   
   if (grepl("^\\s+$", ylabel) ){
     main_plot <- main_plot +
-      ggplot2::theme(axis.title.y=element_blank())
+      ggplot2::theme(axis.title.y=ggplot2::element_blank())
     }
   if (grepl("^\\s+$", xlabel) ){
     main_plot <- main_plot +
-      ggplot2::theme(axis.title.x=element_blank())
+      ggplot2::theme(axis.title.x=ggplot2::element_blank())
   }
   
   main_plot <- main_plot +
