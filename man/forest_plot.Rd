@@ -61,6 +61,8 @@ forest_plot(
   legend_space_x_mult = 1,
   legend_ncol_interval = 1,
   legend_ncol_shape = 1,
+  plot_margin = c(5.5, 5.5, 5.5, 5.5),
+  table_margin = c(5.5, 5.5, 5.5, 5.5),
   return_list = FALSE
 )
 }
@@ -183,6 +185,12 @@ share the same text?}
 \item{legend_ncol_interval}{Control the number of columns for the pointinterval legend.}
 
 \item{legend_ncol_shape}{Control the number of columns for the shape legend.}
+
+\item{plot_margin}{Control the white space around the main plot. Vector of four numeric values
+for the top, right, bottom and left sides.}
+
+\item{table_margin}{Control the white space around the table. Vector of four numeric values
+for the top, right, bottom and left sides.}
 
 \item{return_list}{What to return if True a list of the main and table plots is returned
 instead of the gtable/plot.}
