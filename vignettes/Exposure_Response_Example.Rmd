@@ -1,0 +1,78 @@
+---
+title: "Exposure_Response_Example"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    df_print: kable
+    
+vignette: >
+  %\VignetteIndexEntry{PK_Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  message =FALSE,
+  warning =FALSE,
+  fig.width = 7,
+  comment = "#>",
+  dev.args = list(png = list(type = "cairo"))
+)
+library(coveffectsplot)
+library(ggplot2)
+library(dplyr)
+library(mrgsolve)
+library(patchwork)
+theme_set(theme_bw())
+```
+## Specifying an Exposure Response Model using `mrgsolve`
+Here we illustrate the approach using a Binary response linked to exposure (AUC) via a saturating EMAX function. Weight is a covariate on Clearance. We also have a disease severity categorical  covariate on EMAX where patient with severe disease have a lower EMAX.
+
+```{r exprespmodel, collapse=TRUE }
+exprespmodel <- '
+$PLUGIN Rcpp
+$PARAM
+TVCL = 10, WTCL = 0.75,
+TVEMAX = 5, SEVEMAX = 3,
+DOSE = 75,
+BASEP = 0.1, AUC50 = 10,
+WT=70, SEV = 0
+$OMEGA
+0.1 
+$PRED
+double CL = TVCL *
+    pow((WT/70.0), WTCL)*exp(ETA(1)); 
+
+double EMAX = TVEMAX + SEVEMAX*(SEV == 1) ; 
+double BASE = log(BASEP/(1-BASEP));
+capture AUC = DOSE/CL;
+capture LGST = BASE + (EMAX*AUC/(AUC50+AUC));
+capture P1 = 1/(1+exp(-LGST));
+capture DV = R::runif(0,1)< P1 ? 1 : 0;
+'
+modexprespsim <- mcode("exprespmodel", exprespmodel)
+
+simdata <-  expand.idata(SEV=c(0,1),
+               DOSE = c(0,25,50,75),
+               ID = 1:1000) %>% 
+  dplyr::mutate(WT = exp(rnorm(n(),log(70),0.3)))
+
+set.seed(466548)
+simout <- modexprespsim %>%
+  data_set(simdata) %>%
+  carry.out(WT, DOSE, SEV) %>%
+  mrgsim()%>%
+  as.data.frame
+head(simout)
+ggplot(simout, aes(AUC,DV,col=factor(SEV))) +
+  facet_grid(~cut_interval(WT,2))+
+  geom_point()+
+  geom_smooth(method = "glm",se=FALSE,
+              method.args = list(family = "binomial"))+
+  labs(color="Severity",y="Probability of Being Cured")+
+  theme_bw() + 
+  theme(legend.position = "top")
+
+```
