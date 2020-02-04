@@ -6,7 +6,7 @@ output:
     df_print: kable
     
 vignette: >
-  %\VignetteIndexEntry{PK_Example}
+  %\VignetteIndexEntry{Exposure_Response_Example}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
