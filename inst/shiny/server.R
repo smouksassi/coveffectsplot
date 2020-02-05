@@ -65,7 +65,6 @@ function(input, output, session) {
     ))
     df$covname <- factor(df$covname)
     df$label <- factor(df$label)
-    df$ref <- 1
     df$exposurename <- df$paramname
     sigdigits <- input$sigdigits
     summarydata <- df %>%
