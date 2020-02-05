@@ -332,7 +332,7 @@ out.df.univariatecov.nca$covvalue <-factor(as.factor(out.df.univariatecov.nca$co
 ```{r, fig.width=7,message=FALSE}
 ggplot(out.df.univariatecov.nca,
        aes(x=paramvalue,y=covvalue,fill=factor(..quantile..),height=..ndensity..))+
-  facet_grid(covname~paramname,scales="free",space="free")+
+  facet_grid(covname~paramname,scales="free_y",space="free")+
   annotate( "rect",
             xmin = 0.5,
             xmax = 2,
