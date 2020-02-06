@@ -36,7 +36,8 @@ Suggests:
     patchwork,
     bayestestR,
     plotly,
-    scales
+    scales,
+    Rcpp
 License: MIT + file LICENSE
 SystemRequirements: pandoc with https support
 LazyData: true

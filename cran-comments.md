@@ -7,7 +7,7 @@
 
 0 errors | 0 warnings | 0 note
 
-* This is a minor update adding log axis option and visual tweaks to the table strips.
+* This is a significant update adding a lot of new arguments of options for finer control of the plot and associated shiny app.
 * some Notes from the previous builds on some platforms are false positives since these are used in the shiny app code and are required for it.
 
 ## Reverse dependencies

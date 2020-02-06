@@ -27,6 +27,7 @@ library(tidyr)
 library(mrgsolve)
 library(ggridges)
 library(ggstance)
+library(Rcpp)
 theme_set(theme_bw())
 nsim <- 100 # for vignette to make it run faster otherwise increase to 1000
 #utility function to simulate varying one covariate at a time keeping the rest at the reference
