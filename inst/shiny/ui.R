@@ -28,7 +28,8 @@ fluidPage(
               width = '800px'
             ),
             checkboxInput('shapebyparamname', 'Change Symbol by Parameter(s) ?', value = TRUE),
-            
+            sliderInput("vdodgeheight", "Vertical Space Between Parameters(s)",
+                        min=0.5, max=2, value=0.8,width = '800px'),
             selectizeInput(
               "covariates",
               "Covariates Top to Bottom (Remove/Drag and Drop to Desired Order):",
@@ -129,11 +130,7 @@ fluidPage(
       2,
       tabsetPanel(
         tabPanel(
-          "Table/Other Options",
-          fluidRow(
-            column(
-              12,
-              hr(),
+          "Table Options",
               numericInput("sigdigits",label = "Significant Digits",value = 2,min=NA,max=NA),
               sliderInput("tabletextsize", "Table Text Size", min=1, max=12,step=0.5, value=7),
               sliderInput("plottotableratio", "Plot to Table Ratio", min=1, max=5, value=4,step=0.25,
@@ -151,19 +148,18 @@ fluidPage(
                             multiple = FALSE),
               checkboxInput('showtableyaxisticklabel', 'Show Table y axis ticks/labels ?', value = FALSE),
               checkboxInput('reservetablexaxislabelspace', 'Reserve Table x axis space ?', value = FALSE),
-              checkboxInput('tablepanelborder', 'Draw Table Panel Borders ?', value = TRUE),
-              hr(),
-              numericInput("refvalue","Reference Line",value = 1,step = 0.1),
-              checkboxInput('showrefarea', 'Show Reference Area?', value = TRUE),
-              conditionalPanel(condition = "input.showrefarea" ,
-                               uiOutput("refarea")),
-              sliderInput("height", "Plot Height", min=1080/4, max=1080, value=900, animate = FALSE),
-              sliderInput("vdodgeheight", "Vertical Dodging Height", min=0.5, max=2, value=0.8, animate = FALSE)
-              
-              )
-
-          )
+              checkboxInput('tablepanelborder', 'Draw Table Panel Borders ?', value = TRUE)
         ),#tabpanel
+        tabPanel(
+          "Reference Options",
+          numericInput("refvalue","Reference Line",value = 1,step = 0.1),
+          checkboxInput('showrefarea', 'Show Reference Area?', value = TRUE),
+          conditionalPanel(condition = "input.showrefarea" ,
+                           uiOutput("refarea")),
+          sliderInput("height", "Plot Height", min=1080/4, max=1080,
+                      value=900, animate = FALSE)
+          ),#tabpanel
+        
         tabPanel(
           "Colour/Legend Options/theme",
           colourpicker::colourInput("stripbackgroundfill",
@@ -221,10 +217,13 @@ fluidPage(
         ),#tabpanel
         tabPanel(
           "Custom Legend Ordering/Spacing",
-          numericInput("ncolinterval",label = "Number of columns for the Interval legend",
-                       value = 1,min=NA,max=NA,width='100%'),
-          numericInput("ncolshape",label = "Number of columns for the shape legend",
-                       value = 1,min=NA,max=NA,width='100%'),
+          div(style="display:inline-block",
+              numericInput("ncolinterval",label = "Number of columns for the Interval legend",
+                           value = 1,min=NA,max=NA,width='120px')),
+          div(style="display:inline-block",
+              numericInput("ncolshape",label = "Number of columns for the shape legend",
+                           value = 1,min=NA,max=NA,width='120px')),
+          
           selectizeInput(
             'legendordering',
             label = paste("Drag/Drop to reorder","Colour, Ref, Area Legends"),

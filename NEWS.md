@@ -1,12 +1,13 @@
 # coveffectsplot 0.0.5
 
 * added an option to have different color and text for BSV (issue submitted by professor France Mentre)
-* added two vignettes showing how to simulate a PK or PK/PD model from scratch
+* added two vignettes showing how to simulate a PK , PK/PD and exposure response models from scratch.
 * added a switch to control theme_bw: base_size
 * added theming proposed by Benjamin Rich and arguments to add a table title and size.
 * added an argument to ensure alignment of strips between table and plot.
 * changing default rounding and padding for table numbers (proposed by Benjamin Rich)
-* added options to control the legends number of columns
+* added options to control the legends number of columns.
+* added hooks for more control on margins, strips etc.
 
 # coveffectsplot 0.0.4
 

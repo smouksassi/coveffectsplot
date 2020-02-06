@@ -38,7 +38,7 @@ which0 <- function(x) {
 #' share the same text?
 #' @param legend_position where to put the legend: "top", "bottom","right","none"
 #' @param show_ref_area Show reference window?
-#' @param ref_area Reference area. Two-element numeric vector.
+#' @param ref_area Reference area. Two-element numeric vector multiplying the ref_value.
 #' @param ref_value X intercept of reference line.
 #' @param ref_area_col Reference area background color.
 #' @param ref_value_col Reference line color.
@@ -401,21 +401,22 @@ forest_plot <- function(
       position = ggstance::position_dodgev(height = vertical_dodge_height),
       ggplot2::aes_string(color = "pointintervalcolor"),
       size = 1,
-      alpha = 1
-    )
+      alpha = 0
+    )# dummy to prevent a scales bug that I reported to ggplot2 maintainers
 
   if (show_ref_area) {
     main_plot <- main_plot +
       ggplot2::annotate(
         "rect",
-        xmin = min(ref_area),
-        xmax = max(ref_area),
+        xmin = ref_value*min(ref_area),
+        xmax = ref_value*max(ref_area),
         ymin = -Inf,
         ymax = Inf,
         fill = ref_area_col
       ) +
     ggplot2::geom_ribbon(
-      data = data.frame(x = 1, ymax = 1, ymin = 1 ,fill = area_legend_text),
+      data = data.frame(x = ref_value, ymax = ref_value, ymin = ref_value,
+                        fill = area_legend_text),
       ggplot2::aes(
         x = x,
         ymax = ymax,
@@ -436,7 +437,7 @@ forest_plot <- function(
       position = ggstance::position_dodgev(height = vertical_dodge_height),
       ggplot2::aes_string(color = "pointintervalcolor"),
       size = 1,
-      alpha = 1
+      alpha = 0.8
     )+
     ggplot2::scale_colour_manual("", breaks = colbreakvalues,
                                  values = c(interval_col,bsv_col)) +

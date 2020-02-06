@@ -116,7 +116,7 @@ share the same text?}
 
 \item{show_ref_area}{Show reference window?}
 
-\item{ref_area}{Reference area. Two-element numeric vector.}
+\item{ref_area}{Reference area. Two-element numeric vector multiplying the ref_value.}
 
 \item{ref_value}{X intercept of reference line.}
 

@@ -22,6 +22,7 @@ function(input, output, session) {
     shinyjs::show("covariates")
     shinyjs::show("covvalueorder")
     shinyjs::show("shapebyparamname")
+    shinyjs::show("vdodgeheight")
   })
 
   # Update the options in different inputs based on data
@@ -89,10 +90,10 @@ function(input, output, session) {
 
 
   output$refarea <- renderUI({
-    REF <- input$refvalue
-    ymin <- REF * 0.8
-    ymax <- REF * 1.25
-    ymaxmax <- REF * 5
+    REF <- ifelse(is.na(input$refvalue),1,input$refvalue)
+    ymin <-  0.8
+    ymax <-  1.25
+    ymaxmax <- REF * ymax *3
     ystep <- 0.05
     sliderInput(
       "refareain",
@@ -105,6 +106,9 @@ function(input, output, session) {
     )
 
   })
+  
+  outputOptions(output, "refarea", suspendWhenHidden=FALSE)
+  
   observeEvent(input$colourpointrangereset, {
     shinyjs::reset("colourpointrange")
   })
@@ -178,7 +182,7 @@ function(input, output, session) {
       legend_position = input$legendposition,
       show_ref_area = input$showrefarea,
       ref_area = input$refareain,
-      ref_value = input$refvalue,
+      ref_value = ifelse(is.na(input$refvalue),1,input$refvalue),
       ref_area_col = input$fillrefarea,
       ref_value_col = input$colorrefvalue,
       interval_col = input$colourpointrange,
