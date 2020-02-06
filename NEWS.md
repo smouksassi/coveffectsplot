@@ -1,3 +1,7 @@
+# coveffectsplot 0.0.5.9999
+
+* starting working on the next release to add code generation in the app
+
 # coveffectsplot 0.0.5
 
 * added an option to have different color and text for BSV (issue submitted by professor France Mentre)
