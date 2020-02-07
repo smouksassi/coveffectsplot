@@ -61,7 +61,7 @@ $PRED
 double CL = TVCL *
     pow((WT/70.0), WTCL)*exp(ETA(1)); 
 
-double EMAX = TVEMAX + SEVEMAX*(SEV == 1) ; 
+double EMAX = TVEMAX - SEVEMAX*(SEV == 1) ; 
 double Intercept = log(BASEP/(1-BASEP));
 capture CLi = CL;
 capture AUC = DOSE/CL;
@@ -82,10 +82,12 @@ simout <- modexprespsim %>%
   mrgsim()%>%
   as.data.frame
 ```
+## Probability of Cure 
+This is a plot of the disease being cured versus PK exposure by disease severity and by Weight intervals.
 
 ```{r exprespmodeplotl, collapse=TRUE }
 ggplot(simout, aes(AUC,DV,col=factor(SEV))) +
-  facet_grid(~cut_interval(WT,2))+
+  facet_grid(~cut_interval(WT,2),labeller = label_both)+
   geom_point()+
   geom_smooth(method = "glm",se=FALSE,
               method.args = list(family = "binomial"))+
@@ -94,8 +96,8 @@ ggplot(simout, aes(AUC,DV,col=factor(SEV))) +
   theme(legend.position = "top")
 ```
 
-## Computing the Odds Ratios
-Here we show how the odds ratios can be computed. We already know that the distribution of AUC depends on the Dose and on the clearance distributions. The model had three estimated parameters shown in Red, the dose and two other covariates shown in green. A Change in body weight will trigger a change in Clearance which in turn will control the AUC. To define an odds ratio we need to define changes in covariate values for example odds ratio between Severity = 1 and Severity = 0 (everything else being equal). For nonlinear relationship we need to define a change in covariate value e.g. AUC = 10 / AUC = 5 and AUC = 15 / AUC = 10.
+## Computing the Odds Ratios and Probabilities
+Here we show how the odds ratios and probabilities can be computed. We already know that the distribution of AUC depends on the Dose and on the clearance distributions. The model had three estimated parameters shown in Red, the dose and two other covariates shown in green. A Change in body weight will trigger a change in Clearance which in turn will control the AUC. To define an odds ratio we need to define changes in covariate values for example odds ratio between Severity = 1 and Severity = 0 (everything else being equal). For nonlinear relationships a 5 unit change can generate different results as it depends on where we are on the curve.
 
 where:
 $$AUC = \left(\frac { \color{green}{Dose}} {CL \times \left( \frac { \color{green}{Weight}} {70}\right)^{WTCL} \times exp(\eta{CL}) }\right)$$
@@ -123,7 +125,7 @@ sim_parameters<- as.data.frame(sim_parameters)
 reference.values <- data.frame(WT = 70, DOSE = 75, SEV = 0 )   
 covcomb <- expand.modelframe(
   WT  = c(50,60,70,80,90),
-  DOSE = c(0,50,75,100),
+  DOSE = c(0,25,50,75,100,125),
   SEV = c(0,1),
   rv = reference.values)
 covcomb <- covcomb[!duplicated(
@@ -145,8 +147,7 @@ for(i in 1:nsim) {
     data_set(data.all) %>%
     carry.out(CL,WT, DOSE, SEV, AUC) %>%
     zero_re() %>% 
-    mrgsim()%>%
-  as.data.frame
+    mrgsim()
   dfsimunc <- as.data.frame(out%>% mutate(rep = i) )
   iter_sims <- rbind(iter_sims,dfsimunc)
 }
@@ -168,25 +169,29 @@ iter_sims <- iter_sims %>%
     ID== 6 ~ "DOSE",
     ID== 7 ~ "DOSE",
     ID== 8 ~ "DOSE",
-    ID== 9 ~ "SEV"
+    ID== 9 ~ "DOSE",
+    ID== 10 ~ "DOSE",
+    ID== 11 ~ "SEV"
   ),
   covvalue =case_when(
     ID== 1 ~ paste(WT,"kg"), 
     ID== 2 ~ paste(WT,"kg"),
-    ID== 3 ~ "70 kg\nSevere\n75 mg",
+    ID== 3 ~ "70 kg\nNot Severe\n75 mg",
     ID== 4 ~ paste(WT,"kg"),
     ID== 5 ~ paste(WT,"kg"),
     ID== 6 ~ paste(DOSE,"mg"),
     ID== 7 ~ paste(DOSE,"mg"),
     ID== 8 ~ paste(DOSE,"mg"),
-    ID== 9 ~ "Not Severe"
+    ID== 9 ~ paste(DOSE,"mg"),
+    ID== 10 ~ paste(DOSE,"mg"),
+    ID== 11 ~ "Severe"
   ) )
 iter_sims$covname <-factor(as.factor(iter_sims$covname ),
-                          levels =  c("SEV","Weight","DOSE","REF"))
+                          levels =  c("Weight","DOSE","SEV","REF"))
 iter_sims$covvalue <- factor(as.factor(iter_sims$covvalue),
-                          levels =  c("0 mg","50 mg","100 mg",
+                          levels =  c("0 mg","25 mg","50 mg","100 mg","125 mg",
                           "50 kg","60 kg","80 kg", "90 kg",
-                          "70 kg\nSevere\n75 mg",  "Not Severe"))
+                          "70 kg\nNot Severe\n75 mg",  "Severe"))
 
 coveffectsdatacovrep <- iter_sims %>%
   dplyr::group_by(paramname,ID,WT,DOSE,SEV,covname,covvalue) %>% 
