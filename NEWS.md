@@ -1,6 +1,7 @@
 # coveffectsplot 0.0.5.9999
-
-* starting working on the next release to add code generation in the app
+* Added Code generation in the app (contributed by Dean Attali)
+* minor ui improvement and control for the facets x and y text hjust and vjust
+* added vignette on pediatric multivariate covariate simulations
 
 # coveffectsplot 0.0.5
 

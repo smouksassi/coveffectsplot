@@ -57,6 +57,8 @@ fluidPage(
                                selected = c("covname ~ ."),
                                multiple = FALSE),
                  
+                 tabsetPanel(
+                   tabPanel("Size/Angle/Face",
                  sliderInput("facettexty", "Facet Text Size Y",
                              min = 0, max = 32, step = 1, value = 22),
                  sliderInput("facettextx", "Facet Text Size X",
@@ -65,7 +67,19 @@ fluidPage(
                              min = 90, max = 180+90, step = 90, value = 180),
                  sliderInput("facettextxangle", "Facet Text Angle X",
                              min = 0, max = 90, step = 90, value = 0),
-                 checkboxInput('boldfacettext', "Bold Facet Text", value = TRUE),
+                 checkboxInput('boldfacettext', "Bold Facet Text", value = TRUE)
+                   ),
+                 tabPanel("Justification",
+                 sliderInput("x_facet_text_vjust", "Facet Text Vertical Justification X",
+                                      min = 0, max = 1, step = 0.1, value = 0.5),
+                 sliderInput("y_facet_text_vjust", "Facet Text Vertical Justification Y",
+                                      min = 0, max = 1, step = 0.1, value = 0.5),
+                 sliderInput("x_facet_text_hjust", "Facet Text Horizontal Justification X",
+                                      min = 0, max = 1, step = 0.1, value = 0.5),
+                 sliderInput("y_facet_text_hjust", "Facet Text Horizontal Justification y",
+                                      min = 0, max = 1, step = 0.1, value = 0.5)
+                 )
+                 ),
                  selectizeInput(  "stripplacement", "Strip Placement:",
                                   choices = c("inside","outside"),
                                   selected = c("outside"),
@@ -134,11 +148,11 @@ fluidPage(
       tabsetPanel(
         tabPanel(
           "Table Options",
-              numericInput("sigdigits",label = "Significant Digits",value = 2,min=NA,max=NA),
+              numericInput("sigdigits",label = "Significant Digits",value = 2,min=0,max=NA),
               sliderInput("tabletextsize", "Table Text Size", min=1, max=12,step=0.5, value=7),
-              sliderInput("plottotableratio", "Plot to Table Ratio", min=1, max=5, value=4,step=0.25,
+              sliderInput("plottotableratio", "Plot to Table Ratio", min=1, max=5,
+                          value=4,step=0.25,
                           animate = FALSE),
-
               selectInput('tableposition','Table Position:',
                           c("on the right" = "right", "below" = "below", "none" = "none") ),
               selectInput(  "showtablefacetstrips", "Show Table Facet Strip on:",
@@ -149,9 +163,13 @@ fluidPage(
                             choices = c("both","y","x","none"),
                             selected = c("both"),
                             multiple = FALSE),
-              checkboxInput('showtableyaxisticklabel', 'Show Table y axis ticks/labels ?', value = FALSE),
-              checkboxInput('reservetablexaxislabelspace', 'Reserve Table x axis space ?', value = FALSE),
-              checkboxInput('tablepanelborder', 'Draw Table Panel Borders ?', value = TRUE)
+              checkboxInput('showtableyaxisticklabel',
+                            'Show Table y axis ticks/labels ?', value = FALSE),
+              checkboxInput('reservetablexaxislabelspace', 'Reserve Table x axis space ?',
+                            value = FALSE),
+              checkboxInput('tablepanelborder',
+                            'Draw Table Panel Borders ?',
+                            value = TRUE)
         ),#tabpanel
         tabPanel(
           "Reference Options",

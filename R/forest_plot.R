@@ -20,6 +20,10 @@ which0 <- function(x) {
 #' @param y_facet_text_size Facet text size Y.
 #' @param x_facet_text_angle Facet text angle X.
 #' @param y_facet_text_angle Facet text angle Y.
+#' @param x_facet_text_vjust Facet text vertical justification.
+#' @param y_facet_text_vjust Facet text vertical justification.
+#' @param x_facet_text_hjust Facet text horizontal justification.
+#' @param y_facet_text_hjust Facet text horizontal justification.
 #' @param xy_facet_text_bold Bold Facet text. Logical TRUE FALSE.
 #' @param x_label_text_size X axis labels size.
 #' @param y_label_text_size Y axis labels size.
@@ -222,6 +226,10 @@ forest_plot <- function(
   y_facet_text_size = 13,
   x_facet_text_angle = 0,
   y_facet_text_angle = 180,
+  x_facet_text_vjust = 0.5,
+  y_facet_text_vjust = 0.5,
+  x_facet_text_hjust = 0.5,
+  y_facet_text_hjust = 0.5,
   xy_facet_text_bold = TRUE,
   x_label_text_size = 16,
   y_label_text_size = 16,
@@ -295,7 +303,10 @@ forest_plot <- function(
   } else {
     x.strip.text <- ggplot2::element_text(size = x_facet_text_size,
                                           angle= x_facet_text_angle,
-                                          face = ifelse(xy_facet_text_bold,"bold","plain"))
+                                          face = ifelse(xy_facet_text_bold,"bold","plain"),
+                                          hjust = x_facet_text_hjust,
+                                          vjust = x_facet_text_vjust
+                                          )
   }
   if (y_facet_text_size <= 0) {
     y.strip.text <- ggplot2::element_blank()
@@ -305,12 +316,17 @@ forest_plot <- function(
                                           angle= ifelse(facet_switch %in% c("x","none"),
                                                         y_facet_text_angle-180,
                                                         y_facet_text_angle),
-                                          face = ifelse(xy_facet_text_bold,"bold","plain"))
+                                          face = ifelse(xy_facet_text_bold,"bold","plain"),
+                                          hjust = y_facet_text_hjust,
+                                          vjust = y_facet_text_vjust
+                                          )
    table.y.strip.text <- ggplot2::element_text(size = y_facet_text_size,
                                                angle= ifelse(table_facet_switch %in% c("x","none"),
                                                              y_facet_text_angle-180,
                                                              y_facet_text_angle),
-                                               face = ifelse(xy_facet_text_bold,"bold","plain")) 
+                                               face = ifelse(xy_facet_text_bold,"bold","plain"),
+                                               hjust = y_facet_text_hjust,
+                                               vjust = y_facet_text_vjust) 
   }
   
   if (theme_benrich && y_facet_text_size >0){

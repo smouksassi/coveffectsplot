@@ -13,6 +13,10 @@ forest_plot(
   y_facet_text_size = 13,
   x_facet_text_angle = 0,
   y_facet_text_angle = 180,
+  x_facet_text_vjust = 0.5,
+  y_facet_text_vjust = 0.5,
+  x_facet_text_hjust = 0.5,
+  y_facet_text_hjust = 0.5,
   xy_facet_text_bold = TRUE,
   x_label_text_size = 16,
   y_label_text_size = 16,
@@ -82,6 +86,14 @@ forest_plot(
 \item{x_facet_text_angle}{Facet text angle X.}
 
 \item{y_facet_text_angle}{Facet text angle Y.}
+
+\item{x_facet_text_vjust}{Facet text vertical justification.}
+
+\item{y_facet_text_vjust}{Facet text vertical justification.}
+
+\item{x_facet_text_hjust}{Facet text horizontal justification.}
+
+\item{y_facet_text_hjust}{Facet text horizontal justification.}
 
 \item{xy_facet_text_bold}{Bold Facet text. Logical TRUE FALSE.}
 
