@@ -33,6 +33,7 @@ forest_plot(
   legend_position = "top",
   show_ref_area = TRUE,
   ref_area = c(0.8, 1.25),
+  show_ref_value = TRUE,
   ref_value = 1,
   ref_area_col = "#BEBEBE50",
   ref_value_col = "black",
@@ -129,6 +130,8 @@ share the same text?}
 \item{show_ref_area}{Show reference window?}
 
 \item{ref_area}{Reference area. Two-element numeric vector multiplying the ref_value.}
+
+\item{show_ref_value}{Show reference line?}
 
 \item{ref_value}{X intercept of reference line.}
 

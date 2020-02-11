@@ -22,6 +22,8 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(mrgsolve)
+library(ggridges)
+library(table1)
 theme_set(theme_bw())
 
 ```
@@ -192,9 +194,6 @@ out.df.univariatecov.nca.long <- out.df.univariatecov.nca.long%>%
   mutate(medparam = median(paramvalue),
          paramvalue = paramvalue / medparam) 
 
-out.df.univariatecov.nca.long <- out.df.univariatecov.nca.long %>% 
-  arrange(ID,SEX)
-
   ggplot(out.df.univariatecov.nca.long,
          aes( AGE,WT,col=factor(SEX)) )+
   geom_point(alpha=0.1,size=2)+
@@ -216,10 +215,88 @@ out.df.univariatecov.nca.long <- out.df.univariatecov.nca.long %>%
 
     
 nca.summaries <- out.df.univariatecov.nca.long %>%
-  mutate(WTCUT4 = cut(WT,4))%>%
-  mutate(WTCUT2 = cut(WT,2))%>%
-  mutate(AGECUT4 = cut(AGE,4))
+  mutate(SEXCAT =ifelse( SEX==0,"Female","Male"),
+         REF = "All Subjects")
 
+nca.summaries$WTCAT3 <- table1::eqcut( nca.summaries$WT,3,varlabel = "Weight")
+nca.summaries$WTCAT2 <- table1::eqcut( nca.summaries$WT,2,varlabel = "Weight")
+nca.summaries$AGECUT3 <- table1::eqcut( nca.summaries$AGE,3,varlabel = "Age")
+
+nca.summaries.long <- gather(nca.summaries,
+                             covname,
+                             covvalue,REF,WTCAT3,WTCAT2,AGECUT3,SEXCAT,
+                             factor_key = TRUE)
+
+nca.summaries.long$covvalue <- as.factor( nca.summaries.long$covvalue)
+nca.summaries.long$covvalue <- as.factor( nca.summaries.long$covvalue)
+nca.summaries.long$covvalue <- reorder(nca.summaries.long$covvalue,nca.summaries.long$paramvalue)
+
+
+ggplot(nca.summaries.long,
+        aes(x=paramvalue,y=covvalue,fill=factor(..quantile..),height=..ndensity..))+
+   facet_grid(covname~paramname,scales="free_y")+
+   stat_density_ridges(
+     geom = "density_ridges_gradient", calc_ecdf = TRUE,
+     quantile_lines = TRUE, rel_min_height = 0.01,scale=0.9,
+     quantiles = c(0.05,0.5, 0.95))+
+   scale_fill_manual(
+     name = "Probability", values = c("#FF0000A0", "white","white", "#0000FFA0"),
+     labels = c("(0, 0.05]", "(0.05, 0.5]","(0.5, 0.95]", "(0.95, 1]")
+   )+
+   geom_vline(data=data.frame (xintercept=1),  aes(xintercept =xintercept  ),size = 1)+
+   theme_bw()+
+   labs(x="Effects Of Covariates on PK Parameter",y="")
 
 ```
 
+```{r simcovariate2, collapse=TRUE }
+coveffectsdatacovrep <- nca.summaries.long %>% 
+  dplyr::group_by(paramname,covname,covvalue) %>% 
+  dplyr::summarize(
+    mid= median(paramvalue),
+    lower= quantile(paramvalue,0.05),
+    upper = quantile(paramvalue,0.95)) %>% 
+  dplyr::filter(!is.na(mid))
+
+coveffectsdatacovrep <- coveffectsdatacovrep %>% 
+  mutate(
+    label= covvalue,
+    LABEL = paste0(format(round(mid,2), nsmall = 2),
+                   " [", format(round(lower,2), nsmall = 2), "-",
+                   format(round(upper,2), nsmall = 2), "]"))
+coveffectsdatacovrep<- as.data.frame(coveffectsdatacovrep)
+
+interval_legend_text = "Median (points)\n90% CI (horizontal lines)"
+interval_bsv_text = "BSV (points)\nPrediction Intervals (horizontal lines)"
+png("./coveffectsplotped.png",width =9 ,height = 6,units = "in",res=72)
+coveffectsplot::forest_plot(coveffectsdatacovrep,
+                            ref_area = c(0.8, 1/0.8),
+                            x_range = c(0.5,2),
+                            strip_placement = "inside",
+                            base_size = 18,
+                            y_label_text_size = 12,
+                            xlabel = "Fold Change Relative to Reference",
+                            ref_legend_text =
+                              "Reference (vertical line)\nClinically relevant limits\n(gray area)",
+                            area_legend_text =
+                              "Reference (vertical line)\nClinically relevant limits\n(gray area)",
+                            interval_legend_text = interval_legend_text,
+                            interval_bsv_text = interval_bsv_text,
+                            facet_formula = "covname~paramname",
+                            facet_switch = "y",
+                            facet_scales = "free_y",
+                            facet_space = "free",
+                            paramname_shape = FALSE,
+                            table_position = "right",
+                            table_text_size=4,
+                            plot_table_ratio = 3,
+                            show_table_facet_strip = "none",
+                            logxscale = TRUE,
+                            major_x_ticks = c(0.5,0.8,1/0.8,1/0.5),
+                            return_list = FALSE)
+
+dev.off()
+
+
+```
+![Covariate Effects Plot.](./coveffectsplotped.png)

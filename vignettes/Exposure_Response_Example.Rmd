@@ -193,13 +193,6 @@ iter_sims$covvalue <- factor(as.factor(iter_sims$covvalue),
                           "50 kg","60 kg","80 kg", "90 kg",
                           "70 kg\nNot Severe\n75 mg",  "Severe"))
 
-coveffectsdatacovrep <- iter_sims %>%
-  dplyr::group_by(paramname,ID,WT,DOSE,SEV,covname,covvalue) %>% 
-  dplyr::summarize(
-    mid= median(paramvalue),
-    lower= quantile(paramvalue,0.05),
-    upper = quantile(paramvalue,0.95))
-
 yvar_names <- c(
   'LGST'="Odds Ratio",
   'P1'="Probability"
@@ -224,7 +217,23 @@ ggplot(iter_sims,aes(x=paramvalue,y=covvalue))+
   theme(axis.title = element_blank(),strip.placement = "outside")
 ```
 
-```{r plot2, collapse=TRUE }
+
+```{r plot3, collapse=TRUE }
+coveffectsdatacovrep <- iter_sims %>%
+  dplyr::group_by(paramname,ID,WT,DOSE,SEV,covname,covvalue) %>% 
+  dplyr::summarize(
+    mid= median(paramvalue),
+    lower= quantile(paramvalue,0.025),
+    upper = quantile(paramvalue,0.975))%>% 
+  dplyr::filter(!is.na(mid))
+
+coveffectsdatacovrep <- coveffectsdatacovrep %>% 
+  mutate(
+    label= covvalue,
+    LABEL = paste0(format(round(mid,2), nsmall = 2),
+                   " [", format(round(lower,2), nsmall = 2), "-",
+                   format(round(upper,2), nsmall = 2), "]"))
+coveffectsdatacovrep<- as.data.frame(coveffectsdatacovrep)
 
 ggplot(coveffectsdatacovrep,
        aes(x=mid,y=covvalue))+
@@ -232,4 +241,18 @@ ggplot(coveffectsdatacovrep,
 facet_grid(covname~paramname,scales="free",switch="both",
              labeller = labeller(paramname=yvar_names)) +
   theme(axis.title = element_blank(),strip.placement = "outside")
+png("./coveffectsplotexpresp.png",width =9 ,height = 6,units = "in",res=72)
+forest_plot(coveffectsdatacovrep,
+                            strip_placement = "outside",
+                            show_ref_area = FALSE,show_ref_value=FALSE,
+                            plot_table_ratio = 2,base_size = 12,
+                            table_text_size = 4,xlabel= " ",
+                            facet_formula = "covname~paramname",
+                            facet_scales = "free")
+
+dev.off()
+
 ```
+![Covariate Effects Plot.](./coveffectsplotexpresp.png)
+
+

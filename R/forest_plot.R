@@ -43,6 +43,7 @@ which0 <- function(x) {
 #' @param legend_position where to put the legend: "top", "bottom","right","none"
 #' @param show_ref_area Show reference window?
 #' @param ref_area Reference area. Two-element numeric vector multiplying the ref_value.
+#' @param show_ref_value Show reference line?
 #' @param ref_value X intercept of reference line.
 #' @param ref_area_col Reference area background color.
 #' @param ref_value_col Reference line color.
@@ -246,6 +247,7 @@ forest_plot <- function(
   legend_position = "top",
   show_ref_area = TRUE,
   ref_area = c(0.8, 1.25),
+  show_ref_value = TRUE,
   ref_value = 1,
   ref_area_col = "#BEBEBE50",
   ref_value_col = "black",
@@ -444,11 +446,15 @@ forest_plot <- function(
     ) 
 }
 # fake ribbon for fill legend
-  main_plot <- main_plot +
-    ggplot2::geom_vline(
-      ggplot2::aes(xintercept = ref_value, linetype = ref_legend_text),
-      size = 1, color = ref_value_col 
-    ) +
+  
+  if (show_ref_value) {
+    main_plot <- main_plot +
+      ggplot2::geom_vline(
+        ggplot2::aes(xintercept = ref_value, linetype = ref_legend_text),
+        size = 1, color = ref_value_col 
+      )
+  }
+  main_plot <- main_plot+
     ggstance::geom_pointrangeh(
       position = ggstance::position_dodgev(height = vertical_dodge_height),
       ggplot2::aes_string(color = "pointintervalcolor"),

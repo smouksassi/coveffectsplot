@@ -39,7 +39,8 @@ Suggests:
     plotly,
     scales,
     shinyAce,
-    Rcpp
+    Rcpp,
+    gamlss.dist
 Remotes: rstudio/shinymeta
 License: MIT + file LICENSE
 SystemRequirements: pandoc with https support

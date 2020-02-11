@@ -193,6 +193,7 @@ function(input, output, session) {
         legend_position = ..(input$legendposition),
         show_ref_area = ..(input$showrefarea),
         ref_area = ..(input$refareain),
+        show_ref_value = ..(input$showrefvalue),
         ref_value = ..(ref_value),
         ref_area_col = ..(input$fillrefarea),
         ref_value_col = ..(input$colorrefvalue),

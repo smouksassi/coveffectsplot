@@ -173,16 +173,32 @@ fluidPage(
         ),#tabpanel
         tabPanel(
           "Reference Options",
-          numericInput("refvalue","Reference Line",value = 1,step = 0.1),
+          checkboxInput('showrefvalue', 'Show Reference Line?', value = TRUE),
+          conditionalPanel(condition = "input.showrefvalue" ,
+          numericInput("refvalue","Reference Line",value = 1,step = 0.1)),
           checkboxInput('showrefarea', 'Show Reference Area?', value = TRUE),
           conditionalPanel(condition = "input.showrefarea" ,
                            uiOutput("refarea")),
-          sliderInput("height", "Plot Height", min=1080/4, max=1080,
-                      value=900, animate = FALSE)
+          
+          colourpicker::colourInput("fillrefarea",
+                                    "Reference Area Fill:",
+                                    value= "#BEBEBE50",
+                                    showColour = "both",allowTransparent=TRUE,
+                                    returnName = TRUE),
+          div( actionButton("fillrefareareset", "Reset Reference Area Fill"),
+               style="text-align: right"),
+          
+          colourpicker::colourInput("colorrefvalue",
+                                    "Reference Line Color:",
+                                    value= "black",
+                                    showColour = "both",allowTransparent=TRUE,
+                                    returnName = TRUE),
+          div( actionButton("colorrefvaluereset", "Reset Reference Line Color"),
+               style="text-align: right")
           ),#tabpanel
         
         tabPanel(
-          "Colour/Legend Options/theme",
+          "Colour/Legend Options/Theme",
           colourpicker::colourInput("stripbackgroundfill",
                                     "Strip Background Fill:",
                                     value="#E5E5E5",
@@ -202,25 +218,10 @@ fluidPage(
                                     showColour = "both",allowTransparent=TRUE, returnName = TRUE),
           div( actionButton("colourbsvrangereset", "Reset BSV Range Colour"),
                style="text-align: right"),
-
-          colourpicker::colourInput("fillrefarea",
-                                    "Reference Area Fill:",
-                                    value= "#BEBEBE50",
-                                    showColour = "both",allowTransparent=TRUE,
-                                    returnName = TRUE),
-          div( actionButton("fillrefareareset", "Reset Reference Area Fill"),
-               style="text-align: right"),
-          
-          colourpicker::colourInput("colorrefvalue",
-                                    "Reference Line Color:",
-                                    value= "black",
-                                    showColour = "both",allowTransparent=TRUE,
-                                    returnName = TRUE),
-          div( actionButton("colorrefvaluereset", "Reset Reference Line Color"),
-               style="text-align: right"),
-          
           sliderInput("base_size", "Base size for the theme",
                       min = 1, max = 30, step = 0.1, value = 22),
+          sliderInput("height", "Plot Height", min=1080/4, max=1080,
+                      value=900, animate = FALSE),
           checkboxInput('theme_benrich', "Apply Ben's Theme",value = FALSE),
           conditionalPanel(
             condition = "input.theme_benrich",
