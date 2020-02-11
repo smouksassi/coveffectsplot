@@ -73,13 +73,13 @@ function(input, output, session) {
       summarydata <- df %>%
         group_by(paramname, covname, label) %>%
         mutate(
-          MEANEXP = mid,
-          LOWCI = lower,
-          UPCI =  upper,
-          MEANLABEL = round_pad(MEANEXP, sigdigits),
-          LOWCILABEL = round_pad(LOWCI, sigdigits),
-          UPCILABEL = round_pad(UPCI, sigdigits),
-          LABEL = paste0(MEANLABEL, " [", LOWCILABEL, "-", UPCILABEL, "]")
+          MEANEXP = mid,  
+          LOWCI = lower,  
+          UPCI =  upper,  
+          MEANLABEL = signif_pad(MEANEXP, sigdigits),  
+          LOWCILABEL = signif_pad(LOWCI, sigdigits),  
+          UPCILABEL = signif_pad(UPCI, sigdigits),  
+          LABEL = paste0(MEANLABEL, " [", LOWCILABEL, "-", UPCILABEL, "]") 
         )
   
       summarydata$covvalue <- factor(summarydata$label)
@@ -246,23 +246,20 @@ function(input, output, session) {
         "# Load required packages"
         library(coveffectsplot)
         library(dplyr)
+        library(table1)
         "# Load the data (make sure `forest_plot_data.csv` is in your working directory)"
         df <- read.csv("forest_plot_data.csv", na.strings = c("NA", "."))
         "# Helper functions"
         escape_newline <- function(s) {
           gsub("\\\\n", "\\\n", s)
         }
-        
-        round_pad <- function(x, digits = 2, round5up = TRUE) {
-          eps <- if (round5up) x * (10^(-(digits + 3))) else 0
-          formatC(round(x + eps, digits), digits = digits, format = "f", flag = "0")
-        }
+
       }),
       "# Manipulate data and plot",
       output$plot()
     )
 
-    code <- formatCode(code)
+    code <- formatCode(code, width = 50L)
     code <- paste(code, collapse = "\n")
     showModal(modalDialog(
       size = "l", easyClose = TRUE,
