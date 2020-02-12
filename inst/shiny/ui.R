@@ -124,8 +124,9 @@ fluidPage(
           ),
           checkboxInput('logxscale', 'Log-scale X axis ?', value = FALSE),
           textInput("yaxistitle", label = "Y axis Title", value = ""),
-          textInput("xaxistitle", label = "X axis Title", value = "")
-          
+          checkboxInput('parseyaxistitle', 'Parse Y axis Title?', value = FALSE),
+          textInput("xaxistitle", label = "X axis Title", value = ""),
+          checkboxInput('parsexaxistitle', 'Parse X axis Title?', value = FALSE)
         ),
         tabPanel(
           "How To",
