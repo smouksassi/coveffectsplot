@@ -19,12 +19,12 @@ Imports:
     egg,
     ggplot2,
     ggstance,
-    ggridges,
     markdown,
     shiny,
     shinyjs,
     stats,
     tidyr,
+    table1,
     utils
 Suggests:
     clipr,
@@ -32,8 +32,8 @@ Suggests:
     knitr,
     rmarkdown,
     mrgsolve,
+    ggridges,
     ggrepel,
-    table1,
     patchwork,
     bayestestR,
     plotly,

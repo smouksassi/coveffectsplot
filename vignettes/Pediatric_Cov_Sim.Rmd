@@ -25,15 +25,18 @@ library(mrgsolve)
 library(ggridges)
 library(table1)
 theme_set(theme_bw())
+nsubj <- 1000
 
 ```
+## Specifying A Pediatric Simulation model
+Here we have a simple one-compartment PK model with first-order absorption where clearance and volume are allometrically scaled. We want to illustrate the covariate effects in a pediatric population between 2 to 6 years old. Since Age and Weight in kids are highly related we will not simulate varying one covariate at a time rather we will incorporate a realistic distribution of Age/Weight pairs. The reference subject is a 4 year old female with a weight of 15.9 kg. We first plot a typical PK profile with between subject variability and compute ranges on normalized AUC and Cmax.
 
 ```{r pedpkmodel, collapse=TRUE }
 pedpkmodelcov <- '
 $PARAM
-CL = 4, V=10 , KA=0.5
-CLWT = 0.75,VWT = 1,
-WT=16, SEX=0, AGE=4   
+CL = 4, V = 10, KA = 0.5
+CLWT = 0.75, VWT = 1,
+WT = 15.9,  SEX = 0, AGE = 4   
 
 $CMT GUT CENT
 $MAIN
@@ -43,7 +46,7 @@ double Vi = V *
     pow((WT/22.5), VWT)*exp(ETA(2));  
 
 double KAi = KA;
-double Keli = CLi/Vi    ;
+double Keli = CLi/Vi;
 
 $OMEGA
 0.3 
@@ -60,16 +63,16 @@ $CAPTURE CP KAi CLi Vi
 pedmodsim <- mcode("pedpkmodelcov", pedpkmodelcov)
 
 idata <- tibble(
-  ID = 1:1000,
-  WT = c(rep(15.87824,500),rep(16.31677,500)),
+  ID = 1:nsubj,
+  WT = c(rep(15.9,nsubj/2),rep(16.3,nsubj/2)),#from Nhanes at 6 years female and male
   AGE = 6,
-  SEX = c(rep(0,500),rep(1,500))
+  SEX = c(rep(0,nsubj/2),rep(1,nsubj/2))
 )
 ev1 <- ev(time = 0, amt = 100, cmt = 1)
 data.dose <- ev(ev1)
 data.dose <- as.data.frame(data.dose)
 data.all <- merge(idata, data.dose)
-
+set.seed(678549)
 outputsim <- pedmodsim %>%
   data_set(data.all) %>%
   carry.out(WT, AGE, SEX, CLi) %>%
@@ -79,7 +82,6 @@ outputsim <- outputsim %>%
   arrange(ID, time)
 outputsim$SEX <- as.factor(outputsim$SEX)
 
-set.seed(678549)
 p1 <- ggplot(data = outputsim,
        aes(time, CP, group = ID)) +
   geom_line(alpha = 0.2, size = 0.1) +
@@ -89,6 +91,11 @@ p1 <- ggplot(data = outputsim,
   labs(y = expression(Log[10]~~Plasma~~Concentrations), color = "Sex", x = "Time (h)")
 p1
 
+```
+
+## NCA parameters and associated ranges
+
+```{r ncapedpkmodel, collapse=TRUE }
 NCATYPICAL <- outputsim %>%
   group_by(ID, AGE, WT, SEX) %>%
   summarise (
@@ -103,7 +110,7 @@ NCATYPICALREF <- NCATYPICAL%>%
          paramvalue = paramvalue / medparam) 
 
  ggplot(NCATYPICALREF,
-       aes(x=paramvalue))+
+       aes(x=paramvalue,y=..ndensity..))+
       facet_grid(paramname~SEX,scales="free_y")+
         geom_density()+
   theme_bw()+
@@ -111,27 +118,29 @@ NCATYPICALREF <- NCATYPICAL%>%
   labs(x="Standardized NCA parameters",y="")+
   scale_x_log10()+
   coord_cartesian(expand = FALSE)
+ 
   BSVRANGES<- NCATYPICALREF %>%
-      group_by(SEX) %>%
-  summarize(
+    group_by(SEX) %>%
+    summarize(
     P05 = quantile(paramvalue, 0.05),
     P25 = quantile(paramvalue, 0.25),
     P50 = quantile(paramvalue, 0.5),
     P75 = quantile(paramvalue, 0.75),
     P95 = quantile(paramvalue, 0.95)
   )
-BSVRANGES
+knitr::kable(BSVRANGES)
 
 ```
+
+## Simulating Age/Weight pairs using NHANES LMS values
+The NHANES website provide the smoothed growth charts distribution parameters at specific ages for boys and girls. The `gamlss.dist::rBCCG` function is used to show how we can use these parameters to generate a realistic pediatric Age/Weight/Sex distribution. 
 
 ```{r simcovariate, collapse=TRUE }
 wtage <- read.csv (url("https://www.cdc.gov/growthcharts/data/zscore/wtage.csv"))
 wtage<-  wtage[wtage$Agemos<=6*12,]
-
-nweightsperage <- 50
+nweightsperage <- 50 # simulate 50 kid at each age/sex
 simwtageoutput <- data.frame(matrix(NA, nrow = nrow(wtage),ncol = nweightsperage))
 names(simwtageoutput) <- paste0("Var", 1:nweightsperage)
-
 for (i in 1:nrow(wtage)) {#
   simpoints <- gamlss.dist::rBCCG(nweightsperage,
                                   mu = wtage[i,"M"],
@@ -141,18 +150,22 @@ simwtageoutput[i, ] <- simpoints
 }
 simwtageoutput$Agemos  <- wtage$Agemos
 simwtageoutput$AgeY  <- wtage$Agemos/12
-simwtageoutput$Sex <- wtage$Sex
+simwtageoutput$Sex <- wtage$Sex -1
 
 simwtageoutput <- tidyr::gather(simwtageoutput,age,Weight,
                                 paste0("Var", 1:nweightsperage))
 simwtageoutput$age <- NULL
 ggplot(simwtageoutput,aes(AgeY,Weight))+
-  geom_point()+
+  geom_point(alpha=0.2,size=1.5)+
   facet_grid(~Sex)
+```
 
+## Simulation incorporating the multivariate realistic distribution
+The section above generated 4900 Age/Weight/Sex distribution values that we will use for the simulation. We will remove the betwen subject variability to focus on the covariate effects. We show a plot of the normalized NCA parameters versus Weight and versus Age.
+
+```{r simcovariatemodel, collapse=TRUE }
 idata <- as.data.frame(simwtageoutput)
 names(idata) <- c("Agemos","AGE","SEX","WT")
-idata$SEX <-idata$SEX -1
 ev1 <- ev(time=0,amt=100, cmt=1)
 data.dose <- ev(ev1)
 data.dose<-as.data.frame(data.dose)
@@ -166,55 +179,37 @@ outcovcomb<- pedmodsim %>%
 outcovcomb<-as.data.frame(outcovcomb)
 outcovcomb <- outcovcomb %>% 
   arrange(ID,time,AGE,WT)
-outcovcomb$SEX <- as.factor(outcovcomb$SEX )
-
-ggplot(outcovcomb, aes(time,CP,col=factor(SEX),linetype=factor(SEX)) )+
-  geom_line(aes(group=interaction(ID)),alpha=1,size=1.5)+
-  facet_grid(cut(AGE,2)~ cut(WT,2),labeller = label_both)+
-  labs(linetype="Sex",colour="Weight",caption ="Simulation without Uncertainty\nwithout BSV",
-       x = "Time (h)", y="Plasma Concentrations")
-```
-
-    
-```{r computenca, collapse=TRUE }  
-  out.df.univariatecov <- as.data.frame(outcovcomb)
-out.df.univariatecov <- out.df.univariatecov %>% 
-  arrange(ID,time)
-
-out.df.univariatecov.nca <- out.df.univariatecov %>% 
+outcovcomb$SEX <- as.factor(outcovcomb$SEX)
+out.df.multivariatecov <- as.data.frame(outcovcomb) %>% 
+  arrange(ID,time) %>% 
   group_by(ID,SEX,AGE,WT)%>% 
   summarise (Cmax = max(CP,na.rm = TRUE),
              AUC= sum(diff(time ) *na.omit(lead(CP) + CP)) / 2) 
 
-out.df.univariatecov.nca.long <- out.df.univariatecov.nca %>% 
-  gather(paramname,paramvalue,Cmax,AUC)
-
-out.df.univariatecov.nca.long <- out.df.univariatecov.nca.long%>%
+out.df.multivariatecov.long <- out.df.multivariatecov %>% 
+  gather(paramname,paramvalue,Cmax,AUC) %>%
   group_by (paramname,SEX) %>%
   mutate(medparam = median(paramvalue),
          paramvalue = paramvalue / medparam) 
 
-  ggplot(out.df.univariatecov.nca.long,
-         aes( AGE,WT,col=factor(SEX)) )+
+
+  ggplot(out.df.multivariatecov.long,
+         aes( AGE,paramvalue,col=factor(SEX)) )+
   geom_point(alpha=0.1,size=2)+
   facet_grid(paramname~SEX,labeller = label_value,
              scales="free_y")
-  
-    ggplot(out.df.univariatecov.nca.long,
+    ggplot(out.df.multivariatecov.long,
          aes( WT,paramvalue,col=factor(SEX)) )+
   geom_point(alpha=0.1,size=2)+
   facet_grid(paramname~SEX,labeller = label_value,
              scales="free_y")
     
-  ggplot(out.df.univariatecov.nca.long,
-         aes( AGE,paramvalue,col=factor(SEX)) )+
-  geom_point(alpha=0.1,size=2)+
-  facet_grid(paramname~SEX,labeller = label_value,
-             scales="free_y")
-  
+```
 
+## NCA Summaries and Distribution Plots
     
-nca.summaries <- out.df.univariatecov.nca.long %>%
+```{r computenca, collapse=TRUE }  
+nca.summaries <- out.df.multivariatecov.long %>%
   mutate(SEXCAT =ifelse( SEX==0,"Female","Male"),
          REF = "All Subjects")
 
@@ -256,7 +251,8 @@ coveffectsdatacovrep <- nca.summaries.long %>%
     mid= median(paramvalue),
     lower= quantile(paramvalue,0.05),
     upper = quantile(paramvalue,0.95)) %>% 
-  dplyr::filter(!is.na(mid))
+  dplyr::filter(!is.na(mid)) %>% 
+  dplyr::filter(covname !="WTCAT2")
 
 coveffectsdatacovrep <- coveffectsdatacovrep %>% 
   mutate(
@@ -265,32 +261,33 @@ coveffectsdatacovrep <- coveffectsdatacovrep %>%
                    " [", format(round(lower,2), nsmall = 2), "-",
                    format(round(upper,2), nsmall = 2), "]"))
 coveffectsdatacovrep<- as.data.frame(coveffectsdatacovrep)
+coveffectsdatacovrep$label <- gsub(": ", ":\n", coveffectsdatacovrep$label)
+
 
 interval_legend_text = "Median (points)\n90% CI (horizontal lines)"
 interval_bsv_text = "BSV (points)\nPrediction Intervals (horizontal lines)"
+ref_legend_text = "Reference (vertical line)\nClinically relevant limits\n(gray area)"
+
 png("./coveffectsplotped.png",width =9 ,height = 6,units = "in",res=72)
 coveffectsplot::forest_plot(coveffectsdatacovrep,
                             ref_area = c(0.8, 1/0.8),
                             x_range = c(0.5,2),
-                            strip_placement = "inside",
+                            strip_placement = "outside",
                             base_size = 18,
-                            y_label_text_size = 12,
+                            y_label_text_size = 9,x_label_text_size = 10,
                             xlabel = "Fold Change Relative to Reference",
-                            ref_legend_text =
-                              "Reference (vertical line)\nClinically relevant limits\n(gray area)",
-                            area_legend_text =
-                              "Reference (vertical line)\nClinically relevant limits\n(gray area)",
+                            ref_legend_text =ref_legend_text,
+                            area_legend_text =ref_legend_text ,
                             interval_legend_text = interval_legend_text,
                             interval_bsv_text = interval_bsv_text,
                             facet_formula = "covname~paramname",
-                            facet_switch = "y",
-                            facet_scales = "free_y",
-                            facet_space = "free",
+                            facet_switch = "y",table_facet_switch = "y",
+                            facet_scales = "free_y", facet_space = "free",
                             paramname_shape = FALSE,
                             table_position = "right",
-                            table_text_size=4,
-                            plot_table_ratio = 3,
-                            show_table_facet_strip = "none",
+                            table_text_size=3,
+                            plot_table_ratio = 1.5,
+                            show_table_facet_strip = "x",
                             logxscale = TRUE,
                             major_x_ticks = c(0.5,0.8,1/0.8,1/0.5),
                             return_list = FALSE)

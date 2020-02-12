@@ -46,6 +46,7 @@ forest_plot(
   facet_switch = c("both", "y", "x", "none"),
   facet_scales = c("fixed", "free_y", "free_x", "free"),
   facet_space = c("fixed", "free_x", "free_y", "free"),
+  facet_labeller = "label_value",
   strip_placement = c("inside", "outside"),
   strip_outline = TRUE,
   facet_spacing = 5.5,
@@ -159,6 +160,9 @@ share the same text?}
 
 \item{facet_space}{Facet spaces. Possible values: "fixed", "free_x",
 "free_y", "free".}
+
+\item{facet_labeller}{Facet Labeller. Default "label_value"
+any other valid `facet_grid` labeller can be specified.}
 
 \item{strip_placement}{Strip placement. Possible values: "inside", "outside".}
 

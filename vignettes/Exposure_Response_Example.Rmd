@@ -248,6 +248,7 @@ forest_plot(coveffectsdatacovrep,
                             plot_table_ratio = 2,base_size = 12,
                             table_text_size = 4,xlabel= " ",
                             facet_formula = "covname~paramname",
+                            facet_labeller = labeller(paramname=yvar_names),
                             facet_scales = "free")
 
 dev.off()

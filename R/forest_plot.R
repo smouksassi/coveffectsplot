@@ -59,6 +59,8 @@ which0 <- function(x) {
 #' "free_x", "free".
 #' @param facet_space Facet spaces. Possible values: "fixed", "free_x",
 #' "free_y", "free".
+#' @param facet_labeller Facet Labeller. Default "label_value"
+#'  any other valid `facet_grid` labeller can be specified.
 #' @param strip_placement Strip placement. Possible values: "inside", "outside".
 #' @param strip_outline Draw rectangle around the Strip. Logical TRUE FALSE.
 #' @param facet_spacing Control the space between facets in points.
@@ -260,6 +262,7 @@ forest_plot <- function(
   facet_switch = c("both", "y", "x", "none"),
   facet_scales = c("fixed", "free_y", "free_x", "free"),
   facet_space = c("fixed", "free_x", "free_y", "free"),
+  facet_labeller = "label_value",
   strip_placement = c("inside", "outside"),
   strip_outline = TRUE,
   facet_spacing = 5.5,
@@ -491,13 +494,15 @@ forest_plot <- function(
       ggplot2::facet_grid(facet_formula,
                           scales = facet_scales,
                           space = facet_space,
-                          switch = facet_switch)
+                          switch = facet_switch,
+                          labeller = facet_labeller)
   } else {
     main_plot <- main_plot +
       ggplot2::facet_grid(facet_formula,
                           scales = facet_scales,
                           space = facet_space,
-                          switch = NULL)
+                          switch = NULL,
+                          labeller = facet_labeller)
   }
 
   main_plot <- main_plot +
@@ -611,13 +616,15 @@ forest_plot <- function(
         ggplot2::facet_grid(facet_formula,
                             scales = facet_scales,
                             space = facet_space,
-                            switch = table_facet_switch)
+                            switch = table_facet_switch,
+                            labeller = facet_labeller)
     } else {
       table_plot <- table_plot +
         ggplot2::facet_grid(facet_formula,
                             scales = facet_scales,
                             space = facet_space,
-                            switch = NULL)
+                            switch = NULL,
+                            labeller = facet_labeller)
     }
 
     table_plot <- table_plot +
