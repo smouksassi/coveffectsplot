@@ -356,9 +356,10 @@ forest_plot <- function(
     )
   }
 
-  
+  if ( !is.expression(xlabel) ) {
   if (xlabel == "") {
     xlabel <- paste("Changes of Parameter Relative to Reference")
+  }
   }
   if (table_title == "") {
     table_title <- "Median [95% CI]"
