@@ -86,6 +86,8 @@ which0 <- function(x) {
 #' for the top, right, bottom and left sides.
 #' @param table_margin Control the white space around the table. Vector of four numeric values
 #' for the top, right, bottom and left sides.
+#' @param parse_xlabel treat xlabel as an expression. Logical FALSE TRUE.
+#' @param parse_ylabel treat ylabel as an expression. Logical FALSE TRUE.
 #' @param return_list What to return if True a list of the main and table plots is returned
 #' instead of the gtable/plot.
 
@@ -285,6 +287,8 @@ forest_plot <- function(
   legend_ncol_shape = 1,
   plot_margin = c(5.5, 5.5, 5.5, 5.5),
   table_margin = c(5.5, 5.5, 5.5, 5.5),
+  parse_xlabel = FALSE,
+  parse_ylabel = FALSE,
   return_list = FALSE)
 {
   ymax = ymin = x = fill = NULL
@@ -356,11 +360,16 @@ forest_plot <- function(
     )
   }
 
-  if ( !is.expression(xlabel) ) {
-  if (xlabel == "") {
+  if ( !is.expression(xlabel) && xlabel == "" ) {
     xlabel <- paste("Changes of Parameter Relative to Reference")
   }
+  if ( !is.expression(xlabel) && parse_xlabel) { 
+    xlabel <-   parse(text=xlabel)
+    }
+  if ( !is.expression(ylabel) && parse_ylabel) { 
+    ylabel <-   parse(text=ylabel)
   }
+  
   if (table_title == "") {
     table_title <- "Median [95% CI]"
   }

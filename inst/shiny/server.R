@@ -160,8 +160,8 @@ function(input, output, session) {
     }
     x_range <- if (input$userxzoom) c(input$lowerxin, input$upperxin) else NULL
     ref_value <- if (is.na(input$refvalue)) 1 else input$refvalue
-    inputxaxistitle <- if(input$parsexaxistitle) parse(text=input$xaxistitle) else input$xaxistitle
-    inputyaxistitle <- if(input$parseyaxistitle) parse(text=input$yaxistitle) else input$yaxistitle
+    #inputxaxistitle <- if(input$parsexaxistitle) parse(text=input$xaxistitle) else input$xaxistitle
+    #inputyaxistitle <- if(input$parseyaxistitle) parse(text=input$yaxistitle) else input$yaxistitle
     
     metaExpr({
       summarydata <- ..(plotdataprepare())
@@ -169,8 +169,8 @@ function(input, output, session) {
       plot <- forest_plot(
         data = summarydata,
         facet_formula = ..(input$facetformula),
-        xlabel = ..(inputxaxistitle),
-        ylabel = ..(inputyaxistitle),
+        xlabel = ..(input$xaxistitle),
+        ylabel = ..(input$yaxistitle),
         x_facet_text_size = ..(input$facettextx),
         y_facet_text_size = ..(input$facettexty),
         x_facet_text_angle = ..(input$facettextxangle),
@@ -231,7 +231,9 @@ function(input, output, session) {
         plot_margin = c(..(input$margintop),..(input$marginright),
                         ..(input$marginbottom),..(input$marginleft)),
         table_margin = c(..(input$tabletop),..(input$tableright),
-                        ..(input$tablebottom),..(input$tableleft))
+                        ..(input$tablebottom),..(input$tableleft)),
+        parse_xlabel = ..(input$parsexaxistitle),
+        parse_ylabel = ..(input$parseyaxistitle)
       )
       plot
     })

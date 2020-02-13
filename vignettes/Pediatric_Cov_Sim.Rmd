@@ -161,7 +161,7 @@ ggplot(simwtageoutput,aes(AgeY,Weight))+
 ```
 
 ## Simulation incorporating the multivariate realistic distribution
-The section above generated 4900 Age/Weight/Sex distribution values that we will use for the simulation. We will remove the betwen subject variability to focus on the covariate effects. We show a plot of the normalized NCA parameters versus Weight and versus Age.
+The section above generated 4900 Age/Weight/Sex distribution values that we will use for the simulation. We will remove the between subject variability to focus on the covariate effects. We show a plot of the normalized NCA parameters versus Weight and versus Age.
 
 ```{r simcovariatemodel, collapse=TRUE }
 idata <- as.data.frame(simwtageoutput)

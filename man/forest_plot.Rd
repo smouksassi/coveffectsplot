@@ -69,6 +69,8 @@ forest_plot(
   legend_ncol_shape = 1,
   plot_margin = c(5.5, 5.5, 5.5, 5.5),
   table_margin = c(5.5, 5.5, 5.5, 5.5),
+  parse_xlabel = FALSE,
+  parse_ylabel = FALSE,
   return_list = FALSE
 )
 }
@@ -210,6 +212,10 @@ for the top, right, bottom and left sides.}
 
 \item{table_margin}{Control the white space around the table. Vector of four numeric values
 for the top, right, bottom and left sides.}
+
+\item{parse_xlabel}{treat xlabel as an expression. Logical FALSE TRUE.}
+
+\item{parse_ylabel}{treat ylabel as an expression. Logical FALSE TRUE.}
 
 \item{return_list}{What to return if True a list of the main and table plots is returned
 instead of the gtable/plot.}
