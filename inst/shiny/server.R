@@ -243,6 +243,9 @@ function(input, output, session) {
     if (system.file(package = "shinyAce") == "") {
       stop("Please install.packages('shinyAce') and try again.")
     }
+    if (system.file(package = "formatR") == "") {
+      stop("Please install.packages('formatR') and try again.")
+    }
     
     code <- expandChain(
       "# This code assumes you have a data file named `forest_plot_data.csv`.",
@@ -266,13 +269,15 @@ function(input, output, session) {
       "# Manipulate data and plot",
       output$plot()
     )
-
-    code <- formatCode(code, width = 50L)
+    
+    code <- formatCode(code)
+    code <- formatR::tidy_source(text = code, width.cutoff = 80, indent = 2)
+    code <- code$text.tidy
     code <- paste(code, collapse = "\n")
     showModal(modalDialog(
       size = "l", easyClose = TRUE,
       shinyAce::aceEditor(
-        "code_editor", value = paste(code, collapse = "\n"), wordWrap = TRUE 
+        "code_editor", value = code, wordWrap = TRUE 
       ),
       footer = tagList(
         actionButton("code_copy", "Copy to Clipboard", icon("copy")),

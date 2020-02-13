@@ -28,6 +28,7 @@ Imports:
     utils
 Suggests:
     clipr,
+    formatR,
     MASS,
     knitr,
     rmarkdown,
