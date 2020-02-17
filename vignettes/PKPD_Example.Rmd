@@ -1,5 +1,5 @@
 ---
-title: "PKPD Example"
+title: "PK/PD Model: Assessing the Impact of Covariates on a Biomarker"
 output: 
   rmarkdown::html_vignette:
     toc: true
@@ -38,9 +38,11 @@ expand.modelframe <- function(..., rv, covcol="covname") {
   })
   do.call(rbind, res)
 }
+nsim <- 100 # for vignette to make it run faster otherwise increase to 1000
+
 ```
-## Specifying a PKPD Model using `mrgsolve`
-Here we use a two-compartment PK model linked to an indirect response PD model with the drug inhibiting the rate constant of input (Kin). The model included several covariates effects on Clearance, Volume and Kin. The baseline PD response is controlled by the ratio of Kin/Kout.
+## Specifying a PK/PD Model using `mrgsolve`
+Here we use the same two-compartment PK model linked to an indirect response PD model with the drug inhibiting the rate constant of input (Kin). The model included several covariates effects on Clearance, Volume and Kin. The baseline PD response is controlled by the ratio of Kin/Kout.
 ```{r pkpdmodel, collapse=TRUE }
 codepkpdmodelcov <- '
 $PARAM
@@ -50,7 +52,7 @@ VSEX   = 0.07, VWT = 1,
 KIN  = 3, KOUT =  0.06,  IC50 =  3,  IMAX = 0.999  
 gamma = 0.548,
 KINWT=0.4 , KINAGE=-0.08, KINHEALTHY =1.5,
-WT=66, SEX=0, ALB =45, AGE=62, HEALTHY = 0   
+WT = 85, SEX=0, AGE = 40, ALB = 45,  HEALTHY = 0   
 
 $CMT GUT CENT PER RESP
 $GLOBAL
@@ -66,14 +68,14 @@ double Qpi = Qp *pow((WT/70.0), 0.75);
 double CLi = CL *
     pow((ALB/45.0), CLALB)*
     (SEX == 1.0 ? (1.0+CLSEX) : 1.0)*
-    pow((WT/66), CLWT)*exp(ETA(1)); 
+    pow((WT/85.0), CLWT)*exp(ETA(1)); 
 double Vi = V *
     (SEX == 1.0 ? (1.0+VSEX) : 1.0)*
-    pow((WT/66), VWT)*exp(ETA(2));  
+    pow((WT/85.0), VWT)*exp(ETA(2));  
 double KINi = KIN *
-  pow((AGE/62), KINAGE)*
+  pow((AGE/40), KINAGE)*
   (HEALTHY == 1.0 ? KINHEALTHY : 1.0)*
-  pow((WT/66), KINWT)*exp(ETA(3));
+  pow((WT/85.0), KINWT)*exp(ETA(3));
 double RESP_0 = KINi/KOUT;
 
 $OMEGA
@@ -96,8 +98,8 @@ modpkpdsim <- mcode("codepkpdmodelcov", codepkpdmodelcov)
 We simulate at reference covariate values with between subject variability (BSV) and then we show a plot of the PK and PD profiles of five random subjects.
 ```{r pkpdsimulation, fig.width=7,fig.height=4, message=FALSE }
 idata <- tibble(
-  ID = 1:100, WT = 66,
-  ALB = 45, AGE = 62,SEX = 0, HEALTHY=0)
+  ID = 1:100, WT = 85,
+  ALB = 45, AGE = 40, SEX = 0, HEALTHY = 0)
 ev1 <- ev(time = 0, amt = 100,
           cmt = 1, ii = 24, addl = 20)
 data.dose <- ev(ev1)
@@ -163,10 +165,10 @@ BSVRANGESSTD
 ## Construct ans Simulate at Combinations of Covariate of Interest
 Similarly to the PK Example vignette we generate covariate combinations of interest and we simulate with uncertainty using an invented varcov matrix.
 ```{r covcomb , fig.width=7 }
-reference.values <- data.frame(WT = 66,ALB = 45, AGE = 62, SEX = 0, HEALTHY = 0)   
+reference.values <- data.frame(WT = 85, ALB = 45, AGE = 40, SEX = 0, HEALTHY = 0)   
 covcomb <- expand.modelframe(
-  WT  = c(40,66,90), 
-  AGE = c(42,62,82),
+  WT  = c(56,85,128), 
+  AGE = c(20,40,60),
   ALB = c(40,45,50),
   SEX = c(0,1),#Refernce is for SEX =0
   HEALTHY = c(0,1),#Refernce is for HEALTHY =0
@@ -189,7 +191,6 @@ thecorrelations[lower.tri(thecorrelations, diag = FALSE)]<- 0.2
 thecorrelations[upper.tri(thecorrelations, diag = FALSE)]<- 0.2
 thevarcovmatrix<- diag(sqrt(thvariances))%*%thecorrelations%*%diag(sqrt(thvariances))
 
-nsim <- 100 # for vignette to make it run faster otherwise increase to 1000
 sim_parameters <- MASS::mvrnorm(n = nsim, mu=as.numeric(thmeans),
                                 Sigma=thevarcovmatrix, empirical = TRUE)
 # library(mvtnorm) rmvnorm is another option that can be explored
@@ -273,7 +274,7 @@ out.df.univariatecov.nca <- out.df.univariatecov.nca %>%
 
 REFVALUES <- out.df.univariatecov.nca%>%
   ungroup()%>%
-  filter(HEALTHY==0, SEX==0,WT==66,AGE==62,ALB==45)%>%
+  filter(HEALTHY==0, SEX==0,WT==85,AGE==40,ALB==45)%>%
   group_by(paramname) %>%
   dplyr::summarize(medparam = median(paramvalue))
 
@@ -298,7 +299,7 @@ out.df.univariatecov.nca <- out.df.univariatecov.nca %>%
   ),
   covvalue =case_when(
     ID== 1 ~ paste(WT,"kg"), 
-    ID== 2 ~ "66 kg-Female-45 g/L\n62 years-healthy",
+    ID== 2 ~ "85 kg-Female\n45 g/L-40 years\nhealthy",
     ID== 3 ~ paste(WT,"kg"),
     ID== 4 ~ paste(ALB,"g/L"),
     ID== 5 ~ paste(ALB,"g/L"),
@@ -315,16 +316,16 @@ out.df.univariatecov.nca$covname <- factor(as.factor(out.df.univariatecov.nca$co
 )
 
 out.df.univariatecov.nca$covvalue <-factor(as.factor(out.df.univariatecov.nca$covvalue ),
-                                               levels =  c("40 kg",
-                                                           "66 kg",
-                                                           "90 kg",
+                                               levels =  c("56 kg",
+                                                           "85 kg",
+                                                           "128 kg",
                                                            "Male",
                                                            "40 g/L",
                                                            "50 g/L",
-                                                           "42 years",
-                                                           "82 years",
+                                                           "20 years",
+                                                           "60 years",
                                                            "Diseased",
-"66 kg-Female-45 g/L\n62 years-healthy")
+"85 kg-Female\n45 g/L-40 years\nhealthy")
 )
 # the order of y ticks is controlled by the factor levels.
 ```
@@ -433,7 +434,7 @@ coveffectsplot::forest_plot(coveffectsdatacovrepbsv,
                             facet_formula = "covname~paramname",
                             facet_switch = "y",
                             facet_scales = "free_y",
-                            facet_space = "free",
+                            facet_space = "fixed",
                             paramname_shape = FALSE,
                             table_position = "below",
                             table_text_size=4,
@@ -445,7 +446,8 @@ coveffectsplot::forest_plot(coveffectsdatacovrepbsv,
                             major_x_ticks = c(0.5,1,1/0.5),
                             return_list = FALSE)
 dev.off()
-
+# consider returning a list and editing the y axis label line breaks height
+# theme(axis.text.y = element_text(lineheight = ))
 
 ```
 ![Covariate Effects Plot.](./coveffectsplotpd.png)

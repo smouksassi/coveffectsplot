@@ -1,6 +1,10 @@
 ---
-title: "Pediatric Multivariate Covariate Simulation"
-output: rmarkdown::html_vignette
+title: "PK Model in Pediatric Patients: Assessing the Impact of a Multivariate Correlated Distribution of Covariates on PK exposures"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    df_print: kable
+    
 vignette: >
   %\VignetteIndexEntry{Pediatric_Cov_Sim}
   %\VignetteEngine{knitr::rmarkdown}
@@ -29,7 +33,8 @@ nsubj <- 1000
 
 ```
 ## Specifying A Pediatric Simulation model
-Here we have a simple one-compartment PK model with first-order absorption where clearance and volume are allometrically scaled. We want to illustrate the covariate effects in a pediatric population between 2 to 6 years old. Since Age and Weight in kids are highly related we will not simulate varying one covariate at a time rather we will incorporate a realistic distribution of Age/Weight pairs. The reference subject is a 4 year old female with a weight of 15.9 kg. We first plot a typical PK profile with between subject variability and compute ranges on normalized AUC and Cmax.
+Here we have a simple one-compartment PK model with first-order absorption where clearance and volume are allometrically scaled. We want to illustrate the covariate effects in a pediatric population between 2 to 6 years old. Since Age and Weight in kids are highly related we will not simulate varying one covariate at a time rather we will incorporate a realistic distribution of Age/Weight pairs. The reference subject is a 4 year old female with a weight of 15.9 kg.  
+First we plot a typical PK profile with between subject variability.
 
 ```{r pedpkmodel, collapse=TRUE }
 pedpkmodelcov <- '
@@ -64,8 +69,8 @@ pedmodsim <- mcode("pedpkmodelcov", pedpkmodelcov)
 
 idata <- tibble(
   ID = 1:nsubj,
-  WT = c(rep(15.9,nsubj/2),rep(16.3,nsubj/2)),#from Nhanes at 6 years female and male
-  AGE = 6,
+  WT = c(rep(15.9,nsubj/2),rep(16.3,nsubj/2)),#from Nhanes at 4 years female and male
+  AGE = 4,
   SEX = c(rep(0,nsubj/2),rep(1,nsubj/2))
 )
 ev1 <- ev(time = 0, amt = 100, cmt = 1)
@@ -93,7 +98,8 @@ p1
 
 ```
 
-## NCA parameters and associated ranges
+## NCA PK parameters and associated ranges
+Second we compute ranges on normalized AUC and Cmax.
 
 ```{r ncapedpkmodel, collapse=TRUE }
 NCATYPICAL <- outputsim %>%
@@ -120,7 +126,7 @@ NCATYPICALREF <- NCATYPICAL%>%
   coord_cartesian(expand = FALSE)
  
   BSVRANGES<- NCATYPICALREF %>%
-    group_by(SEX) %>%
+    group_by(paramname, SEX) %>%
     summarize(
     P05 = quantile(paramvalue, 0.05),
     P25 = quantile(paramvalue, 0.25),
@@ -129,7 +135,6 @@ NCATYPICALREF <- NCATYPICAL%>%
     P95 = quantile(paramvalue, 0.95)
   )
 knitr::kable(BSVRANGES)
-
 ```
 
 ## Simulating Age/Weight pairs using NHANES LMS values
@@ -160,8 +165,8 @@ ggplot(simwtageoutput,aes(AgeY,Weight))+
   facet_grid(~Sex)
 ```
 
-## Simulation incorporating the multivariate realistic distribution
-The section above generated 4900 Age/Weight/Sex distribution values that we will use for the simulation. We will remove the between subject variability to focus on the covariate effects. We show a plot of the normalized NCA parameters versus Weight and versus Age.
+## Simulation with the Multivariate Realistic Distribution
+The section above generated 4900 Age/Weight/Sex distribution values that we will use for the simulation. We will remove the between subject variability to focus on the covariate effects. We show a plot of the normalized NCA parameters versus Age and versus Weight.
 
 ```{r simcovariatemodel, collapse=TRUE }
 idata <- as.data.frame(simwtageoutput)
@@ -244,6 +249,8 @@ ggplot(nca.summaries.long,
 
 ```
 
+## A Forest Plot with a Side Table
+Similarly to previous sections, we prepare the data to use `forest_plot`. We provide a two parameters plot illustrating some of the options.
 ```{r simcovariate2, collapse=TRUE }
 coveffectsdatacovrep <- nca.summaries.long %>% 
   dplyr::group_by(paramname,covname,covvalue) %>% 
