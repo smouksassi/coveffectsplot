@@ -152,10 +152,10 @@ function(input, output, session) {
     minor_x_ticks <- NULL
     if (input$customxticks) {
       tryCatch({
-         major_x_ticks <- as.numeric(unique(unlist(strsplit(input$xaxisbreaks), ",")[[1]]))
+         major_x_ticks <- as.numeric(unique(unlist(strsplit(input$xaxisbreaks, ",")[[1]])))
       }, warning = function(w) {}, error = function(e) {})
       tryCatch({
-        minor_x_ticks <- as.numeric(unique(unlist(strsplit(input$xaxisminorbreaks), ",")[[1]]))
+        minor_x_ticks <- as.numeric(unique(unlist(strsplit(input$xaxisminorbreaks, ",")[[1]])))
       }, warning = function(w) {}, error = function(e) {})
     }
     x_range <- if (input$userxzoom) c(input$lowerxin, input$upperxin) else NULL
