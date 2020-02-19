@@ -65,8 +65,8 @@ double Vi = V *
     pow((WT/85.0), VWT)*exp(ETA(2));  
 
 double KAi = KA;
-double Vpi = Vp *pow((WT/70.0),    1);
-double Qpi = Qp *pow((WT/70.0), 0.75);
+double Vpi = Vp *pow((WT/85.0),    1);
+double Qpi = Qp *pow((WT/85.0), 0.75);
 double Keli = CLi/Vi    ;
 double Kpti = Qpi/Vi    ;
 double Ktpi = Qpi/Vpi   ;
@@ -463,7 +463,8 @@ ggplot(out.df.univariatecov.nca.longboxplot,
   facet_grid(paramname ~covname,scales="free",
              labeller = label_parsed)+
     geom_boxplot()+
-  labs(y="PK Parameter Value","Covariate Value")
+  theme(axis.title.x = element_blank())+
+  labs(y="PK Parameter Value")
 
 
 ```

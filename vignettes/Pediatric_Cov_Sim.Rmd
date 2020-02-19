@@ -187,7 +187,7 @@ wtvsageplot
 ```
 
 ## Simulation with the Multivariate Realistic Distribution
-The section above generated 4900 Age/Weight/Sex distribution values that we will use for the simulation. We will remove the between subject variability to focus on the covariate effects. We show a plot of the normalized NCA parameters versus Age and versus Weight.
+The section above generated 4900 Age/Weight/Sex distribution values that we will use for the simulation. We will remove the between subject variability to focus on the covariate effects. We show a plot of the normalized PK parameters versus Age and versus Weight.
 
 ```{r simcovariatemodel, collapse=TRUE }
 idata <- as.data.frame(simwtageoutput)

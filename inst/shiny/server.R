@@ -160,8 +160,6 @@ function(input, output, session) {
     }
     x_range <- if (input$userxzoom) c(input$lowerxin, input$upperxin) else NULL
     ref_value <- if (is.na(input$refvalue)) 1 else input$refvalue
-    #inputxaxistitle <- if(input$parsexaxistitle) parse(text=input$xaxistitle) else input$xaxistitle
-    #inputyaxistitle <- if(input$parseyaxistitle) parse(text=input$yaxistitle) else input$yaxistitle
     
     metaExpr({
       summarydata <- ..(plotdataprepare())
