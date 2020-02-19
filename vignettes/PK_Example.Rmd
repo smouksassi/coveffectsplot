@@ -13,6 +13,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
+  warning =FALSE,
+  message =FALSE,
   comment = "#>",
   dev.args = list(png = list(type = "cairo"))
 )
@@ -25,6 +27,7 @@ library(tidyr)
 library(dplyr)
 library(table1)
 library(patchwork)
+library(egg)
 theme_set(theme_bw())
 #utility function to simulate varying one covariate at a time keeping the rest at the reference
 expand.modelframe <- function(..., rv, covcol="covname") {
@@ -108,6 +111,7 @@ outputsim <- as.data.frame(outputsim)
 outputsim <- outputsim %>%
   arrange(ID, time)
 outputsim$SEX <- as.factor(outputsim$SEX)
+outputsim$SEX <- factor(outputsim$SEX,labels = "Female")
 
 set.seed(678549)
 p1 <- ggplot(data = outputsim[outputsim$ID %in% sample(unique(outputsim$ID), 500), ],
@@ -125,10 +129,16 @@ p2 <- ggplot(data = outputsim[outputsim$ID %in% sample(unique(outputsim$ID), 500
   scale_y_log10() +
   labs(y = expression(Log[10]~~Plasma~~Concentrations), color = "Sex", x = "Time (h)")
 p1+p2
+
+```
+
+```{r, fig.width=7 ,message=FALSE, include=FALSE}
+ # p2 +theme_bw(base_size=18)
+ # ggsave("pk1.png", device="png",type="cairo-png",width= 5, height = 5,dpi=72)
 ```
 
 ### Compute PK Parameters, Plot and Summarize BSV
-In this section we compute PK parameters using noncompartmental analysis (NCA), provide a plot of the parameters as well as of the standardized ones. We also summarize and report the BSV as ranges of 50 and 90% of patients for each PK parameter.
+In this section we compute the PK parameters of interest, provide a plot of the parameters as well as of the standardized ones. We also summarize and report the BSV as ranges of 50 and 90% of patients for each PK parameter.
 
 ```{r computenca , fig.width=7 , message=FALSE }
 NCATYPICAL <- outputsim %>%
@@ -148,18 +158,18 @@ p3 <- ggplot(NCATYPICAL,
     quantile_lines = TRUE, rel_min_height = 0.001,scale=0.9,
     quantiles = c(0.05,0.25,0.5,0.75, 0.95)) +
   scale_fill_manual(
-    name = "Probability", values = c("#FF0000A0",
-                                     "#0000FFA0", "white","white",
-                                     "#0000FFA0","#FF0000A0"),
+    name = "Probability", values = c("white","#FF000050","#FF0000A0", "#FF0000A0","#FF000050","white"),
     labels = c("(0, 0.05]", "(0.05, 0.25]",
                "(0.25, 0.5]","(0.5, 0.75]",
                "(0.75, 0.95]","(0.95, 1]")
   )+
   theme_bw()+
-  labs(x="NCA parameters",y="")+
+  theme(legend.position = "none",
+        axis.text.y=element_blank(),axis.ticks.y = element_blank(),
+        axis.title.y = element_blank())+
+  labs(x="PK Parameters",y="")+
   scale_x_log10()+
   coord_cartesian(expand = FALSE)
-
 
 NCATYPICALREF <- NCATYPICAL%>%
   group_by (paramname) %>%
@@ -174,18 +184,29 @@ p4 <- ggplot(NCATYPICALREF,
     quantile_lines = TRUE, rel_min_height = 0.001,scale=0.9,
     quantiles = c(0.05,0.25,0.5,0.75, 0.95)) +
   scale_fill_manual(
-    name = "Probability", values = c("#FF0000A0","#0000FFA0", "white","white", "#0000FFA0","#FF0000A0"),
+    name = "Probability", values = c("white","#FF000050","#FF0000A0", "#FF0000A0","#FF000050","white"),
     labels = c("(0, 0.05]", "(0.05, 0.25]",
                "(0.25, 0.5]","(0.5, 0.75]",
                "(0.75, 0.95]","(0.95, 1]")
   )+
   theme_bw()+
-  theme(legend.position = "none")+
-  labs(x="Standardized NCA parameters",y="")+
+  theme(legend.position = "none",
+        axis.text.y=element_blank(),axis.ticks.y = element_blank(),
+        axis.title.y = element_blank())+
+  labs(x="Standardized PK Parameters",y="")+
   scale_x_log10()+
   coord_cartesian(expand = FALSE)
 
 p3+p4
+
+```
+
+```{r, fig.width=7 ,message=FALSE, include=FALSE}
+# p3+theme_bw(base_size=22) +xlab("Reference Subject\PK Parameters with BSV")
+# ggsave("pk22.png", device="png",type="cairo-png")
+
+# p4+theme_bw(base_size=22) +xlab("Reference Subject\nStandardized PK Parameters with BSV")
+# ggsave("pk22.png", device="png",type="cairo-png")
 ```
 
 **Ranges of BSV for each PK Parameter:**
@@ -236,13 +257,14 @@ outcovcomb<-as.data.frame(outcovcomb)
 outcovcomb <- outcovcomb %>% 
   arrange(ID,time,WT)
 outcovcomb$SEX <- as.factor(outcovcomb$SEX )
+outcovcomb$SEX <- factor(outcovcomb$SEX,labels = c("Female","Male"))
 
 ggplot(outcovcomb, aes(time,CP,col=factor(WT),linetype=factor(SEX)) )+
   geom_line(aes(group=interaction(ID)),alpha=1,size=1.5)+
   facet_grid(ALB~ WT,labeller = label_both)+
   labs(linetype="Sex",colour="Weight",caption ="Simulation without Uncertainty\nwithout BSV",
        x = "Time (h)", y="Plasma Concentrations")+
-  coord_cartesian(ylim=c(0,6))
+  coord_cartesian(ylim=c(0,3.5))
 ```
 
 ### Adding Uncertainty from a Varcov Matrix
@@ -309,8 +331,9 @@ for(i in 1:nsim) {
   dfsimunc <- as.data.frame(out%>% mutate(rep = i) )
   iter_sims <- rbind(iter_sims,dfsimunc)
 }
+iter_sims$SEX <- factor(iter_sims$SEX,labels = c("Female","Male"))
 
-ggplot(iter_sims, aes(time,CP,col=factor(WT),linetype=factor(SEX) ) )+
+ggplot(iter_sims, aes(time,CP,col=factor(WT),linetype=SEX ) )+
   geom_line(aes(group=interaction(ID,rep)),alpha=0.3,size=0.3)+
   geom_line(data=outcovcomb,aes(group=interaction(ID)),color="black")+
   facet_grid(ALB~ WT,labeller = label_both)+
@@ -318,12 +341,20 @@ ggplot(iter_sims, aes(time,CP,col=factor(WT),linetype=factor(SEX) ) )+
        colour="Uncertainty Replicates\nWeight",
        caption ="Simulation with Uncertainty\nwithout BSV" ,
        x="Time (h)", y = "Plasma Concentrations")+
-  coord_cartesian(ylim=c(0,6))
-
+  coord_cartesian(ylim=c(0,3.5))
 ```
 
-### Compute NCA PK Parameters and Boxplots   
-Similar to an earlier section, we compute the NCA parameters by patient and by replicate standardize by the median and provide a plot. We add some data manipulation to construct more informative labels that will help in the plotting.
+```{r, fig.width=7 ,message=FALSE, include=FALSE}
+# last_plot()+theme(axis.title.y = element_text(size=15))+
+#   guides(colour=guide_legend(override.aes = list(alpha=1,size=0.5)),
+#          linetype=guide_legend(override.aes = list(size=0.5)))+
+#   coord_cartesian(ylim=c(0,4))
+# ggsave("pk3.png", device="png",type="cairo-png",width= 7, height = 4,dpi=72)
+```
+
+
+### Compute PK Parameters and Boxplots   
+Similar to an earlier section, we compute the PK parameters by patient and by replicate standardize by the computed median for reference subject and provide a plot. We add some data manipulation to construct more informative labels that will help in the plotting.
 
 ```{r, fig.width=7, include=FALSE, message=FALSE}
 out.df.univariatecov <- as.data.frame(iter_sims)
@@ -337,21 +368,18 @@ out.df.univariatecov.nca <- out.df.univariatecov %>%
              AUC= sum(diff(time ) *na.omit(lead(CP) + CP)) / 2) 
 out.df.univariatecov.nca <- out.df.univariatecov.nca %>% 
   arrange(rep,ID)
-
 REFVALUES <- out.df.univariatecov.nca %>% 
-  ungroup() %>% 
-  filter(ALB==45, WT==85,SEX==0)%>%
-  dplyr::summarize(refcmax= median(Cmax ),
-                   refclast=median(Clast),
-                   refauc =median(AUC))
-
-out.df.univariatecov.nca$Cmax <- out.df.univariatecov.nca$Cmax/as.numeric(REFVALUES[1] )
-out.df.univariatecov.nca$Clast <- out.df.univariatecov.nca$Clast/as.numeric(REFVALUES[2] )
-out.df.univariatecov.nca$AUC <- out.df.univariatecov.nca$AUC/as.numeric(REFVALUES[3] )
+  ungroup() %>%
+  filter(ALB==45, WT==85,SEX=="Female")%>%
+  gather(paramname,paramvalue,Cmax:AUC)%>%
+  group_by (paramname) %>%
+  dplyr::summarize(medparam = median(paramvalue))
 ```
 
 
-```{r, fig.width=7 ,message=FALSE}
+```{r, fig.width=7,fig.height=5 ,message=FALSE}
+REFVALUES # Median by Parameter
+
 out.df.univariatecov.nca <- out.df.univariatecov.nca %>% 
   ungroup() %>% 
   dplyr::mutate( covname = case_when(
@@ -367,7 +395,7 @@ out.df.univariatecov.nca <- out.df.univariatecov.nca %>%
   covvalue =case_when(
     ID== 1 ~ paste(WT,"kg"), 
     ID== 2 ~ paste(WT,"kg"),
-    ID== 3 ~ "85 kg-Female-45 g/L",
+    ID== 3 ~ "85 kg\nFemale\n45 g/L",
     ID== 4 ~ paste(WT,"kg"),
     ID== 5 ~ paste(WT,"kg"),
     ID== 6 ~ paste(ALB,"g/L"),
@@ -377,6 +405,8 @@ out.df.univariatecov.nca <- out.df.univariatecov.nca %>%
   )
 out.df.univariatecov.nca.long <- gather(out.df.univariatecov.nca,
                                         paramname, paramvalue, Cmax:AUC)
+out.df.univariatecov.nca.long <- left_join(out.df.univariatecov.nca.long,REFVALUES)
+out.df.univariatecov.nca.long$paramvaluestd <- out.df.univariatecov.nca.long$paramvalue/out.df.univariatecov.nca.long$medparam
 
 out.df.univariatecov.nca.long$covname <-factor(as.factor(out.df.univariatecov.nca$covname ),
                           levels =  c("Weight","Sex","Albumin", "REF")
@@ -390,29 +420,106 @@ out.df.univariatecov.nca.long$covvalue <-factor(as.factor(out.df.univariatecov.n
                                                            "Male",
                                                            "40 g/L",
                                                            "50 g/L",
-                                                           "85 kg-Female-45 g/L"
+                                                           "85 kg\nFemale\n45 g/L"
                                                            )
 )
 # the order of y ticks is controlled by the factor levels.
+#\n will generate line breaks in the label
+out.df.univariatecov.nca.long<- out.df.univariatecov.nca.long %>% 
+  arrange(WT)
+out.df.univariatecov.nca.long$SEX <- factor(out.df.univariatecov.nca.long$SEX,
+                                            labels = c("Female","Male"))
 
-ggplot(out.df.univariatecov.nca.long,
-       aes(paramname,paramvalue,col=factor(paramname),shape=factor(SEX) ))+
-  geom_point(alpha=0.1,size=1)+
-  geom_hline(yintercept = 1)+
-  geom_boxplot()+
-  facet_grid(ALB~ WT,labeller = label_both)+
-  theme(axis.text.x=element_text(angle=30))+
-  labs(y="PK Parameter Value",x="",shape="Sex",col="")
+out.df.univariatecov.nca.long$paramname <-
+  factor(out.df.univariatecov.nca.long$paramname, labels = c("AUC", "C[last]", "C[max]"))
+REFVALUES$paramname <-
+  factor(REFVALUES$paramname, labels = c("AUC", "C[last]", "C[max]"))
+
+out.df.univariatecov.nca.longboxplot <- out.df.univariatecov.nca.long[out.df.univariatecov.nca.long$covname!="REF",]
+
+out.df.univariatecov.nca.longboxplotREF<- out.df.univariatecov.nca.long[out.df.univariatecov.nca.long$covname=="REF",]
+
+out.df.univariatecov.nca.longboxplotREFWT<- out.df.univariatecov.nca.longboxplotREF
+out.df.univariatecov.nca.longboxplotREFWT$covname <-"Weight"
+out.df.univariatecov.nca.longboxplotREFWT$covvalue<- "85 kg\nFemale\n45 g/L\nREF"
+  
+out.df.univariatecov.nca.longboxplotREFSEX<- out.df.univariatecov.nca.longboxplotREF 
+out.df.univariatecov.nca.longboxplotREFSEX$covname<-"Sex"
+out.df.univariatecov.nca.longboxplotREFSEX$covvalue<- "85 kg\nFemale\n45 g/L\nREF"
+
+out.df.univariatecov.nca.longboxplotREFALB<- out.df.univariatecov.nca.longboxplotREF 
+out.df.univariatecov.nca.longboxplotREFALB$covname<-"Albumin"
+out.df.univariatecov.nca.longboxplotREFALB$covvalue<- "85 kg\nFemale\n45 g/L\nREF"
+
+
+out.df.univariatecov.nca.longboxplot<-rbind(out.df.univariatecov.nca.longboxplot,
+                                            out.df.univariatecov.nca.longboxplotREFWT,
+                                            out.df.univariatecov.nca.longboxplotREFSEX,
+                                            out.df.univariatecov.nca.longboxplotREFALB)
+out.df.univariatecov.nca.longboxplot$covvalue <- reorder(factor(out.df.univariatecov.nca.longboxplot$covvalue),out.df.univariatecov.nca.longboxplot$paramvalue)
+
+ggplot(out.df.univariatecov.nca.longboxplot,
+       aes(x=covvalue ,y=paramvalue))+
+  facet_grid(paramname ~covname,scales="free",
+             labeller = label_parsed)+
+    geom_boxplot()+
+  labs(y="PK Parameter Value","Covariate Value")
+
 
 ```
 
+```{r, fig.width=7 ,message=FALSE, include=FALSE}
+#   last_plot()
+#  ggsave("pk4.png", device="png",type="cairo-png",width= 7, height = 4,dpi=72)
+# p1<- ggplot(out.df.univariatecov.nca.long[ out.df.univariatecov.nca.long$ALB==45&
+# out.df.univariatecov.nca.long$SEX=="Female",],
+#        aes(y=paramvalue,col=factor(paramname),
+#            linetype=factor(SEX) ))+
+#   geom_hline(data=REFVALUES, aes(yintercept=medparam ))+
+#   geom_boxplot(position = position_dodge2(preserve ="single"))+
+#   facet_grid(paramname~ WT+ALB,scales="free",labeller =
+#                labeller(.rows = label_parsed, .cols = label_both),
+#              switch="x")+
+#   scale_color_discrete(labels=
+# c(expression(AUC),expression(C[last]), expression(C[max]) ))+
+#   theme(axis.text.x=element_blank(),axis.ticks.x = element_blank())+
+#   labs(y="Parameter Uncertainty",x="",linetype="Sex",col="")
+# 
+# p2<- ggplot(out.df.univariatecov.nca.long[ out.df.univariatecov.nca.long$WT==85&
+# out.df.univariatecov.nca.long$SEX=="Female",],
+#        aes(y=paramvalue,col=factor(paramname),
+#            linetype=factor(SEX) ))+
+#   geom_hline(data=REFVALUES, aes(yintercept=medparam ))+
+#   geom_boxplot()+
+#   facet_grid(paramname~ ALB+WT,scales="free",labeller =
+#                labeller(.rows = label_parsed, .cols = label_both),
+#              switch="x")+
+#   scale_color_discrete(labels=
+# c(expression(AUC),expression(C[last]), expression(C[max]) ))+
+#   theme(axis.text.x=element_blank(),axis.ticks.x = element_blank())+
+#   labs(y="Parameter Uncertainty",x="",linetype="Sex",col="")
+# grid.arrange(grobs = lapply(
+# list(p1+theme(plot.margin = margin(0))),
+# set_panel_size,
+# width = unit(7/5, "in"),
+# height = unit(7/4, "in"),margin = unit(0.1, "in")
+# ))
+# grid.arrange(grobs = lapply(
+# list(p2+theme(plot.margin = margin(0))),
+# set_panel_size,
+# width = unit(6/5, "in"),
+# height = unit(6/4, "in"),margin = unit(0.1, "in")
+# ))
+```
+
 ### Alternative View of the Data: Distributions and Intervals 
-Here we provide an alternative visual summary of the PK parameters. It shows the distribution, quantiles of interest and a simpler median, 90% pointinterval summary right below it. It isolates each covariate effects in one panel keeping the reference on its own. It is exactly the same data as the boxplots. Which visual presentation do you prefer? Which one enables you to clearly see and compare the covariate effects?  
+Here we provide an alternative visual summary of the standardized PK parameters. It shows the distribution, quantiles of interest. It isolates each covariate effects in one panel keeping the reference on its own. It is exactly the same data as the boxplots. Which visual presentation do you prefer? Which one enables you to clearly see and compare the covariate effects?  
 
 ```{r, fig.width=7,message=FALSE}
 ggplot(out.df.univariatecov.nca.long,
-       aes(x=paramvalue,y=covvalue,fill=factor(..quantile..),height=..ndensity..))+
-  facet_grid(covname~paramname,scales="free",space="free")+
+       aes(x=paramvaluestd,y=covvalue,fill=factor(..quantile..),height=..ndensity..))+
+  facet_grid(covname~paramname,scales="free_y",space="free",
+             labeller = label_parsed)+
   annotate( "rect",
             xmin = 0.8,
             xmax = 1.25,
@@ -425,19 +532,24 @@ ggplot(out.df.univariatecov.nca.long,
     quantile_lines = TRUE, rel_min_height = 0.001,scale=0.9,
     quantiles = c(0.05,0.5, 0.95)) +
   scale_fill_manual(
-    name = "Probability", values = c("#FF0000A0", "white","white", "#0000FFA0"),
+    name = "Probability", values = c("white", "#0000FFA0","#0000FFA0", "white"),
     labels = c("(0, 0.05]", "(0.05, 0.5]","(0.5, 0.95]", "(0.95, 1]")
   )+
-  stat_summaryh(aes(x=paramvalue,y=covvalue),fun.data="median_hilow_h",
-                color="steelblue",
-                geom="pointrangeh",size=0.5,position=position_nudge(y=-0.1),
-                fun.args = list(conf.int=0.9),inherit.aes = FALSE)+
+  # stat_summaryh(aes(x=paramvalue,y=covvalue),fun.data="median_hilow_h",
+  #               color="steelblue",
+  #               geom="pointrangeh",size=0.5,position=position_nudge(y=-0.1),
+  #               fun.args = list(conf.int=0.9),inherit.aes = FALSE)+
   geom_vline( aes(xintercept = 1),size = 1)+
   theme_bw()+
-  labs(x="Effects Relative to parameter reference value",y="")+
-  scale_x_continuous(breaks=c(0.25,0.5,0.8,1/0.8,1/0.5,1/0.25))+
-  scale_x_log10()
+  labs(x="Effects Relative to Parameter Reference Value",y="")+
+  scale_x_continuous(breaks=c(0.25,0.5,0.8,1/0.8,1/0.5,1/0.25),trans ="log" )
 ```
+
+```{r, fig.width=7 ,message=FALSE, include=FALSE}
+ #  last_plot()
+ # ggsave("pk5.png", device="png",type="cairo-png",width= 7, height = 4,dpi=72)
+```
+
 
 ### Adding the BSV and Using `forest_plot`
 To contrast the covariate effects with random unexplained variability we add to the data the BSV intervals computed in an earlier section. We then do some data manipulation and formatting to produce a plot from the package function `forest_plot`. To simplify we will only keep AUC before revisiting more than one parameter plots at the end. 
@@ -449,9 +561,9 @@ out.df.univariatecov.nca.long$covvalue<- as.character(out.df.univariatecov.nca.l
 coveffectsdatacovrep <- out.df.univariatecov.nca.long %>% 
   dplyr::group_by(paramname,covname,covvalue) %>% 
   dplyr::summarize(
-    mid= median(paramvalue),
-    lower= quantile(paramvalue,0.05),
-    upper = quantile(paramvalue,0.95))
+    mid= median(paramvaluestd),
+    lower= quantile(paramvaluestd,0.05),
+    upper = quantile(paramvaluestd,0.95))
 
 coveffectsdatacovrepbsv <- coveffectsdatacovrep[coveffectsdatacovrep$covname=="REF",]
 coveffectsdatacovrepbsv$covname <- "BSV"
@@ -483,7 +595,7 @@ coveffectsdatacovrepbsv$label <-factor(as.factor(coveffectsdatacovrepbsv$label )
                                                 "Male",
                                                 "40 g/L",
                                                 "50 g/L",
-                                                "85 kg-Female-45 g/L",
+                                                "85 kg\nFemale\n45 g/L",
                                                 "90% of patients",
                                                 "50% of patients"
                                     )
@@ -600,7 +712,7 @@ dev.off()
 
 ```{r, fig.width=7, fig.height=6, warning=FALSE,message=FALSE}
 main_plot <- plotlists[[1]] + theme(
-               panel.spacing=unit(0, "pt"),
+               panel.spacing=unit(10, "pt"),
                panel.grid=element_blank(),
                panel.grid.minor=element_blank(),
                legend.position="bottom",
@@ -612,10 +724,25 @@ main_plot <- plotlists[[1]] + theme(
                    face="italic",color="gray",
                    size=rel(1)),
                legend.text = element_text(size=rel(0.5)),
-               plot.margin = margin(t=0,r=0,b=0,l=5,unit="pt"))
+               plot.margin = margin(t=0,r=0,b=0,l=5,unit="pt")) +
+  scale_y_discrete(
+breaks=c("90% of patients",
+         "50% of patients",
+         "85 kg\nFemale\n45 g/L",
+         "40 g/L","50 g/L","Male",
+         "56 kg","72 kg","98 kg","128 kg"
+),
+labels=c("90% of patients",
+               "50% of patients",
+               "85 kg-Female-45 g/L",
+               "40 g/L","50 g/L","Male",
+               "56 kg","72 kg","98 kg","128 kg"
+)
+  )
+
 table_plot <- plotlists[[2]] + theme(
                panel.border=element_blank(),
-               panel.spacing=unit(0, "pt"),
+               panel.spacing=unit(10, "pt"),
                strip.background.y=element_blank(),
                legend.text = element_text(size=rel(0.5)),
                plot.margin = margin(t=0,r=5,b=0,l=0,unit="pt"))
@@ -656,10 +783,11 @@ forest_plot(coveffectsdatacovrepbsv,
                             facet_switch = "y",
                             facet_scales = "free_y",
                             facet_space = "free",
+                            facet_labeller = label_parsed,
                             paramname_shape = FALSE,
                             table_position = "none",
                             table_text_size=4,
-                            base_size = 9,
+                            base_size = 11,
                             plot_table_ratio = 4,
                             show_table_facet_strip = "none",
                             logxscale = TRUE,

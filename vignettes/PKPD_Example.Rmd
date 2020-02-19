@@ -42,7 +42,7 @@ nsim <- 100 # for vignette to make it run faster otherwise increase to 1000
 
 ```
 ## Specifying a PK/PD Model using `mrgsolve`
-Here we use the same two-compartment PK model linked to an indirect response PD model with the drug inhibiting the rate constant of input (Kin). The model included several covariates effects on Clearance, Volume and Kin. The baseline PD response is controlled by the ratio of Kin/Kout.
+Here we use the same two-compartment PK model linked to an indirect response PD model with the drug inhibiting the rate constant of input (Kin). The model included several covariates effects on Clearance, Volume and Kin. The baseline PD value is controlled by the ratio of Kin/Kout.
 ```{r pkpdmodel, collapse=TRUE }
 codepkpdmodelcov <- '
 $PARAM
@@ -117,7 +117,7 @@ outputpkpdsim$HEALTHY <- as.factor(outputpkpdsim$HEALTHY)
 
 yvar_names <- c(
   'CP'="Plasma Concentrations",
-  'RESP'="PD Response"
+  'RESP'="PD Values"
 )
 set.seed(678549)
 outputpkpdsimlong <- outputpkpdsim[outputpkpdsim$ID %in%
@@ -132,12 +132,31 @@ ggplot(data =outputpkpdsimlong ,
   labs(y = "", color = "Sex", x = "Time (h)")+
   theme(strip.placement = "outside",
         axis.title.y=element_blank())
+```
 
+
+```{r pd1, fig.width=7,fig.height=4, include=FALSE }
+# set.seed(678549)
+# outputpkpdsimlong <- outputpkpdsim %>%
+#   gather(key,value,CP,RESP)
+# ggplot(data =outputpkpdsimlong ,
+#        aes(time/24, value, group = ID)) +
+#   geom_line(alpha = 0.1, size = 0.3) +
+#   facet_grid(key ~WT+ALB+SEX,scales="free_y",switch="y",
+#              labeller = labeller(key=yvar_names, WT= label_both,
+#                                  ALB= label_both,SEX= label_both,.multi_line = FALSE)) +
+#   labs(y = "", color = "Sex", x = "Time (days)")+
+#   theme(strip.placement = "outside",
+#         axis.title.y=element_blank())
+# last_plot() +theme_bw(base_size=18)+
+#   theme(strip.placement = "outside",
+#         axis.title.y=element_blank())
+# ggsave("pd1.png", device="png",type="cairo-png", width = 7, height = 5,dpi=72)
 ```
 
 ### Compute PD Parameters and Summarize BSV 
 Here we compute the PD baseline (where we start), nadir response (minimum response achieved) and the delta (difference) between the baseline and nadir. We then summarize and report the BSV around these parameters as ranges of 50 and 90% of patients. We then show a plot of the first 10 replicates as an example of the simulated PD profiles. Since the code is similar to the PK Example vignette it is not shown.
-```{r computenca , fig.width=7 , message=FALSE }
+```{r computenca , fig.width=7,  message=FALSE }
 NCATYPICAL <- outputpkpdsim %>%
   group_by(ID, HEALTHY, WT, SEX, AGE, ALB) %>%
   summarise (
@@ -162,9 +181,33 @@ NCATYPICALREF <- NCATYPICAL%>%
   )
 BSVRANGESSTD
 ```
+
+```{r pd2, fig.width=7,fig.height=5, include=FALSE }
+# p4 <- ggplot(NCATYPICALREF,
+#        aes(x=paramvalue,y=paramname,fill=factor(..quantile..),height=..ndensity..))+
+#       facet_wrap(~paramname,scales="free_y",ncol=1)+
+#   stat_density_ridges(
+#     geom = "density_ridges_gradient", calc_ecdf = TRUE,
+#     quantile_lines = TRUE, rel_min_height = 0.001,scale=0.9,
+#     quantiles = c(0.05,0.25,0.5,0.75, 0.95)) +
+#   scale_fill_manual(
+#     name = "Probability", values = c("white","#FF000050","#FF0000A0", "#FF0000A0","#FF000050","white"),
+#     labels = c("(0, 0.05]", "(0.05, 0.25]",
+#                "(0.25, 0.5]","(0.5, 0.75]",
+#                "(0.75, 0.95]","(0.95, 1]")
+#   )+
+#   theme_bw()+
+#   theme(legend.position = "none")+
+#   labs(x="Standardized PD Parameters",y="")+
+#   scale_x_log10()+
+#   coord_cartesian(expand = FALSE)+
+#   theme_bw(base_size=22)+
+#   theme(axis.text.y=element_blank(),axis.ticks.y = element_blank())
+# ggsave("pd2.png", device="png",type="cairo-png")
+```
 ## Construct ans Simulate at Combinations of Covariate of Interest
 Similarly to the PK Example vignette we generate covariate combinations of interest and we simulate with uncertainty using an invented varcov matrix.
-```{r covcomb , fig.width=7 }
+```{r covcomb , fig.width=7}
 reference.values <- data.frame(WT = 85, ALB = 45, AGE = 40, SEX = 0, HEALTHY = 0)   
 covcomb <- expand.modelframe(
   WT  = c(56,85,128), 
@@ -179,6 +222,24 @@ covcomb <- covcomb[!duplicated(
 covcomb
 ```
 ```{r, fig.width=7 ,message=FALSE, include=FALSE}
+  covcomb$covname<- NULL
+  covcomb$ID <- 1:nrow(covcomb)
+  idata <- as.data.frame(covcomb)
+  ev1 <- ev(time = 0, amt = 100, cmt = 1, ii = 24, addl = 20)
+  data.dose <- ev(ev1)
+  data.dose<-as.data.frame(data.dose)
+  data.all<-merge(idata,data.dose)
+  data.all$amt<- 100
+   outcovcomb<- modpkpdsim %>%
+    data_set(data.all) %>%
+    carry.out(ALB,AGE, HEALTHY, WT,SEX,amt,CLi,KINi,KOUT) %>%
+    zero_re() %>%
+    mrgsim(start=0,end=24*28,delta=0.25)
+outcovcomb<-as.data.frame(outcovcomb)
+outcovcomb <- outcovcomb %>%
+  arrange(ID,time,WT)
+outcovcomb$SEX <- as.factor(outcovcomb$SEX )
+outcovcomb$HEALTHY <- as.factor(outcovcomb$HEALTHY )
 thmeans <- c(4,10,0.5,50,10,
              -0.8,0.2,1,
              0.07,1,
@@ -246,12 +307,19 @@ for(i in 1:nsim) {
 ```{r, fig.width=7 ,message=FALSE, warning=FALSE}
 ggplot(iter_sims[iter_sims$rep<=10,], aes(time/24,PDRESP,col=factor(WT),linetype=factor(HEALTHY) ) )+
   geom_line(aes(group=interaction(ID,rep)),alpha=0.3,size=0.3)+
-  facet_grid(ALB~ AGE,labeller = label_both)+
-  labs(linetype="Healthy",
-       colour="Weight (kg)",
-       caption ="Simulation\nwith Uncertainty without BSV\nreplicates 1 to 10" ,
-       x="Days", y = "PD Response")
+  geom_line(data=outcovcomb,aes(group=interaction(ID)),color="black")+
+  facet_grid(SEX+ALB~ AGE+WT,labeller = label_both)+
+  labs(linetype="No Uncertainty\nHealthy",
+       colour="Uncertainty\nReplicates(1 to 10)\nWeight (kg)",
+       caption ="Simulation\nwith Uncertainty without BSV" ,
+       x="Days", y = "PD Values")
+```
 
+```{r, fig.width=7 ,message=FALSE, include=FALSE}
+#  last_plot()+theme(axis.title.y = element_text(size=15))+
+#    guides(colour=guide_legend(override.aes = list(alpha=1,size=0.5)),
+#           linetype=guide_legend(override.aes = list(size=0.5)))
+# ggsave("pd3.png", device="png",type="cairo-png",width= 7, height = 4,dpi=72)
 ```
 
 ### Compute PD Parameters and Distributions Plots   
@@ -279,10 +347,6 @@ REFVALUES <- out.df.univariatecov.nca%>%
   dplyr::summarize(medparam = median(paramvalue))
 
 out.df.univariatecov.nca <- left_join(out.df.univariatecov.nca,REFVALUES)
-
-out.df.univariatecov.nca <- out.df.univariatecov.nca%>%
-  group_by (paramname) %>%
-  mutate(paramvalue= paramvalue / medparam ) 
 
 out.df.univariatecov.nca <- out.df.univariatecov.nca %>% 
   ungroup() %>% 
@@ -330,7 +394,34 @@ out.df.univariatecov.nca$covvalue <-factor(as.factor(out.df.univariatecov.nca$co
 # the order of y ticks is controlled by the factor levels.
 ```
 
-```{r, fig.width=7,message=FALSE}
+```{r, fig.width=7, fig.height=5, message=FALSE}
+ggplot(out.df.univariatecov.nca,
+       aes(x=covvalue ,y=paramvalue))+
+  facet_grid(paramname ~covname,scales="free",
+             labeller = label_parsed)+
+    geom_boxplot()+
+  labs(y="PD Parameter Value","Covariate Value")
+```
+
+```{r, fig.width=7 ,message=FALSE, include=FALSE}
+# last_plot()+theme(axis.title.y = element_text(size=15))
+#ggsave("pd4.png", device="png",type="cairo-png",width= 7, height = 4,dpi=72)
+# ggplot(out.df.univariatecov.nca,
+#        aes(paramname,paramvalue,col=factor(paramname),
+#            linetype=factor(HEALTHY) ))+
+#   geom_point(alpha=0.1,size=1)+
+#   geom_hline(yintercept = 1)+
+#   geom_boxplot()+
+#   facet_grid(SEX+ALB~ AGE+WT,labeller = label_both)+
+#   theme(axis.text.x=element_text(angle=30))+
+#   labs(y="Standardized PD Parameter Value",x="",linetype="Healthy",col="")
+```
+
+```{r, fig.width=7,fig.height=5,message=FALSE}
+out.df.univariatecov.nca <- out.df.univariatecov.nca%>%
+  group_by (paramname) %>%
+  mutate(paramvalue= paramvalue / medparam ) 
+
 ggplot(out.df.univariatecov.nca,
        aes(x=paramvalue,y=covvalue,fill=factor(..quantile..),height=..ndensity..))+
   facet_grid(covname~paramname,scales="free_y",space="free")+
@@ -346,18 +437,22 @@ ggplot(out.df.univariatecov.nca,
     quantile_lines = TRUE, rel_min_height = 0.001,scale=0.9,
     quantiles = c(0.05,0.5, 0.95)) +
   scale_fill_manual(
-    name = "Probability", values = c("#FF0000A0", "white","white", "#0000FFA0"),
+    name = "Probability", values = c("white", "#0000FFA0","#0000FFA0", "white"),
     labels = c("(0, 0.05]", "(0.05, 0.5]","(0.5, 0.95]", "(0.95, 1]")
   )+
-  stat_summaryh(aes(x=paramvalue,y=covvalue),fun.data="median_hilow_h",
-                color="steelblue",
-                geom="pointrangeh",size=0.5,position=position_nudge(y=-0.1),
-                fun.args = list(conf.int=0.9),inherit.aes = FALSE)+
+  # stat_summaryh(aes(x=paramvalue,y=covvalue),fun.data="median_hilow_h",
+  #               color="steelblue",
+  #               geom="pointrangeh",size=0.5,position=position_nudge(y=-0.1),
+  #               fun.args = list(conf.int=0.9),inherit.aes = FALSE)+
   geom_vline( aes(xintercept = 1),size = 1)+
   theme_bw()+
   labs(x="Effects Relative to parameter reference value",y="")+
   scale_x_continuous(breaks=c(0.25,0.5,0.8,1/0.8,1/0.5,1/0.25))+
   scale_x_log10()
+```
+```{r, fig.width=7 ,message=FALSE, include=FALSE}
+# last_plot()
+#ggsave("pd5.png", device="png",type="cairo-png",width= 7, height = 5,dpi=72)
 ```
 
 ### Summarize, add BSV and Use `forest_plot`

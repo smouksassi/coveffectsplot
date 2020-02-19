@@ -111,7 +111,7 @@ CLBSVdistribution$CLBSV<- CLBSVdistribution$CL/10
 
 ```{r, echo=FALSE,fig.align = "center",fig.width = 6}
 dfbsv<- as.data.frame(
-  round( quantile(CLBSVdistribution$CLBSV,probs=c(0,0.05,0.25,0.5,0.75,0.95,1)),1))
+  round( quantile(CLBSVdistribution$CLBSV,probs=c(0,0.05,0.25,0.5,0.75,0.95,1)),2))
 names(dfbsv)<- "BSVquantilevalue"
 dfbsv$quantile<- rownames(dfbsv)
 BSVLINE1<- data.frame(
@@ -129,7 +129,7 @@ BSVLINE2<- data.frame(
 BSVLINE <- rbind(BSVLINE1,BSVLINE2)
 ggplot2::ggplot(data= CLBSVdistribution)+
  ggplot2:: geom_density(ggplot2::aes(x=CLBSV,
-                   col="simomega")) +
+                   col="Simulated\nDensity")) +
    ggplot2::geom_rect(data=BSVLINE,
             ggplot2::aes(xmin=lower,xmax=upper  ,
                 fill=extent),ymin=-Inf,ymax=Inf ,
@@ -141,7 +141,7 @@ ggplot2::ggplot(data= CLBSVdistribution)+
         axis.text.x=ggplot2::element_text(size=12))+
   ggplot2::scale_x_continuous(breaks=c(0.25,0.5,0.8,1,1.25,1.5,2,3))+
   ggplot2::coord_cartesian(xlim=c(0.4,2))+
-  ggplot2::labs(colour="",fill="BSV Coverage",x="BSVCL/Reference CL",
+  ggplot2::labs(colour="",fill="BSV Ranges",x="Individual Clearances with BSV/Reference CL",
                 title="Illustrating 30% BSV")+
   ggplot2::guides(fill = ggplot2::guide_legend(override.aes =  list(alpha = 0.1)  ))
 

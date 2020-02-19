@@ -277,7 +277,7 @@ forest_plot <- function(
   show_table_facet_strip = "none",
   table_facet_switch = c("both", "y", "x", "none"),
   show_table_yaxis_tick_label = FALSE,
-  reserve_table_xaxis_label_space = FALSE,
+  reserve_table_xaxis_label_space = TRUE,
   table_panel_border = TRUE,
   table_position = c("right", "below", "none"),
   plot_table_ratio = 4,

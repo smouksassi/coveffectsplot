@@ -86,8 +86,9 @@ outputsim <- as.data.frame(outputsim)
 outputsim <- outputsim %>%
   arrange(ID, time)
 outputsim$SEX <- as.factor(outputsim$SEX)
+outputsim$SEX <- factor(outputsim$SEX, labels=c("Girls","Boys"))
 
-p1 <- ggplot(data = outputsim,
+p1 <- ggplot(data = outputsim[outputsim$SEX=="Girls",],
        aes(time, CP, group = ID)) +
   geom_line(alpha = 0.2, size = 0.1) +
   facet_grid(AGE ~ WT+SEX,
@@ -95,10 +96,14 @@ p1 <- ggplot(data = outputsim,
   scale_y_log10() +
   labs(y = expression(Log[10]~~Plasma~~Concentrations), color = "Sex", x = "Time (h)")
 p1
-
 ```
 
-## NCA PK parameters and associated ranges
+```{r ped1, fig.width=7,fig.height=4, include=FALSE }
+# p1 +theme_bw(base_size=18)
+# ggsave("ped1.png", device="png",type="cairo-png")
+```
+
+## PK parameters and associated ranges
 Second we compute ranges on normalized AUC and Cmax.
 
 ```{r ncapedpkmodel, collapse=TRUE }
@@ -114,20 +119,9 @@ NCATYPICALREF <- NCATYPICAL%>%
   group_by (paramname,SEX) %>%
   mutate(medparam = median(paramvalue),
          paramvalue = paramvalue / medparam) 
-
- ggplot(NCATYPICALREF,
-       aes(x=paramvalue,y=..ndensity..))+
-      facet_grid(paramname~SEX,scales="free_y")+
-        geom_density()+
-  theme_bw()+
-  theme(legend.position = "none")+
-  labs(x="Standardized NCA parameters",y="")+
-  scale_x_log10()+
-  coord_cartesian(expand = FALSE)
- 
   BSVRANGES<- NCATYPICALREF %>%
     group_by(paramname, SEX) %>%
-    summarize(
+    dplyr::summarize(
     P05 = quantile(paramvalue, 0.05),
     P25 = quantile(paramvalue, 0.25),
     P50 = quantile(paramvalue, 0.5),
@@ -137,11 +131,35 @@ NCATYPICALREF <- NCATYPICAL%>%
 knitr::kable(BSVRANGES)
 ```
 
+```{r ped2, fig.width=7,fig.height=4, include=FALSE }
+# ggplot(NCATYPICALREF[NCATYPICALREF$SEX=="Girls",],
+#        aes(x=paramvalue,y=paramname,fill=factor(..quantile..),height=..ndensity..))+
+#       facet_grid(paramname~SEX,scales="free_y",switch="y")+
+#   stat_density_ridges(
+#     geom = "density_ridges_gradient", calc_ecdf = TRUE,
+#     quantile_lines = TRUE, rel_min_height = 0.001,scale=0.9,
+#     quantiles = c(0.05,0.25,0.5,0.75, 0.95)) +
+#   scale_fill_manual(
+#     name = "Probability", values = c("white","#FF000050","#FF0000A0", "#FF0000A0","#FF000050","white"),
+#     labels = c("(0, 0.05]", "(0.05, 0.25]",
+#                "(0.25, 0.5]","(0.5, 0.75]",
+#                "(0.75, 0.95]","(0.95, 1]")
+#   )+
+#   labs(x="Standardized PK parameters",y="")+
+#   scale_x_log10()+
+#   coord_cartesian(expand = FALSE)+
+#   theme_bw(base_size=22)+
+#   theme(axis.text.y=element_blank(),axis.ticks.y = element_blank(),
+#           legend.position = "none")
+# ggsave("ped2.png", device="png",type="cairo-png")
+```
+
 ## Simulating Age/Weight pairs using NHANES LMS values
 The NHANES website provide the smoothed growth charts distribution parameters at specific ages for boys and girls. The `gamlss.dist::rBCCG` function is used to show how we can use these parameters to generate a realistic pediatric Age/Weight/Sex distribution. 
 
 ```{r simcovariate, collapse=TRUE }
 wtage <- read.csv (url("https://www.cdc.gov/growthcharts/data/zscore/wtage.csv"))
+#boys 1 and girls 2 in this file
 wtage<-  wtage[wtage$Agemos<=6*12,]
 nweightsperage <- 50 # simulate 50 kid at each age/sex
 simwtageoutput <- data.frame(matrix(NA, nrow = nrow(wtage),ncol = nweightsperage))
@@ -155,14 +173,17 @@ simwtageoutput[i, ] <- simpoints
 }
 simwtageoutput$Agemos  <- wtage$Agemos
 simwtageoutput$AgeY  <- wtage$Agemos/12
-simwtageoutput$Sex <- wtage$Sex -1
+simwtageoutput$Sex <- ifelse( wtage$Sex==2,0,1)
 
 simwtageoutput <- tidyr::gather(simwtageoutput,age,Weight,
                                 paste0("Var", 1:nweightsperage))
 simwtageoutput$age <- NULL
-ggplot(simwtageoutput,aes(AgeY,Weight))+
+simwtageoutput$SEXLABEL <- factor(simwtageoutput$Sex,labels=c("Girls","Boys"))
+wtvsageplot<- ggplot(simwtageoutput,aes(AgeY,Weight,color=SEXLABEL))+
   geom_point(alpha=0.2,size=1.5)+
-  facet_grid(~Sex)
+  facet_grid(~SEXLABEL)+
+  labs(y="Weight (kg)", x= "Age (years)",col="")
+wtvsageplot
 ```
 
 ## Simulation with the Multivariate Realistic Distribution
@@ -170,7 +191,7 @@ The section above generated 4900 Age/Weight/Sex distribution values that we will
 
 ```{r simcovariatemodel, collapse=TRUE }
 idata <- as.data.frame(simwtageoutput)
-names(idata) <- c("Agemos","AGE","SEX","WT")
+names(idata) <- c("Agemos","AGE","SEX","WT","SEXLABEL")
 ev1 <- ev(time=0,amt=100, cmt=1)
 data.dose <- ev(ev1)
 data.dose<-as.data.frame(data.dose)
@@ -183,8 +204,9 @@ outcovcomb<- pedmodsim %>%
   mrgsim(end=24, delta=1)
 outcovcomb<-as.data.frame(outcovcomb)
 outcovcomb <- outcovcomb %>% 
-  arrange(ID,time,AGE,WT)
+  arrange(ID,time,SEX,AGE,WT)
 outcovcomb$SEX <- as.factor(outcovcomb$SEX)
+
 out.df.multivariatecov <- as.data.frame(outcovcomb) %>% 
   arrange(ID,time) %>% 
   group_by(ID,SEX,AGE,WT)%>% 
@@ -196,41 +218,60 @@ out.df.multivariatecov.long <- out.df.multivariatecov %>%
   group_by (paramname,SEX) %>%
   mutate(medparam = median(paramvalue),
          paramvalue = paramvalue / medparam) 
+out.df.multivariatecov.long$SEXLABEL <- factor(out.df.multivariatecov.long$SEX,labels=c("Girls","Boys"))
 
-
-  ggplot(out.df.multivariatecov.long,
-         aes( AGE,paramvalue,col=factor(SEX)) )+
+paramvsage <-  ggplot(out.df.multivariatecov.long,
+         aes( AGE,paramvalue,col=SEXLABEL) )+
   geom_point(alpha=0.1,size=2)+
-  facet_grid(paramname~SEX,labeller = label_value,
-             scales="free_y")
-    ggplot(out.df.multivariatecov.long,
-         aes( WT,paramvalue,col=factor(SEX)) )+
+  facet_grid(paramname~SEXLABEL,labeller = label_value,
+             scales="free_y")+
+    labs(y="Standardized Parameter Value",x="Age (years)",color="")
+paramvsage  
+paramvswt <-    ggplot(out.df.multivariatecov.long,
+         aes( WT,paramvalue,col=factor(SEXLABEL)) )+
   geom_point(alpha=0.1,size=2)+
-  facet_grid(paramname~SEX,labeller = label_value,
-             scales="free_y")
-    
+  facet_grid(paramname~SEXLABEL,labeller = label_value,
+             scales="free_y")+
+    labs(y="Standardized Parameter Value",x="Weight (kg)",color="")
+paramvswt   
 ```
 
-## NCA Summaries and Distribution Plots
-    
-```{r computenca, collapse=TRUE }  
+```{r, fig.width=7 ,message=FALSE, include=FALSE}
+# outcovcomb$SEX <- factor(outcovcomb$SEX,labels=c("Girls","Boys"))
+#  p3 <- ggplot(data =outcovcomb ,
+#        aes(time, CP, group = ID,color=SEX)) +
+#   geom_line(alpha = 0.1, size = 0.3) +
+#   facet_grid(  table1::eqcut(AGE,2)  ~ table1::eqcut(WT,4) ) +
+# labs(y = "", color = "Sex", x = "Time (h)")+
+#   theme(strip.placement = "outside",
+#   axis.title.y=element_blank(),legend.position =c(0.9,0.2),
+#   legend.background = element_blank())+
+#     guides(colour=guide_legend(override.aes = list(alpha=1,size=0.5)))
+# ggsave("pedmcov3.png", device="png",type="cairo-png",width= 9, height = 6,dpi=72)
+# wtvsageplot +theme_bw(base_size=18)
+# ggsave("pedcov1.png", device="png",type="cairo-png",width= 8, height = 5,dpi=72)
+# paramvsage+theme_bw(base_size=18)
+# ggsave("pedcov2.png", device="png",type="cairo-png",width= 8, height = 5,dpi=72)
+# paramvswt+theme_bw(base_size=18)
+# ggsave("pedcov3.png", device="png",type="cairo-png",width= 8, height = 5,dpi=72)
+```
+
+## PK Parameters Summaries and Distribution Plots  
+```{r computenca, fig.height=5, collapse=TRUE }  
 nca.summaries <- out.df.multivariatecov.long %>%
-  mutate(SEXCAT =ifelse( SEX==0,"Female","Male"),
+  mutate(SEXCAT =ifelse( SEX==0,"Girls","Boys"),
          REF = "All Subjects")
 
 nca.summaries$WTCAT3 <- table1::eqcut( nca.summaries$WT,3,varlabel = "Weight")
-nca.summaries$WTCAT2 <- table1::eqcut( nca.summaries$WT,2,varlabel = "Weight")
-nca.summaries$AGECUT3 <- table1::eqcut( nca.summaries$AGE,3,varlabel = "Age")
-
+nca.summaries$WTCAT4 <- table1::eqcut( nca.summaries$WT,4,varlabel = "Weight")
+nca.summaries$AGECAT4 <- table1::eqcut( nca.summaries$AGE,4,varlabel = "Age")
 nca.summaries.long <- gather(nca.summaries,
                              covname,
-                             covvalue,REF,WTCAT3,WTCAT2,AGECUT3,SEXCAT,
+                             covvalue,REF,WTCAT3,WTCAT4,AGECAT4,SEXCAT,
                              factor_key = TRUE)
-
 nca.summaries.long$covvalue <- as.factor( nca.summaries.long$covvalue)
 nca.summaries.long$covvalue <- as.factor( nca.summaries.long$covvalue)
 nca.summaries.long$covvalue <- reorder(nca.summaries.long$covvalue,nca.summaries.long$paramvalue)
-
 
 ggplot(nca.summaries.long,
         aes(x=paramvalue,y=covvalue,fill=factor(..quantile..),height=..ndensity..))+
@@ -240,13 +281,24 @@ ggplot(nca.summaries.long,
      quantile_lines = TRUE, rel_min_height = 0.01,scale=0.9,
      quantiles = c(0.05,0.5, 0.95))+
    scale_fill_manual(
-     name = "Probability", values = c("#FF0000A0", "white","white", "#0000FFA0"),
+     name = "Probability", values = c("white","#0000FFA0", "#0000FFA0", "white"),
      labels = c("(0, 0.05]", "(0.05, 0.5]","(0.5, 0.95]", "(0.95, 1]")
    )+
    geom_vline(data=data.frame (xintercept=1),  aes(xintercept =xintercept  ),size = 1)+
    theme_bw()+
    labs(x="Effects Of Covariates on PK Parameter",y="")
+```
 
+```{r, fig.width=7 ,message=FALSE, include=FALSE}
+#ggsave("ped5.png", device="png",type="cairo-png",width= 7, height = 6,dpi=72)
+# ggplot(nca.summaries,
+#         aes(x=paramname,y=paramvalue,color=WTCAT3,linetype=SEXCAT))+
+#    facet_grid( AGECAT4  ~WTCAT3,scales="free_y")+
+#   geom_boxplot(show.legend = c(colour = FALSE))+
+#    theme_bw()+
+#   theme(legend.position = "top")+
+#    labs(x="Effects Of Covariates on PK Parameter",y="",color="",linetype="")
+# ggsave("ped4.png", device="png",type="cairo-png",width= 7, height = 5,dpi=72)
 ```
 
 ## A Forest Plot with a Side Table
@@ -259,24 +311,46 @@ coveffectsdatacovrep <- nca.summaries.long %>%
     lower= quantile(paramvalue,0.05),
     upper = quantile(paramvalue,0.95)) %>% 
   dplyr::filter(!is.na(mid)) %>% 
-  dplyr::filter(covname !="WTCAT2")
+  dplyr::filter(covname !="WTCAT3")
 
-coveffectsdatacovrep <- coveffectsdatacovrep %>% 
+  BSVRANGES<- NCATYPICALREF %>%
+    group_by(paramname) %>%
+    dplyr::summarize(
+    P05 = quantile(paramvalue, 0.05),
+    P25 = quantile(paramvalue, 0.25),
+    P50 = quantile(paramvalue, 0.5),
+    P75 = quantile(paramvalue, 0.75),
+    P95 = quantile(paramvalue, 0.95)
+  )
+
+coveffectsdatacovrepbsv <- coveffectsdatacovrep[coveffectsdatacovrep$covname=="REF",]
+coveffectsdatacovrepbsv$covname <- "BSV"
+coveffectsdatacovrepbsv$covvalue <- "90% of patients"
+coveffectsdatacovrepbsv$label <-    "90% of patients"
+coveffectsdatacovrepbsv$lower <- BSVRANGES$P05
+coveffectsdatacovrepbsv$upper <- BSVRANGES$P95
+coveffectsdatacovrepbsv<- rbind(coveffectsdatacovrep,coveffectsdatacovrepbsv)
+coveffectsdatacovrepbsv <- coveffectsdatacovrepbsv %>% 
   mutate(
     label= covvalue,
     LABEL = paste0(format(round(mid,2), nsmall = 2),
                    " [", format(round(lower,2), nsmall = 2), "-",
                    format(round(upper,2), nsmall = 2), "]"))
-coveffectsdatacovrep<- as.data.frame(coveffectsdatacovrep)
-coveffectsdatacovrep$label <- gsub(": ", ":\n", coveffectsdatacovrep$label)
+coveffectsdatacovrepbsv<- as.data.frame(coveffectsdatacovrepbsv)
 
+coveffectsdatacovrepbsv$label <- gsub(": ", ":\n", coveffectsdatacovrepbsv$label)
+
+coveffectsdatacovrepbsv$covname <-factor(as.factor(coveffectsdatacovrepbsv$covname ),
+levels =  c("WTCAT4","AGECAT4","SEXCAT","REF", "BSV"),
+labels = c("Weight","Age","Sex","REF","BSV"))
+    
 
 interval_legend_text = "Median (points)\n90% CI (horizontal lines)"
 interval_bsv_text = "BSV (points)\nPrediction Intervals (horizontal lines)"
 ref_legend_text = "Reference (vertical line)\nClinically relevant limits\n(gray area)"
 
-png("./coveffectsplotped.png",width =9 ,height = 6,units = "in",res=72)
-coveffectsplot::forest_plot(coveffectsdatacovrep,
+png("./coveffectsplotped.png",width =9 ,height = 7,units = "in",res=72)
+coveffectsplot::forest_plot(coveffectsdatacovrepbsv,
                             ref_area = c(0.8, 1/0.8),
                             x_range = c(0.5,2),
                             strip_placement = "outside",
@@ -288,7 +362,8 @@ coveffectsplot::forest_plot(coveffectsdatacovrep,
                             interval_legend_text = interval_legend_text,
                             interval_bsv_text = interval_bsv_text,
                             facet_formula = "covname~paramname",
-                            facet_switch = "y",table_facet_switch = "y",
+                            facet_switch = "both",table_facet_switch = "both",
+                            reserve_table_xaxis_label_space = TRUE,
                             facet_scales = "free_y", facet_space = "free",
                             paramname_shape = FALSE,
                             table_position = "right",
@@ -300,7 +375,5 @@ coveffectsplot::forest_plot(coveffectsdatacovrep,
                             return_list = FALSE)
 
 dev.off()
-
-
 ```
 ![Covariate Effects Plot.](./coveffectsplotped.png)

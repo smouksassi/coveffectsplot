@@ -1,5 +1,5 @@
 ---
-title: "Exposure Response Example"
+title: "Exposure-Response Model Assessing the Impact of Covariates on Probabilities and Odds Ratios"
 output: 
   rmarkdown::html_vignette:
     toc: true
@@ -52,15 +52,14 @@ exprespmodel <- '
 $PLUGIN Rcpp
 $PARAM
 TVCL = 10, WTCL = 0.75,
-TVEMAX = 5, SEVEMAX = 3,AUC50 = 10,
+TVEMAX = 5, SEVEMAX = 3,AUC50 = 7.5,
 BASEP = 0.1,
 WT=70, SEV = 0,DOSE = 75
 $OMEGA
-0.1 
+0.09 
 $PRED
 double CL = TVCL *
     pow((WT/70.0), WTCL)*exp(ETA(1)); 
-
 double EMAX = TVEMAX - SEVEMAX*(SEV == 1) ; 
 double Intercept = log(BASEP/(1-BASEP));
 capture CLi = CL;
@@ -70,14 +69,13 @@ capture P1 = 1/(1+exp(-LGST));
 capture DV = R::runif(0,1)< P1 ? 1 : 0;
 '
 modexprespsim <- mcode("exprespmodel", exprespmodel)
-simdata <-  expand.idata(SEV=c(0,1),
-               DOSE = c(0,25,50,75),
+simdata <-  expand.idata(SEV=c(0),
+               DOSE = c(0,75),
                ID = 1:1000) %>% 
-  dplyr::mutate(WT = exp(rnorm(n(),log(70),0.3)))
+  dplyr::mutate(WT = 70) #exp(rnorm(n(),log(70),0.3)
 set.seed(466548)
 simout <- modexprespsim %>%
   data_set(simdata) %>%
-  zero_re() %>% 
   carry.out(WT, DOSE, SEV) %>%
   mrgsim()%>%
   as.data.frame
@@ -86,12 +84,14 @@ simout <- modexprespsim %>%
 This is a plot of the disease being cured versus PK exposure by disease severity and by Weight intervals.
 
 ```{r exprespmodeplotl, collapse=TRUE }
-ggplot(simout, aes(AUC,DV,col=factor(SEV))) +
-  facet_grid(~cut_interval(WT,2),labeller = label_both)+
-  geom_point()+
+ggplot(simout, aes(AUC,DV,linetype=factor(SEV))) +
+  facet_grid( WT~SEV,labeller = label_both)+
+  geom_point(position=position_jitter(height=0.02,width=0.1),
+             aes(color=factor(DOSE)))+
   geom_smooth(method = "glm",se=FALSE,
-              method.args = list(family = "binomial"))+
-  labs(color="Severity",y="Probability of Being Cured")+
+              method.args = list(family = "binomial"),color="black")+
+  labs(color="Dose (mg)",y="Probability of Being Cured",
+       linetype="Severity")+
   theme_bw() + 
   theme(legend.position = "top")
 ```
@@ -107,7 +107,7 @@ $$log(odds) = \color{red}{Intercept} + \left( \frac {\color{red}{E_{max}} \times
 ```{r, collapse=TRUE }
 thmeans <- c(10,0.75, #TVCL WTCL
              5,3, # TVEMAX  SEVEMAX
-             10, # AUC50
+             7.5, # AUC50
               0.1) #BASEP
 thvariances<- (thmeans*0.15)^2
 thecorrelations <- matrix(ncol=length(thmeans),nrow=length(thmeans))
@@ -125,7 +125,7 @@ sim_parameters<- as.data.frame(sim_parameters)
 reference.values <- data.frame(WT = 70, DOSE = 75, SEV = 0 )   
 covcomb <- expand.modelframe(
   WT  = c(50,60,70,80,90),
-  DOSE = c(0,25,50,75,100,125),
+  DOSE = c(0,25,50,75,100,125,150),
   SEV = c(0,1),
   rv = reference.values)
 covcomb <- covcomb[!duplicated(
@@ -171,7 +171,8 @@ iter_sims <- iter_sims %>%
     ID== 8 ~ "DOSE",
     ID== 9 ~ "DOSE",
     ID== 10 ~ "DOSE",
-    ID== 11 ~ "SEV"
+    ID== 11 ~ "DOSE",
+    ID== 12 ~ "SEV"
   ),
   covvalue =case_when(
     ID== 1 ~ paste(WT,"kg"), 
@@ -184,12 +185,13 @@ iter_sims <- iter_sims %>%
     ID== 8 ~ paste(DOSE,"mg"),
     ID== 9 ~ paste(DOSE,"mg"),
     ID== 10 ~ paste(DOSE,"mg"),
-    ID== 11 ~ "Severe"
+    ID== 11 ~ paste(DOSE,"mg"),
+    ID== 12 ~ "Severe"
   ) )
 iter_sims$covname <-factor(as.factor(iter_sims$covname ),
                           levels =  c("Weight","DOSE","SEV","REF"))
 iter_sims$covvalue <- factor(as.factor(iter_sims$covvalue),
-                          levels =  c("0 mg","25 mg","50 mg","100 mg","125 mg",
+                          levels =  c("0 mg","25 mg","50 mg","100 mg","125 mg","150 mg",
                           "50 kg","60 kg","80 kg", "90 kg",
                           "70 kg\nNot Severe\n75 mg",  "Severe"))
 
@@ -217,6 +219,19 @@ ggplot(iter_sims,aes(x=paramvalue,y=covvalue))+
   theme(axis.title = element_blank(),strip.placement = "outside")
 ```
 
+```{r  collapse=TRUE,include=FALSE }
+# uncertaintyplot<- ggplot(iter_sims, aes(AUC,DV,linetype=factor(SEV))) +
+#   facet_grid( ~WT,labeller = label_both,scales="free_x",space="free_x")+
+#   geom_point(position=position_jitter(height=0.02,width=0.1),
+#              aes(color=factor(DOSE)))+
+#   geom_smooth(method = "glm",se=FALSE,
+#               method.args = list(family = "binomial"),color="black")+
+#   labs(color="Dose (mg)",y="Probability of Being Cured",
+#        linetype="Severity")+
+#   theme_bw() + 
+#   theme(legend.position = "top")
+# uncertaintyplot
+```
 
 ```{r plot3, collapse=TRUE }
 coveffectsdatacovrep <- iter_sims %>%
