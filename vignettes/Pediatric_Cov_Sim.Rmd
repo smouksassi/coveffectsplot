@@ -1,5 +1,5 @@
 ---
-title: "PK Model in Pediatric Patients: Assessing the Impact of a Multivariate Correlated Distribution of Covariates on PK exposures"
+title: "PK Model in Pediatric Patients: Assessing the Impact of a Multivariate Correlated Distribution of Covariates on PK Exposures"
 output: 
   rmarkdown::html_vignette:
     toc: true
@@ -10,6 +10,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+In this vignette we illustrate how to study the effects of covariates in a pediatric population between 2 to 6 years old. Since Age and Weight in kids are highly correlated, we will not simulate varying one covariate at a time rather we will incorporate a **distribution** of realistic Age/Weight pairs.
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -32,9 +33,9 @@ theme_set(theme_bw())
 nsubj <- 1000
 
 ```
-## Specifying A Pediatric Simulation model
-Here we have a simple one-compartment PK model with first-order absorption where clearance and volume are allometrically scaled. We want to illustrate the covariate effects in a pediatric population between 2 to 6 years old. Since Age and Weight in kids are highly related we will not simulate varying one covariate at a time rather we will incorporate a realistic distribution of Age/Weight pairs. The reference subject is a 4 year old female with a weight of 15.9 kg.  
-First we plot a typical PK profile with between subject variability.
+## Specifying A Pediatric Simulation Model
+Here we have a simple one-compartment PK model with first-order absorption where clearance and volume are allometrically scaled. The reference subject is a 4 year old female with a weight of 15.9 kg.  
+* First we plot a typical PK profile with between subject variability (BSV).
 
 ```{r pedpkmodel, collapse=TRUE }
 pedpkmodelcov <- '
@@ -100,11 +101,11 @@ p1
 
 ```{r ped1, fig.width=7,fig.height=4, include=FALSE }
 # p1 +theme_bw(base_size=18)
-# ggsave("ped1.png", device="png",type="cairo-png")
+# ggsave("ped1.png", device="png",type="cairo-png",width= 6, height = 5,dpi=72)
 ```
 
-## PK parameters and associated ranges
-Second we compute ranges on normalized AUC and Cmax.
+## PK Parameters and Associated BSV ranges
+* Second we compute the PK parameters AUC and Cmax, standardize and compute between subject variability ranges.
 
 ```{r ncapedpkmodel, collapse=TRUE }
 NCATYPICAL <- outputsim %>%
@@ -145,7 +146,7 @@ knitr::kable(BSVRANGES)
 #                "(0.25, 0.5]","(0.5, 0.75]",
 #                "(0.75, 0.95]","(0.95, 1]")
 #   )+
-#   labs(x="Standardized PK parameters",y="")+
+#   labs(x="Reference Subject\nStandardized PK Parameters with BSV",y="")+
 #   scale_x_log10()+
 #   coord_cartesian(expand = FALSE)+
 #   theme_bw(base_size=22)+
@@ -154,8 +155,8 @@ knitr::kable(BSVRANGES)
 # ggsave("ped2.png", device="png",type="cairo-png")
 ```
 
-## Simulating Age/Weight pairs using NHANES LMS values
-The NHANES website provide the smoothed growth charts distribution parameters at specific ages for boys and girls. The `gamlss.dist::rBCCG` function is used to show how we can use these parameters to generate a realistic pediatric Age/Weight/Sex distribution. 
+## Simulating Age/Weight Pairs Using NHANES LMS Values
+The NHANES website provides a csv file containning the smoothed growth charts distribution parameters at specific ages for boys and girls. The `gamlss.dist::rBCCG` function is used to show how we can use these parameters to generate a realistic pediatric Age/Weight/Sex distribution. 
 
 ```{r simcovariate, collapse=TRUE }
 wtage <- read.csv (url("https://www.cdc.gov/growthcharts/data/zscore/wtage.csv"))
@@ -187,9 +188,9 @@ wtvsageplot
 ```
 
 ## Simulation with the Multivariate Realistic Distribution
-The section above generated 4900 Age/Weight/Sex distribution values that we will use for the simulation. We will remove the between subject variability to focus on the covariate effects. We show a plot of the normalized PK parameters versus Age and versus Weight.
+The section above generated 4900 Age/Weight/Sex distribution values that we will use for the simulation. We will remove the between subject variability to focus on the covariate effects. We show a plot of the PK profiles and the normalized PK parameters versus Age and versus Weight.
 
-```{r simcovariatemodel, collapse=TRUE }
+```{r simcovariatemodelpk,fig.height=6, collapse=TRUE }
 idata <- as.data.frame(simwtageoutput)
 names(idata) <- c("Agemos","AGE","SEX","WT","SEXLABEL")
 ev1 <- ev(time=0,amt=100, cmt=1)
@@ -207,6 +208,25 @@ outcovcomb <- outcovcomb %>%
   arrange(ID,time,SEX,AGE,WT)
 outcovcomb$SEX <- as.factor(outcovcomb$SEX)
 
+outcovcomb$SEX <- factor(outcovcomb$SEX,labels=c("Girls","Boys"))
+f <- function(x, xcat, which, what, from, to, ...) {
+   what <- sub("of ", "of\n", what)
+   what <- sub("median ", "median\n", what)
+   sprintf("%s %s [%s to %s[",
+       which, what, signif_pad(from, 3, FALSE), signif_pad(to, 3, FALSE))
+}
+ p3 <- ggplot(data =outcovcomb ,
+       aes(time, CP, group = ID,color=SEX)) +
+  geom_line(alpha = 0.1, size = 0.3) +
+  facet_grid(  table1::eqcut(AGE,2,f)  ~ table1::eqcut(WT,4,f) ) +
+labs(y = "Plasma Concentrations", color = "Sex", x = "Time (h)")+
+  theme(strip.placement = "outside",legend.position =c(0.9,0.2),
+  legend.background = element_blank())+
+  guides(colour=guide_legend(override.aes = list(alpha=1,size=0.5)))
+ p3
+```
+
+```{r simcovariatemodelpkparam, collapse=TRUE }
 out.df.multivariatecov <- as.data.frame(outcovcomb) %>% 
   arrange(ID,time) %>% 
   group_by(ID,SEX,AGE,WT)%>% 
@@ -225,31 +245,31 @@ paramvsage <-  ggplot(out.df.multivariatecov.long,
   geom_point(alpha=0.1,size=2)+
   facet_grid(paramname~SEXLABEL,labeller = label_value,
              scales="free_y")+
-    labs(y="Standardized Parameter Value",x="Age (years)",color="")
+    labs(y="Standardized PK Parameter Values",x="Age (years)",color="")
 paramvsage  
 paramvswt <-    ggplot(out.df.multivariatecov.long,
          aes( WT,paramvalue,col=factor(SEXLABEL)) )+
   geom_point(alpha=0.1,size=2)+
   facet_grid(paramname~SEXLABEL,labeller = label_value,
              scales="free_y")+
-    labs(y="Standardized Parameter Value",x="Weight (kg)",color="")
+    labs(y="Standardized PK Parameter Values",x="Weight (kg)",color="")
 paramvswt   
 ```
 
+
 ```{r, fig.width=7 ,message=FALSE, include=FALSE}
-# outcovcomb$SEX <- factor(outcovcomb$SEX,labels=c("Girls","Boys"))
-#  p3 <- ggplot(data =outcovcomb ,
-#        aes(time, CP, group = ID,color=SEX)) +
-#   geom_line(alpha = 0.1, size = 0.3) +
-#   facet_grid(  table1::eqcut(AGE,2)  ~ table1::eqcut(WT,4) ) +
-# labs(y = "", color = "Sex", x = "Time (h)")+
-#   theme(strip.placement = "outside",
-#   axis.title.y=element_blank(),legend.position =c(0.9,0.2),
+# p3 <- p3+ theme_bw(base_size = 18)+
+#   theme(strip.placement = "outside",legend.position =c(0.9,0.2),
 #   legend.background = element_blank())+
-#     guides(colour=guide_legend(override.aes = list(alpha=1,size=0.5)))
-# ggsave("pedmcov3.png", device="png",type="cairo-png",width= 9, height = 6,dpi=72)
+#   guides(colour=guide_legend(override.aes = list(alpha=1,size=0.5)))
+# 
+#  ggsave("pedmcov3.png", device="png",type="cairo-png",
+#         width= 9, height = 6,dpi=72)
 # wtvsageplot +theme_bw(base_size=18)
 # ggsave("pedcov1.png", device="png",type="cairo-png",width= 8, height = 5,dpi=72)
+ # wtvsageplot +theme_bw(base_size=18) + facet_grid(SEXLABEL~.,switch="y")
+ # ggsave("pedcov1b.png", device="png",type="cairo-png",width= 5, height = 6,dpi=72)
+
 # paramvsage+theme_bw(base_size=18)
 # ggsave("pedcov2.png", device="png",type="cairo-png",width= 8, height = 5,dpi=72)
 # paramvswt+theme_bw(base_size=18)

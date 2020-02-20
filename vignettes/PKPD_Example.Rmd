@@ -172,7 +172,7 @@ NCATYPICALREF <- NCATYPICAL%>%
   mutate(medparam = median(paramvalue),
          paramvalue = paramvalue / medparam) 
   BSVRANGESSTD<- NCATYPICALREF %>%
-  summarize(
+  dplyr::summarize(
     P05 = quantile(paramvalue, 0.05),
     P25 = quantile(paramvalue, 0.25),
     P50 = quantile(paramvalue, 0.5),
@@ -400,12 +400,13 @@ ggplot(out.df.univariatecov.nca,
   facet_grid(paramname ~covname,scales="free",
              labeller = label_parsed)+
     geom_boxplot()+
-  labs(y="PD Parameter Value","Covariate Value")
+  theme(axis.title.x = element_blank())+
+  labs(y="PD Parameter Values",x="Covariate Value")
 ```
 
 ```{r, fig.width=7 ,message=FALSE, include=FALSE}
 # last_plot()+theme(axis.title.y = element_text(size=15))
-#ggsave("pd4.png", device="png",type="cairo-png",width= 7, height = 4,dpi=72)
+# ggsave("pd4.png", device="png",type="cairo-png",width= 7, height = 4,dpi=2*72)
 # ggplot(out.df.univariatecov.nca,
 #        aes(paramname,paramvalue,col=factor(paramname),
 #            linetype=factor(HEALTHY) ))+
