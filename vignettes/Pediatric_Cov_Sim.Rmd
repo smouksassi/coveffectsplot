@@ -290,7 +290,6 @@ nca.summaries.long <- gather(nca.summaries,
                              covvalue,REF,WTCAT3,WTCAT4,AGECAT4,SEXCAT,
                              factor_key = TRUE)
 nca.summaries.long$covvalue <- as.factor( nca.summaries.long$covvalue)
-nca.summaries.long$covvalue <- as.factor( nca.summaries.long$covvalue)
 nca.summaries.long$covvalue <- reorder(nca.summaries.long$covvalue,nca.summaries.long$paramvalue)
 
 ggplot(nca.summaries.long,

@@ -90,7 +90,7 @@ modcovsim <- mcode("codepkmodelcov", codepkmodelcov)
 ```
 ### Simulate a Reference Subjects with BSV
 We simulate the reference subject having the reference covariate values defined in the model which are:  
-Weight = 85 kg, Sex = Female and Albumin = 45 g/dL.
+Weight = 85 kg, Sex = Female and Albumin = 45 g/L.
 We also keep the between subject variability (BSV) to illustrate its effects on the concentration-time profiles on linear and log linear scales.
 
 ```{r pksimulation, fig.width=7, message=FALSE }
