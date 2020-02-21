@@ -39,6 +39,7 @@ Suggests:
     bayestestR,
     plotly,
     scales,
+    data.table,
     shinyAce,
     Rcpp,
     gamlss.dist
