@@ -301,7 +301,17 @@ theta[c("WT", "SEX", "ALB")] <- NULL
 theta <- unlist(theta)
 as.data.frame(t(theta))
 
-varcov <- linpk::cor2cov(
+cor2cov <- function (cor, sd) 
+{
+    if (missing(sd)) {
+        sd <- diag(cor)
+    }
+    diag(cor) <- 1
+    n <- nrow(cor)
+    diag(sd, n) %*% cor %*% diag(sd, n)
+}
+
+varcov <- cor2cov(
   matrix(0.2, nrow=length(theta), ncol=length(theta)),
   sd=theta*0.15)
 rownames(varcov) <- colnames(varcov) <- names(theta)
