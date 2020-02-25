@@ -29,6 +29,7 @@ library(ggplot2)
 library(mrgsolve)
 library(ggridges)
 library(table1)
+library(data.table)
 theme_set(theme_bw())
 nsubj <- 1000
 
@@ -39,17 +40,24 @@ Here we have a simple one-compartment PK model with first-order absorption where
 
 ```{r pedpkmodel, collapse=TRUE }
 pedpkmodelcov <- '
-$PARAM
-CL = 4, V = 10, KA = 0.5
-CLWT = 0.75, VWT = 1,
-WT = 15.9,  SEX = 0, AGE = 4   
+$PARAM @annotated
+KA    : 0.5   : Absorption rate constant Ka (1/h)
+CL    : 4     : Clearance CL (L/h)
+V     : 10    : Central volume Vc (L)
+CLWT  : 0.75  : Weight on CL (ref. 22.5 kg)
+VWT   : 1     : Weight on V (ref. 22.5 kg)
+
+$PARAM @annotated // reference values for covariate
+WT    : 15.8  : Weight (kg)
+SEX   : 0     : Sex (0=Female, 1=Male)
+AGE   : 4     : Age (years)
 
 $CMT GUT CENT
 $MAIN
 double CLi = CL *
-    pow((WT/22.5), CLWT)*exp(ETA(1)); 
+    pow((WT/15.8), CLWT)*exp(ETA(1)); 
 double Vi = V *
-    pow((WT/22.5), VWT)*exp(ETA(2));  
+    pow((WT/15.8), VWT)*exp(ETA(2));  
 
 double KAi = KA;
 double Keli = CLi/Vi;
@@ -64,28 +72,32 @@ dxdt_CENT =  KAi*GUT-Keli*CENT;
 
 $TABLE
 double CP   = CENT/ Vi;
-$CAPTURE CP KAi CLi Vi 
+$CAPTURE CP KAi CLi Vi WT SEX AGE 
 '
 pedmodsim <- mcode("pedpkmodelcov", pedpkmodelcov)
+partab <- setDT(pedmodsim@annot$data)[block=="PARAM", .(name, descr, unit)]
+partab <- merge(partab, melt(setDT(pedmodsim@param@data), meas=patterns("*"), var="name"))
+knitr::kable(partab)
 
-idata <- tibble(
+idata <- data.table(
   ID = 1:nsubj,
-  WT = c(rep(15.9,nsubj/2),rep(16.3,nsubj/2)),#from Nhanes at 4 years female and male
+  WT = c(rep(15.8,nsubj/2),
+         rep(16.2,nsubj/2)),#from Nhanes at 4 years female and male
   AGE = 4,
   SEX = c(rep(0,nsubj/2),rep(1,nsubj/2))
 )
 ev1 <- ev(time = 0, amt = 100, cmt = 1)
 data.dose <- ev(ev1)
-data.dose <- as.data.frame(data.dose)
-data.all <- merge(idata, data.dose)
+data.dose <- setDT(as.data.frame(data.dose))
+data.all <- data.table(idata, data.dose)
+
 set.seed(678549)
 outputsim <- pedmodsim %>%
   data_set(data.all) %>%
-  carry.out(WT, AGE, SEX, CLi) %>%
-  mrgsim(end = 24, delta = 0.25)
-outputsim <- as.data.frame(outputsim)
-outputsim <- outputsim %>%
-  arrange(ID, time)
+  mrgsim(end = 24, delta = 0.25)%>%
+  as.data.frame %>%
+  as.data.table
+
 outputsim$SEX <- as.factor(outputsim$SEX)
 outputsim$SEX <- factor(outputsim$SEX, labels=c("Girls","Boys"))
 
@@ -108,48 +120,57 @@ p1
 * Second we compute the PK parameters AUC and Cmax, standardize and compute between subject variability ranges.
 
 ```{r ncapedpkmodel, collapse=TRUE }
-NCATYPICAL <- outputsim %>%
-  group_by(ID, AGE, WT, SEX) %>%
-  summarise (
-    Cmax = max(CP, na.rm = TRUE),
-    AUC = sum(diff(time) * na.omit(lead(CP) + CP)) / 2
-  ) %>%
-  gather(paramname, paramvalue, Cmax,  AUC)
-
-NCATYPICALREF <- NCATYPICAL%>%
-  group_by (paramname,SEX) %>%
-  mutate(medparam = median(paramvalue),
-         paramvalue = paramvalue / medparam) 
-  BSVRANGES<- NCATYPICALREF %>%
-    group_by(paramname, SEX) %>%
-    dplyr::summarize(
-    P05 = quantile(paramvalue, 0.05),
-    P25 = quantile(paramvalue, 0.25),
-    P50 = quantile(paramvalue, 0.5),
-    P75 = quantile(paramvalue, 0.75),
-    P95 = quantile(paramvalue, 0.95)
+derive.exposure <- function(time, CP) {
+  n <- length(time)
+  x <- c(
+    Cmax = max(CP),
+    AUC = sum(diff(time) * (CP[-1] + CP[-n])) / 2
   )
-knitr::kable(BSVRANGES)
+  data.table(paramname=names(x), paramvalue=x)
+}
+refbsv <- outputsim[, derive.exposure(time, CP), by=.(ID, WT, SEX, AGE)]
+refbsv[, stdparamvalue := paramvalue/median(paramvalue), by=list(SEX,paramname)]
+
+bsvranges <- refbsv[,list(
+    P05 = quantile(stdparamvalue, 0.05),
+    P25 = quantile(stdparamvalue, 0.25),
+    P50 = quantile(stdparamvalue, 0.5),
+    P75 = quantile(stdparamvalue, 0.75),
+    P95 = quantile(stdparamvalue, 0.95)), by = list(SEX,paramname)]
+bsvranges
+
+p4 <- ggplot(refbsv[SEX=="Girls",], aes(
+        x      = stdparamvalue,
+        y      = paramname,
+        fill   = factor(..quantile..),
+        height = ..ndensity..)) +
+  facet_wrap(~ paramname, scales="free_y", ncol=1) +
+  stat_density_ridges(
+    geom="density_ridges_gradient", calc_ecdf=TRUE,
+    quantile_lines=TRUE, rel_min_height=0.001, scale=0.9,
+    quantiles=c(0.05, 0.25, 0.5, 0.75, 0.95)) +
+  scale_fill_manual(
+    name="Probability",
+    values=c("white", "#FF000050", "#FF0000A0", 
+             "#FF0000A0", "#FF000050", "white"),
+    labels = c("(0, 0.05]", "(0.05, 0.25]",
+             "(0.25, 0.5]", "(0.5, 0.75]",
+             "(0.75, 0.95]", "(0.95, 1]")) +
+  theme_bw() +
+  theme(
+    legend.position = "none",
+    axis.text.y     = element_blank(),
+    axis.ticks.y    = element_blank(),
+    axis.title.y    = element_blank()) +
+  labs(x="Standardized PK Parameters", y="") +
+  scale_x_log10() +
+  coord_cartesian(expand=FALSE)
+
+p4
 ```
 
 ```{r ped2, fig.width=7,fig.height=4, include=FALSE }
-# ggplot(NCATYPICALREF[NCATYPICALREF$SEX=="Girls",],
-#        aes(x=paramvalue,y=paramname,fill=factor(..quantile..),height=..ndensity..))+
-#       facet_grid(paramname~SEX,scales="free_y",switch="y")+
-#   stat_density_ridges(
-#     geom = "density_ridges_gradient", calc_ecdf = TRUE,
-#     quantile_lines = TRUE, rel_min_height = 0.001,scale=0.9,
-#     quantiles = c(0.05,0.25,0.5,0.75, 0.95)) +
-#   scale_fill_manual(
-#     name = "Probability", values = c("white","#FF000050","#FF0000A0", "#FF0000A0","#FF000050","white"),
-#     labels = c("(0, 0.05]", "(0.05, 0.25]",
-#                "(0.25, 0.5]","(0.5, 0.75]",
-#                "(0.75, 0.95]","(0.95, 1]")
-#   )+
-#   labs(x="Reference Subject\nStandardized PK Parameters with BSV",y="")+
-#   scale_x_log10()+
-#   coord_cartesian(expand = FALSE)+
-#   theme_bw(base_size=22)+
+#  p4+ theme_bw(base_size=22)+
 #   theme(axis.text.y=element_blank(),axis.ticks.y = element_blank(),
 #           legend.position = "none")
 # ggsave("ped2.png", device="png",type="cairo-png")
@@ -161,10 +182,16 @@ The NHANES website provides a csv file containing the smoothed growth charts dis
 ```{r simcovariate, collapse=TRUE }
 wtage <- read.csv (url("https://www.cdc.gov/growthcharts/data/zscore/wtage.csv"))
 #boys 1 and girls 2 in this file
-wtage<-  wtage[wtage$Agemos<=6*12,]
+wtage<-  wtage[wtage$Agemos<=6*12,] # keeps only 2 to 6 years
+
+wtage[wtage$Agemos>=4*12-1&wtage$Agemos<=4*12 +1,] %>%
+  group_by(Sex) %>% 
+  summarize(Median=median(M))
+
 nweightsperage <- 50 # simulate 50 kid at each age/sex
 simwtageoutput <- data.frame(matrix(NA, nrow = nrow(wtage),ncol = nweightsperage))
 names(simwtageoutput) <- paste0("Var", 1:nweightsperage)
+set.seed(209321)
 for (i in 1:nrow(wtage)) {#
   simpoints <- gamlss.dist::rBCCG(nweightsperage,
                                   mu = wtage[i,"M"],
@@ -174,7 +201,7 @@ simwtageoutput[i, ] <- simpoints
 }
 simwtageoutput$Agemos  <- wtage$Agemos
 simwtageoutput$AgeY  <- wtage$Agemos/12
-simwtageoutput$Sex <- ifelse( wtage$Sex==2,0,1)
+simwtageoutput$Sex <- ifelse( wtage$Sex==2,0,1)#recode girls to 0, boys to 1
 
 simwtageoutput <- tidyr::gather(simwtageoutput,age,Weight,
                                 paste0("Var", 1:nweightsperage))
@@ -200,15 +227,14 @@ data.all<-merge(idata,data.dose)
 data.all$ID <- 1: nrow(data.all)
 outcovcomb<- pedmodsim %>%
   data_set(data.all) %>%
-  carry.out(WT,AGE,SEX,CLi) %>%
   zero_re() %>% 
   mrgsim(end=24, delta=1)
 outcovcomb<-as.data.frame(outcovcomb)
 outcovcomb <- outcovcomb %>% 
   arrange(ID,time,SEX,AGE,WT)
 outcovcomb$SEX <- as.factor(outcovcomb$SEX)
-
 outcovcomb$SEX <- factor(outcovcomb$SEX,labels=c("Girls","Boys"))
+
 f <- function(x, xcat, which, what, from, to, ...) {
    what <- sub("of ", "of\n", what)
    what <- sub("median ", "median\n", what)
@@ -279,7 +305,7 @@ paramvswt
 ## PK Parameters Summaries and Distribution Plots  
 ```{r computenca, fig.height=5, collapse=TRUE }  
 nca.summaries <- out.df.multivariatecov.long %>%
-  mutate(SEXCAT =ifelse( SEX==0,"Girls","Boys"),
+  mutate(SEXCAT =ifelse( SEX=="Boys","Girls","Boys"),
          REF = "All Subjects")
 
 nca.summaries$WTCAT3 <- table1::eqcut( nca.summaries$WT,3,varlabel = "Weight")
@@ -332,23 +358,26 @@ coveffectsdatacovrep <- nca.summaries.long %>%
   dplyr::filter(!is.na(mid)) %>% 
   dplyr::filter(covname !="WTCAT3")
 
-  BSVRANGES<- NCATYPICALREF %>%
-    group_by(paramname) %>%
-    dplyr::summarize(
-    P05 = quantile(paramvalue, 0.05),
-    P25 = quantile(paramvalue, 0.25),
-    P50 = quantile(paramvalue, 0.5),
-    P75 = quantile(paramvalue, 0.75),
-    P95 = quantile(paramvalue, 0.95)
-  )
+bsvranges <- bsvranges[SEX=="Girls",]
+
+setkey(bsvranges, paramname)
 
 coveffectsdatacovrepbsv <- coveffectsdatacovrep[coveffectsdatacovrep$covname=="REF",]
 coveffectsdatacovrepbsv$covname <- "BSV"
 coveffectsdatacovrepbsv$covvalue <- "90% of patients"
 coveffectsdatacovrepbsv$label <-    "90% of patients"
-coveffectsdatacovrepbsv$lower <- BSVRANGES$P05
-coveffectsdatacovrepbsv$upper <- BSVRANGES$P95
-coveffectsdatacovrepbsv<- rbind(coveffectsdatacovrep,coveffectsdatacovrepbsv)
+coveffectsdatacovrepbsv$lower <- bsvranges$P05
+coveffectsdatacovrepbsv$upper <- bsvranges$P95
+coveffectsdatacovrepbsv2 <- coveffectsdatacovrep[coveffectsdatacovrep$covname=="REF",]
+coveffectsdatacovrepbsv2$covname <- "BSV"
+coveffectsdatacovrepbsv2$covvalue <- "50% of patients"
+coveffectsdatacovrepbsv2$label <-    "50% of patients"
+coveffectsdatacovrepbsv2$lower <- bsvranges$P25
+coveffectsdatacovrepbsv2$upper <- bsvranges$P75
+
+coveffectsdatacovrepbsv<- rbind(coveffectsdatacovrep,coveffectsdatacovrepbsv2,
+                                coveffectsdatacovrepbsv)
+
 coveffectsdatacovrepbsv <- coveffectsdatacovrepbsv %>% 
   mutate(
     label= covvalue,
@@ -364,6 +393,19 @@ levels =  c("WTCAT4","AGECAT4","SEXCAT","REF", "BSV"),
 labels = c("Weight","Age","Sex","REF","BSV"))
     
 
+coveffectsdatacovrepbsv$label <- factor(coveffectsdatacovrepbsv$label,
+levels =c(
+   "1st quartile of Age:\n[2.00,2.96)"
+ , "2nd quartile of Age:\n[2.96,3.96)"
+ , "3rd quartile of Age:\n[3.96,4.96)"
+ , "4th quartile of Age:\n[4.96,5.96]" 
+ , "Boys", "Girls", "All Subjects","90% of patients","50% of patients"
+, "1st quartile of Weight:\n[9.40,13.9)"
+, "2nd quartile of Weight:\n[13.9,15.9)"
+, "3rd quartile of Weight:\n[15.9,18.3)"
+, "4th quartile of Weight:\n[18.3,38.2]"
+))
+
 interval_legend_text = "Median (points)\n90% CI (horizontal lines)"
 interval_bsv_text = "BSV (points)\nPrediction Intervals (horizontal lines)"
 ref_legend_text = "Reference (vertical line)\nClinically relevant limits\n(gray area)"
@@ -371,7 +413,7 @@ ref_legend_text = "Reference (vertical line)\nClinically relevant limits\n(gray 
 png("./coveffectsplotped.png",width =9 ,height = 7,units = "in",res=72)
 coveffectsplot::forest_plot(coveffectsdatacovrepbsv,
                             ref_area = c(0.8, 1/0.8),
-                            x_range = c(0.5,2),
+                            x_range = c(0.4,2.2),
                             strip_placement = "outside",
                             base_size = 18,
                             y_label_text_size = 9,x_label_text_size = 10,
