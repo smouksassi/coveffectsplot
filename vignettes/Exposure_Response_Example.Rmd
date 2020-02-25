@@ -191,7 +191,8 @@ iter_sims <- iter_sims %>%
 iter_sims$covname <-factor(as.factor(iter_sims$covname ),
                           levels =  c("Weight","DOSE","SEV","REF"))
 iter_sims$covvalue <- factor(as.factor(iter_sims$covvalue),
-                          levels =  c("0 mg","25 mg","50 mg","100 mg","125 mg","150 mg",
+                          levels =  c("0 mg","25 mg","50 mg",
+                                      "100 mg","125 mg","150 mg",
                           "50 kg","60 kg","80 kg", "90 kg",
                           "70 kg\nNot Severe\n75 mg",  "Severe"))
 
@@ -204,16 +205,12 @@ ggplot(iter_sims,aes(x=paramvalue,y=covvalue))+
   stat_density_ridges(aes(fill=factor(..quantile..),height=..ndensity..),
     geom = "density_ridges_gradient", calc_ecdf = TRUE,
     quantile_lines = TRUE, rel_min_height = 0.001,scale=0.9,
-    quantiles = c(0.05,0.25,0.5,0.75, 0.95))+
+    quantiles = c(0.025,0.5, 0.975))+
     facet_grid(covname~paramname,scales="free",switch="both",
              labeller = labeller(paramname=yvar_names))+ 
   scale_fill_manual(
-    name = "Probability", values = c("#FF0000A0",
-                                     "#0000FFA0", "white","white",
-                                     "#0000FFA0","#FF0000A0"),
-    labels = c("(0, 0.05]", "(0.05, 0.25]",
-               "(0.25, 0.5]","(0.5, 0.75]",
-               "(0.75, 0.95]","(0.95, 1]")
+    name = "Probability", values = c("white","#0000FFA0", "#0000FFA0","white"),
+    labels = c("(0, 0.025]","(0.025, 0.5]","(0.5, 0.975]","(0.975, 1]")
   )+
   theme_bw()+
   theme(axis.title = element_blank(),strip.placement = "outside")
