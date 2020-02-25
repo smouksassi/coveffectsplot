@@ -47,7 +47,7 @@ The observed distribution of the covariates Weight and Sex in the studied popula
 
 Alternatively, we might be interested to compute effects for clinically meaningful difference e.g. 20 kg and then we report effects at 50, 70 and 90 kg. Some clinical covariates like eGFR have predefined cutoffs that we want to cover. 
 
-If the assumption of varying one covariate at a time does not hold we recommend the use of a relalistic distribution of correlated covariates (simualted or real). 
+If the assumption of varying one covariate at a time does not hold we recommend the use of a realistic distribution of correlated covariates (simulated or real). 
 
 Finally, since the BSV cannot be controlled for, showing the distribution of the BSV is important to contrast and compare with the estimated covariate related effects as this will allow us to understand where a random subject given a known set of covariates could possibly belong. We also suggest that precomputing, BSV ranges based on percentiles of the BSV distribution is more helpful than letting the user guess the ranges from visual inspection. 
 

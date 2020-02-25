@@ -50,7 +50,7 @@ round_pad <- function(x, digits = 2, round5up = TRUE) {
   formatC(round(x + eps, digits), digits = digits, format = "f", flag = "0")
 }
 ```
-Here we illustrate the approach with a two-compartment PK model defined with an oridinary differential equation (ODE) and covariates on the PK parameters Clearance (CL) and Volume (V). Weight, Albumin and Sex had effects on CL while Weight and Sex had effects on V. For simplicity no covariates had effects on peripheral clearance or volume. The approach is general and simulation based and can be easily extended to any ODE model with multiple covariate effects.
+Here we illustrate the approach with a two-compartment PK model defined with an ordinary differential equation (ODE) and covariates on the PK parameters Clearance (CL) and Volume (V). Weight, Albumin and Sex had effects on CL while Weight and Sex had effects on V. For simplicity no covariates had effects on peripheral clearance or volume. The approach is general and simulation based and can be easily extended to any ODE model with multiple covariate effects.
 
 ## Specifying a PK Model using `mrgsolve`
 
