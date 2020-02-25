@@ -172,22 +172,22 @@ ggplot(data =outputpkpdsimlong ,
 
 
 ```{r pd1, fig.width=7,fig.height=4, include=FALSE }
-set.seed(678549)
-outputpkpdsimlong <- outputpkpdsim %>%
-  gather(key,value,CP,RESP)
-outputpkpdsimlong$SEX <- as.factor(outputpkpdsimlong$SEX )
-outputpkpdsimlong$SEX <- factor(outputpkpdsimlong$SEX, labels=c("Female"))
-pd1<- ggplot(data =outputpkpdsimlong ,
-       aes(time/24, value, group = ID)) +
-  geom_line(alpha = 0.1, size = 0.3) +
-  facet_grid(key ~WT+ALB+SEX,scales="free_y",switch="y",
-             labeller = labeller(key=yvar_names, WT= label_both,
-                                 ALB= label_both,SEX= label_both,.multi_line = FALSE)) +
-  labs(y = "", color = "Sex", x = "Time (days)")+
-  theme_bw(base_size=18)+
-  theme(strip.placement = "outside",
-        axis.title.y=element_blank())
-ggsave("pd1.png", device="png",type="cairo-png", width = 7, height = 5,dpi=72)
+# set.seed(678549)
+# outputpkpdsimlong <- outputpkpdsim %>%
+#   gather(key,value,CP,RESP)
+# outputpkpdsimlong$SEX <- as.factor(outputpkpdsimlong$SEX )
+# outputpkpdsimlong$SEX <- factor(outputpkpdsimlong$SEX, labels=c("Female"))
+# pd1<- ggplot(data =outputpkpdsimlong ,
+#        aes(time/24, value, group = ID)) +
+#   geom_line(alpha = 0.1, size = 0.3) +
+#   facet_grid(key ~WT+ALB+SEX,scales="free_y",switch="y",
+#              labeller = labeller(key=yvar_names, WT= label_both,
+#                                  ALB= label_both,SEX= label_both,.multi_line = FALSE)) +
+#   labs(y = "", color = "Sex", x = "Time (days)")+
+#   theme_bw(base_size=18)+
+#   theme(strip.placement = "outside",
+#         axis.title.y=element_blank())
+# ggsave("pd1.png", device="png",type="cairo-png", width = 7, height = 5.5,dpi=72)
 ```
 
 ### Compute PD Parameters and Summarize BSV 
