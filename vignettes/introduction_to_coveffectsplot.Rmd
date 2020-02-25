@@ -1,5 +1,5 @@
 ---
-title: "Introduction to coveffectsplot"
+title: "Introduction to `coveffectsplot`"
 author: "Samer Mouksassi"
 date: "`r Sys.Date()`"
 output: 
@@ -18,6 +18,8 @@ knitr::opts_chunk$set(
   dev.args = list(png = list(type = "cairo"))
 )
 library(coveffectsplot)
+library(ggplot2)
+library(ggridges)
 suppressPackageStartupMessages( library(dplyr) )
 
 ```
@@ -25,41 +27,43 @@ suppressPackageStartupMessages( library(dplyr) )
 The use of forest plots to summarize the impact of various intrinsic and extrinsic factors on the pharmacokinetics (PK) of drugs is becoming a standard practice and a key part of submission packages to the FDA. The forest plots format make it easier for clinicians to quickly find and interpret the information they need.^[Essential pharmacokinetic information for drug dosage decisions: a concise visual presentation in the drug label. Clin Pharmacol Ther. 2011 Sep;90(3):471-4.]
 
 ## Motivation
-Traditionally, a paragraph describing the various doses in various group is part of the official drug label and often a table is provided. The advantages of table versus graphs has been previously discussed and each has its own merits. While web-based interactive graphics allow on-demand mouse hovering to show the graph numbers, this is not possible on a printed sheet of paper or a static PDF as required for a drug label. As such, combining a graphic representation of the data with a side table provide the best of both worlds and provide to the clinician an efficient way to interpret the data.
+Traditionally, a paragraph describing the various doses in various group is part of the official drug label and often a table is provided. The advantages of table versus graphs has been previously discussed and each has its own merits. While web-based interactive graphics allow on-demand mouse hovering to show the graph numbers, this is not possible on a printed sheet of paper or on a static PDF as required for a drug label. As such, combining a graphic representation of the data with a side table provides the best of both worlds and provide to the clinician an efficient way to interpret the data.
 
-## Background on a fictitious drug
+## Background on a Fictitious Drug
 Let us assume that we have a drug following a first-order absorption one-compartment PK model with parameters absorption constant (Ka), Clearance (CL) and Volume of distribution (V). Usually, a nonlinear mixed effects model is fitted to the PK data and covariates covering intrinsic and extrinsic are tested on the various parameters. For simplicity, let us assume that the covariate modeling did not add any covariate on Ka and V and provided the following model for CL:
 
-$$CL = {POPCL} \times \left( \frac { \color{blue}{Weight}} {70}\right)^{dWTdCL}\times \left( dSEXdCL\times \left( \color{blue}{Sex}== 1  \right) \right)\times \left(  exp(\eta{CL})\right)$$
+$$CL = {POPCL} \times \left( \frac { \color{blue}{Weight}} {70}\right)^{dWTdCL}\times \left( dSexdCL\times \left( \color{blue}{Sex}== 1  \right) \right)\times \left(  exp(\eta{CL})\right)$$
 
-The above equation shows that we have two covariates on CL one is Weight (kg) a continuous variable with reference value of 70 (kg) and influencing CL with a power model with coefficient dWTdCL. The second is SEX which is an indicator variable taking the value of 0 (Woman, used as the reference category) and 1 (Man) influencing CL with a coefficient dSEXdCL. The last term denotes the individual deviations from the population (random effects) which assumes that CL in the population is log normally distributed. The same model can be more familiar to statisticians if re-written into a linear additive form:
+The above equation shows that we have two covariates on CL one is Weight (kg) a continuous variable with reference value of 70 (kg) and influencing CL with a power model with coefficient dWTdCL. The second is Sex which is an indicator variable taking the value of 0 (Woman, used as the reference category) and 1 (Man) influencing CL with a coefficient dSexdCL. The last term denotes the individual deviations from the population (random effects) which assumes that CL in the population is log normally distributed. The same model can be more familiar to statisticians if re-written into a log-linear additive form:
 
-$$log(CL) = {log(POPCL)} + dWTdCL\times log\left(\frac { \color{blue}{Weight}} {70}\right)+ \ log(dSEXdCL)\times\left(\color{blue}{Sex}== 1 \right)  +\eta{CL}$$
+$$log(CL) = {log(POPCL)} + dWTdCL\times log\left(\frac { \color{blue}{Weight}} {70}\right)+ \ log(dSexdCL)\times\left(\color{blue}{Sex}== 1 \right)  +\eta{CL}$$
 and where the individual level random effect describes the between subject variability (BSV) and is:
 $$\eta{CL}\sim \mathcal{N}(0,\,\omega_{CL}^{2})$$
-The modeling output would give you the value of the fixed effects parameters (POPCL, dWTdCL and dSEXdCL), the variance covariance matrix of the random effects as well as the associated uncertainty from the estimated asymptotic variance covariance matrix of the various estimated parameters. Alternatively, the uncertainty can also be obtained using a nonparametric bootstrap resampling of the individuals. Oftentimes, the uncertainty is reported as a standard error or relative standard error (%). If we are interested in reporting the standard error of CL in Men this would involve some error propagation using the delta method, using simulation from the variance covariance matrix or using the bootstrap distribution.
+The modeling output would give you the value of the fixed effects parameters (POPCL, dWTdCL and dSexdCL), the variance covariance matrix of the random effects as well as the associated uncertainty from the estimated asymptotic variance covariance matrix of the various estimated parameters. Alternatively, the uncertainty can also be obtained using a nonparametric bootstrap resampling of the individuals. Oftentimes, the uncertainty is reported as a standard error or relative standard error (%). If we are interested in reporting the standard error of CL in Men there is several ways we can use to compute it: 1) error propagation using the delta method. 2) simulation from the variance covariance matrix. 3) using the bootstrap distribution.
 
-The observed distribution of the covariates Weight and SEX in the studied population is important because, to compute the covariates effects, we need to choose values for all covariates included in the model It is desirable to provide sensible values that would provide a good sense on where most of the patients are. A common practice is to report the effects of the 75th percentile to the 25th percentile which will cover 50% of the population, some would also want to cover 90% of the population (5th to the 95th percentiles). Of note is that we need to cover enough of the covariate range and steps(e.g. show effects at the 5th, 25th, 50th, 75th and 95th percentiles) to illustrate a nonlinear relationship like the power model.
+The observed distribution of the covariates Weight and Sex in the studied population is important because, to compute the covariates effects, we need to choose values for all covariates included in the model. It is desirable to provide sensible values that would provide a good sense on where most of the patients are. A common practice is to report the effects of the 75th percentile to the 25th percentile which will cover 50% of the population, some would also want to cover 90% of the population (5th to the 95th percentiles). Of note is that we need to cover enough of the covariate range and steps(e.g. show effects at the 5th, 25th, 50th, 75th and 95th percentiles) to illustrate a nonlinear relationship like the power model.
 
-Alternatively, we might be interested to compute effects for clinically meaningful difference e.g. 20 kg so we report effects at 50, 70 and 90 kg. Some clinical covariates like eGFR have predefined cutoffs that we want to cover.
+Alternatively, we might be interested to compute effects for clinically meaningful difference e.g. 20 kg and then we report effects at 50, 70 and 90 kg. Some clinical covariates like eGFR have predefined cutoffs that we want to cover. 
 
-Finally, since the BSV cannot be controlled for, showing the distribution of the BSV is important to contrast and compare with the estimated covariate related effects as this will allow us to understand where a random subject given a known set of covariate could possibly belong. Precomputing, some percentiles of the BSV distribution can even be more useful as estimating probabilities based on a plotted density estimate can be visually difficult. 
+If the assumption of varying one covariate at a time does not hold we recommend the use of a relalistic distribution of correlated covariates (simualted or real). 
 
-## Simulating data and modeling outputs
+Finally, since the BSV cannot be controlled for, showing the distribution of the BSV is important to contrast and compare with the estimated covariate related effects as this will allow us to understand where a random subject given a known set of covariates could possibly belong. We also suggest that precomputing, BSV ranges based on percentiles of the BSV distribution is more helpful than letting the user guess the ranges from visual inspection. 
 
-We will assume that the model fit had estimated parameters with relative standard errors of 5%. For this vignette, a simulation from a multivariate normal distribution with n= 10000 was used. The five first rows are shown in the table below. The assumed mean values for POPCL, dWTdCL and dSEXdCL were 10, 0.75 and 1.5 respectively.
-For simplicity, we will also assume that there were equal number of SEX = 1 (Man) and SEX = 0 (Woman) and that men and women had mean weights of 75 and 65 kg and the same standard deviation of 15 kg (overall mean of 70 kg). 
+## Simulating Data and Outputs from a Modeling Exercise
+
+We will assume that the model fit had estimated parameters with relative standard errors of 15%. For this vignette, a simulation from a multivariate normal distribution with n= 10000 was used. The five first rows are shown in the table below. The assumed mean values for POPCL, dWTdCL and dSexdCL were 10, 0.75 and 1.5 respectively.
+For simplicity, we will also assume that there were equal number of Sex = 1 (Man) and Sex = 0 (Woman) and that men and women had mean weights of 75 and 65 kg and the same standard deviation of 20 kg. 
 
 ```{r, echo=TRUE, results='asis',fig.align = "center",fig.width = 6}
 set.seed(657687)
 df <- data.frame(
 MASS::mvrnorm(n = 10000,
                 mu = c(10,0.75,1.5),
-                Sigma=matrix(c((10*0.05)^2,
-                               0.001,0.001,0.001,(0.75*0.05)^2,
-                               0.001,0.001,0.001,(1.5*0.05)^2),3,3,byrow = TRUE) 
+                Sigma=matrix(c((10*0.15)^2,
+                               0.001,0.001,0.001,(0.75*0.15)^2,
+                               0.001,0.001,0.001,(1.5*0.15)^2),3,3,byrow = TRUE) 
 ))
-names(df) <- c("POPCL","dWTdCL","dSEXdCL")
+names(df) <- c("POPCL","dWTdCL","dSexdCL")
 knitr::kable(head(round(df,2),5))
 ```
 
@@ -69,15 +73,16 @@ dflong <- tidyr::gather(df)
 ggplot2::ggplot(dflong,ggplot2::aes(x=value,fill=key))+
   ggplot2::geom_density(alpha=0.2)+
     ggplot2::facet_wrap(~key,scales="free",ncol=1)+
-    ggplot2::labs(fill="",x="Uncertainty Distribution of the parameters")+
+    ggplot2::labs(fill="",x="Uncertainty Distribution (RSE 15%) of the Parameters")+
   ggplot2::theme(legend.position = "right",legend.background = 
-                   ggplot2::element_rect(fill="transparent"))+
-  ggplot2::guides(fill=ggplot2::guide_legend(reverse = TRUE))
-
+                   ggplot2::element_rect(fill="transparent"),
+                 axis.ticks.y = element_blank(),axis.text.y =element_blank())+
+  ggplot2::guides(fill=ggplot2::guide_legend(reverse = FALSE))
+set.seed(657687)
 dfcov<- data.frame(
 MASS::mvrnorm(n=10000 ,
                 mu =c(65,75),
-                Sigma=matrix(c(15^2,0.01,0.01,15^2),2,2,byrow = TRUE) 
+                Sigma=matrix(c(20^2,0.01,0.01,20^2),2,2,byrow = TRUE) 
 ))
 names(dfcov)<- c("WTWOMAN","WTMAN")
 dfcovlong <- tidyr::gather(dfcov)
@@ -85,8 +90,8 @@ ggplot2::ggplot(dfcovlong,ggplot2::aes(x=value,fill=key))+
   ggplot2::geom_density(alpha=0.2)+
   ggplot2::labs(fill="",x="Weight (kg)")+
   ggplot2::theme(legend.position = "right",legend.background = 
-                   ggplot2::element_rect(fill="transparent"))+
-  ggplot2::guides(fill=ggplot2::guide_legend(reverse = TRUE))
+                   ggplot2::element_rect(fill="transparent"),axis.ticks.y = element_blank(),axis.text.y =element_blank())+
+  ggplot2::guides(fill=ggplot2::guide_legend(reverse = FALSE))
 
 
 dfcovlongquantile<- as.data.frame(
@@ -100,8 +105,8 @@ dfcovlongquantiletable<- t(dfcovlongquantile)
 knitr::kable(dfcovlongquantiletable[1,,drop=FALSE],row.names=FALSE)
 ```
 
-The model had a between subject variability on CL $\omega_{CL}^{2}$ variance of 0.09 which translate to apparent CV of sqrt (exp (0.09) -1) = 0.3069. A common way to report this BSV is to say we have 30.7% BSV. But what does this really mean in practical terms? If I take 50 patients (with the same covariate values) what are the chances that some of these patients will have very low or very high CL warranting dose changes? In other words, how much percent of the patients will have a CL less than or equal to half the CL of the reference value?
-A  useful metric can be to compute the bounds where say 50% and 90% of the patients will be located using simple quantile functions on simulated distributions. For the 30.7% BSV case, we compute that 50% of the patients will be within the 0.82 to 1.23 interval (blue area) while 90% of the patients will be within the 0.61 to 1.63 interval (red area). A table showing the various quantiles is also shown. For asymmetrical distribution we can also use the highest density intervals instead of percentiles.
+The model had a between subject variability on CL $\omega_{CL}^{2}$ variance of 0.09 which translate to apparent CV of sqrt (exp (0.09) -1) = 0.3069. A common way to report this BSV is to say we have 30.7% BSV. But what does this really mean in practical terms? What are the chances that a patient with known covaraite values, will have very low or very high CL warranting dose changes?  
+A useful metric can be to compute the bounds where say 50% and 90% of the patients will be located using simple quantile functions on simulated distributions. For the 30.7% BSV case, we compute that 50% of the patients will be within the 0.82 to 1.23 interval (dark red area) while 90% of the patients will be within the 0.61 to 1.63 interval (lighter red area). A table showing the various quantiles is also shown. For asymmetrical distribution we can also use the highest density intervals instead of percentiles but this is not shown here.
 
 ```{r, echo=TRUE,fig.align = "center",fig.width = 6}
 set.seed(546789)
@@ -109,7 +114,7 @@ CLBSVdistribution <- data.frame(CL= 10*exp(rnorm(10000,0,sd=0.09^0.5)))
 CLBSVdistribution$CLBSV<- CLBSVdistribution$CL/10
 ```
 
-```{r, echo=FALSE,fig.align = "center",fig.width = 6}
+```{r, echo=FALSE,fig.align = "center",fig.width = 6 ,fig.height=4}
 dfbsv<- as.data.frame(
   round( quantile(CLBSVdistribution$CLBSV,probs=c(0,0.05,0.25,0.5,0.75,0.95,1)),2))
 names(dfbsv)<- "BSVquantilevalue"
@@ -127,23 +132,34 @@ BSVLINE2<- data.frame(
                        extent="BSV50%")
 
 BSVLINE <- rbind(BSVLINE1,BSVLINE2)
-ggplot2::ggplot(data= CLBSVdistribution)+
- ggplot2:: geom_density(ggplot2::aes(x=CLBSV,
-                   col="Simulated\nDensity")) +
-   ggplot2::geom_rect(data=BSVLINE,
-            ggplot2::aes(xmin=lower,xmax=upper  ,
-                fill=extent),ymin=-Inf,ymax=Inf ,
-           alpha=0.1)+
-  ggplot2::geom_vline(xintercept=c(0.8,1,1.25))+
-  ggplot2::theme_bw(base_size = 16)+
-  ggplot2::theme(axis.text.y = ggplot2::element_blank(),
-        axis.ticks.y = ggplot2::element_blank(),
-        axis.text.x=ggplot2::element_text(size=12))+
-  ggplot2::scale_x_continuous(breaks=c(0.25,0.5,0.8,1,1.25,1.5,2,3))+
-  ggplot2::coord_cartesian(xlim=c(0.4,2))+
-  ggplot2::labs(colour="",fill="BSV Ranges",x="Individual Clearances with BSV/Reference CL",
-                title="Illustrating 30% BSV")+
-  ggplot2::guides(fill = ggplot2::guide_legend(override.aes =  list(alpha = 0.1)  ))
+CLBSVdistribution$paramname<- "CL"
+  ggplot(CLBSVdistribution, aes(
+  x      = CLBSV,
+  y      = paramname,
+  fill   = factor(..quantile..),
+  height = ..ndensity..)) +
+  stat_density_ridges(
+    geom="density_ridges_gradient", calc_ecdf=TRUE,
+    quantile_lines=TRUE, rel_min_height=0.001, scale=0.9,
+    quantiles=c(0.05, 0.25, 0.5, 0.75, 0.95)) +
+  scale_fill_manual(
+    name="BSV Ranges",
+    values=c("white", "#FF000050", "#FF0000A0", "#FF0000A0", "#FF000050", "white"),
+    labels = c("(0, 0.05]", "(0.05, 0.25]",
+               "(0.25, 0.5]", "(0.5, 0.75]",
+               "(0.75, 0.95]", "(0.95, 1]")) +
+  theme_bw(base_size = 16) +
+  theme(
+    legend.position = "right",
+    axis.text.y     = element_blank(),
+    axis.ticks.y    = element_blank(),
+    axis.title.y    = element_blank(),
+    axis.text.x=ggplot2::element_text(size=12),
+    axis.title.x=ggplot2::element_text(size=14)) +
+  scale_x_continuous(breaks=c(0.25,0.61,0.82,1,1.22,1.63,2))+
+  coord_cartesian(expand=FALSE,xlim = c(0.49,2.01))+
+  ggplot2::labs(x="Individual Clearances with BSV/Reference CL",
+                title="Illustrating 30% BSV")
 
 
 
@@ -153,19 +169,20 @@ knitr::kable(dfbsvtable[1,,drop=FALSE],row.names=FALSE)
 #0.55, 0.74, 1 , 1.12, 1.53
 ```
 
-## Visualizing effects distributions
+## Visualizing Covariate Effects with Distributions
 
-We will divide the POPCL uncertainty distribution by its median to standardize it. This will make everything relative to the reference where all covariates are held at the reference value(s) here SEX = 0 and Weight = 70 kg.
-We will also compute the effects of Weight = 50 kg and 90 kg as compared to the 70 kg.
-We keep dSEXdCL as is, it represents the effects of SEX = 1 effects when weight is held at its reference value = 70 kg. Additionally we can compute the effects for any combination of covariates e.g. Weight = 90 kg and SEX = 1. A clinical relevance areas e.g. between 0.8 and 1.25 of the reference value is shown since this is often regarded as the zone of PK equivalence. A covariate need to have lower or larger effects than this zone to trigger actions requiring dose changes. Finally we will make a plot that compare the magnitude of uncertainty, covariate distribution and between subject variability effects.
+* First, we will divide the POPCL uncertainty distribution by its median to standardize it. This will make everything relative to the reference where all covariates are held at the reference value(s) here Sex = 0 and Weight = 70 kg.
+* Second, We will compute the effects of Weight = 50 kg and 90 kg as compared to the 70 kg.
+We keep dSexdCL as is, it represents the effects of Sex = 1 effects when weight is held at its reference value = 70 kg.
+* Third, we optionally compute the effects for combination of covariates of interest e.g. Weight = 90 kg and Sex = 1. A clinical relevance areas e.g. between 0.8 and 1.25 of the reference value is shown since this is often regarded as the zone of PK equivalence. Usually, a covariate need to have effects driving PK exposures outside of this zone to trigger actions requiring dose changes. * Finally, we will make a plot that compare the magnitude of uncertainty, covariate distribution and between subject variability effects.
 
 ```{r,fig.width= 7}
 dfeffects <- df
 dfeffects$REF <- dfeffects$POPCL/ median(dfeffects$POPCL)
 dfeffects$SEX_FEMALE_WT_50 <- dfeffects$REF*(50/70)^dfeffects$dWTdCL
 dfeffects$SEX_FEMALE_WT_90 <-  dfeffects$REF*(90/70)^dfeffects$dWTdCL
-dfeffects$SEX_Male_WT_70 <- dfeffects$dSEXdCL
-dfeffects$SEX_Male_WT_90 <- dfeffects$dSEXdCL*dfeffects$REF*(90/70)^dfeffects$dWTdCL
+dfeffects$SEX_Male_WT_70 <- dfeffects$dSexdCL
+dfeffects$SEX_Male_WT_90 <- dfeffects$dSexdCL*dfeffects$REF*(90/70)^dfeffects$dWTdCL
 dfeffects$BSV<-  CLBSVdistribution$CLBSV
 
 dfeffects<- dfeffects[,c("SEX_FEMALE_WT_50",
@@ -201,13 +218,13 @@ ggridges::stat_density_ridges(
   ggplot2::theme_bw()+
   ggplot2::labs(x="Effects Relative to parameter reference value",y="")
 ```
-Next we overlay the various sources of variability to compare them head to head:
+*Here we overlay the various sources of variability to compare them head to head:*
 ```{r,fig.width= 7}
 ggplot2::ggplot(dfeffects)+
-  ggplot2::geom_density(ggplot2::aes(x=REF,y=..scaled..,col="a.Uncertainty\nRSE=5%"))+
+  ggplot2::geom_density(ggplot2::aes(x=REF,y=..scaled..,col="a.Uncertainty\nRSE=15%"))+
   ggplot2::geom_density(data=dfcovlong,
                         ggplot2::aes(x=(value/70)^0.75 ,
-                                y=..scaled..,col="b.Weight\nMean=70 kg, sd=15 kg"))+
+                                y=..scaled..,col="b.Weight\nMean=70 kg, sd=20 kg"))+
   ggplot2::geom_density(data=CLBSVdistribution ,ggplot2::aes(x=CLBSV,
                                      y=..scaled..,col="c.Between subject variability\nCV=30%"))+
   ggplot2::theme_bw(base_size = 16)+
@@ -215,11 +232,11 @@ ggplot2::ggplot(dfeffects)+
         axis.ticks.y = ggplot2::element_blank())+
   ggplot2::scale_x_continuous(breaks=c(0.25,0.5,0.8,1,1.25,1.5,2,3))+
   ggplot2::coord_cartesian(xlim=c(0.25,2))+
-  ggplot2::labs(color="",x="Effects Relative to parameter reference value",y= "Scaled Density")
+  ggplot2::labs(color="",x="Effects Standardized Relative to the Typical Value",y= "Scaled Density")
 
 ```
 
-## Simplifying the effects distributions data
+## Simplifying the Distributions into Ranges of Effects
 The above plots might be overloading the reader with information. We will simplify it by removing unnecessary details and by computing the desired stats in advance.
 
 ```{r,}
@@ -418,4 +435,4 @@ dev.off()
 ```
 ![](coveffectsplot2.png)
 
-In this vignette we  covered univariate covariate effects where we vary one at a time. Refer to the other vignettes for more elaborate examples.
+In this introductory vignette we covered univariate covariate effects where we vary one at a time. Refer to the other vignettes for more advanced examples illustrating full simulation of PK or PK/PD or exposure-response models including the use of full covariate distributions.
