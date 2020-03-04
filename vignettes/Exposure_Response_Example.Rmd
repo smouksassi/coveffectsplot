@@ -1,5 +1,5 @@
 ---
-title: "Exposure-Response Model Assessing the Impact of Covariates on Probabilities and Odds Ratios"
+title: "Exposure-Response Model Assessing the Impact of Covariates on Probabilities of Clinical Outcome"
 output: 
   rmarkdown::html_vignette:
     toc: true
@@ -43,6 +43,8 @@ expand.modelframe <- function(..., rv, covcol="covname") {
   do.call(rbind, res)
 }
 
+expit <- function(x) exp(x)/ (1 + exp(x) )
+ 
 ```
 ## Specifying an Exposure Response Model using `mrgsolve`
 Here we illustrate the approach using a Binary response linked to exposure (AUC) via a saturating EMAX function. Weight is a covariate on Clearance. We also have a disease severity categorical covariate on EMAX where patient with severe disease have a lower EMAX.
@@ -50,13 +52,22 @@ Here we illustrate the approach using a Binary response linked to exposure (AUC)
 ```{r exprespmodel, collapse=TRUE }
 exprespmodel <- '
 $PLUGIN Rcpp
-$PARAM
-TVCL = 10, WTCL = 0.75,
-TVEMAX = 5, SEVEMAX = 3,AUC50 = 7.5,
-BASEP = 0.1,
-WT=70, SEV = 0,DOSE = 75
-$OMEGA
-0.09 
+$PARAM @annotated
+TVCL    : 10  : Clearance CL (L/h)
+WTCL    : 0.75: Weight on CL (ref. 70 kg)
+TVEMAX  : 5   : Maximum Drug Effect
+SEVEMAX : 3   : Severity Reduction of Drug Effect
+AUC50   : 7.5 : Area Under the Curve providing half maximal response
+BASEP   : 0.1 : Baseline Probability of Response 
+
+$PARAM @annotated // reference values for covariate
+WT      : 70  : Weight (kg)
+SEV     : 0   : Sex (0=Female, 1=Male)
+DOSE    : 75  : Dose (mg)
+$OMEGA @annotated @block
+nCL     :0.09 : ETA on CL
+
+
 $PRED
 double CL = TVCL *
     pow((WT/70.0), WTCL)*exp(ETA(1)); 
@@ -68,6 +79,12 @@ capture LGST = Intercept + (EMAX*AUC/(AUC50+AUC));
 capture P1 = 1/(1+exp(-LGST));
 capture DV = R::runif(0,1)< P1 ? 1 : 0;
 '
+# the typical probability from the model parameters will be :
+TypicalProb<- 1/(1+exp(-(log(0.1/(1-0.1)) + (5*75/10/(7.5+75/10)))))
+MaxProb<- 1/(1+exp(-(log(0.1/(1-0.1)) + (5*750/10/(7.5+750/10)))))
+MinProb<- 1/(1+exp(-(log(0.1/(1-0.1)) + (5*0/10/(7.5+0/10)))))
+
+
 modexprespsim <- mcode("exprespmodel", exprespmodel)
 simdata <-  expand.idata(SEV=c(0),
                DOSE = c(0,75),
@@ -87,24 +104,112 @@ This is a plot of the disease being cured versus PK exposure by disease severity
 ggplot(simout, aes(AUC,DV,linetype=factor(SEV))) +
   facet_grid( WT~SEV,labeller = label_both)+
   geom_point(position=position_jitter(height=0.02,width=0.1),
-             aes(color=factor(DOSE)))+
-  geom_smooth(method = "glm",se=FALSE,
-              method.args = list(family = "binomial"),color="black")+
+             aes(color=factor(DOSE)),size=1,alpha=0.5)+
+  geom_line(aes(y=P1),method = "smooth",se=FALSE,color="black",size=1.1)+
+  geom_label(data=data.frame(
+    x=8.5,y=TypicalProb,label=round(100*TypicalProb,1),SEV=0),
+    aes(x=x,y=y,label=label),fill="transparent")+
+    geom_label(data=data.frame(
+    x=0.3,y=0.1,label=round(100*0.1,1),SEV=0),
+    aes(x=x,y=y,label=label),fill="transparent")+
   labs(color="Dose (mg)",y="Probability of Being Cured",
        linetype="Severity")+
   theme_bw() + 
   theme(legend.position = "top")
 ```
 
-## Computing the Odds Ratios and Probabilities
-Here we show how the odds ratios and probabilities can be computed. We already know that the distribution of AUC depends on the Dose and on the clearance distributions. The model had three estimated parameters shown in Red, the dose and two other covariates shown in green. A Change in body weight will trigger a change in Clearance which in turn will control the AUC. To define an odds ratio we need to define changes in covariate values for example odds ratio between Severity = 1 and Severity = 0 (everything else being equal). For nonlinear relationships a 5 unit change can generate different results as it depends on where we are on the curve.
+```{r, fig.width=7 ,message=FALSE, include=FALSE}
+# last_plot()+theme_bw(base_size=18)+ geom_label(
+#   data=data.frame(x=7.5,y=0.576,label="57.6%",SEV=0,WT=70),
+#   aes(x=x,y=y,label=label),inherit.aes = FALSE)+ 
+#   theme(legend.position = "top")
+# ggsave("aucbsvresponse.png", device="png",type="cairo-png",width = 5,
+#        height = 5)
+```
+
+```{r bsvrangeplot, collapse=TRUE }
+simoutbsvplacebo <- simout %>% 
+  filter(DOSE==0)%>% 
+  mutate(LGST =LGST)%>%
+  gather(paramname, paramvalue,LGST,P1)%>%
+  group_by(paramname)%>%
+  summarize(P50 = quantile(paramvalue, 0.5)
+)
+simoutbsv <- simout %>% 
+  mutate(logodds =LGST)%>% 
+  filter(DOSE==75)
+# the probability of response at the typical AUC
+simoutbsvlong  <- simoutbsv  %>%
+  mutate(P1std=P1/TypicalProb) %>% 
+  gather(paramname, paramvalue,P1std,P1)
+
+
+yvar_names <- c(
+  'P1std'="Standardized Probability",
+  'P1'="Probability"
+)
+
+pbsvranges<-  ggplot(simoutbsvlong, aes(
+        x      = paramvalue,
+        y      = paramname,
+        fill   = factor(..quantile..),
+        height = ..ndensity..)) +
+  facet_wrap(paramname~. , scales="free", ncol=1,
+             labeller=labeller(paramname=yvar_names) ) +
+  stat_density_ridges(
+    geom="density_ridges_gradient", calc_ecdf=TRUE,
+    quantile_lines=TRUE, rel_min_height=0.001, scale=0.9,
+    quantiles=c(0.05, 0.25, 0.5, 0.75, 0.95)) +
+  scale_fill_manual(
+    name="Probability",
+    values=c("white", "#FF000050", "#FF0000A0", "#FF0000A0", "#FF000050", "white"),
+    labels = c("(0, 0.05]", "(0.05, 0.25]",
+             "(0.25, 0.5]", "(0.5, 0.75]",
+             "(0.75, 0.95]", "(0.95, 1]")) +
+  theme_bw() +
+  theme(
+    legend.position = "none",
+    axis.text.y     = element_blank(),
+    axis.ticks.y    = element_blank(),
+    axis.title.y    = element_blank()) +
+  labs(x="Parameters", y="") +
+  scale_x_log10() +
+  coord_cartesian(expand=FALSE)
+
+pbsvranges
+
+
+simoutbsvranges <- simoutbsvlong %>%
+  group_by(paramname)%>%
+  summarize(
+   P05 = quantile(paramvalue, 0.05),
+    P25 = quantile(paramvalue, 0.25),
+    P50 = quantile(paramvalue, 0.5),
+    P75 = quantile(paramvalue, 0.75),
+    P95 = quantile(paramvalue, 0.95))
+simoutbsvranges
+```
+
+```{r, fig.width=7 ,message=FALSE, include=FALSE}
+# pbsvranges+theme_bw(base_size=22)+
+#   theme(
+#     legend.position = "none",
+#     axis.text.y     = element_blank(),
+#     axis.ticks.y    = element_blank(),
+#     axis.title.y    = element_blank())
+# ggsave("pbsvranges.png", device="png",type="cairo-png",width = 5, height = 5)
+```
+
+## Computing the Odds and Probabilities
+Here we show how the odds and probabilities can be computed. We already know that the distribution of AUC depends on the Dose and on the clearance distributions. The model had five parameters shown in <span style="color: red;">red</span>, the dose, disease severity and weight were covariates and are shown in <span style="color: green;">green</span>. A Change in body weight will trigger a change in Clearance which in turn will control the AUC. To define an odds ratio we need to define a reference odds with reference covariate values Severity = 0 and changes in covariate values for example Severity = 1 (everything else being equal). For nonlinear relationships, in addition to the covariate unit change e.g. 25 mg change of dose it is important to define what reference value we are using e.g. A change from Placebo = 0 mg to 25 mg is not the same as a change from the typical dose of 75 mg increasing it to 100 mg.
 
 where:
-$$AUC = \left(\frac { \color{green}{Dose}} {CL \times \left( \frac { \color{green}{Weight}} {70}\right)^{WTCL} \times exp(\eta{CL}) }\right)$$
-$$\color{red}{E_{max}}= E_{max} \left(intercept \right) + SevE_{max}\times\left(\color{green}{Severity} = 1\right) $$
-$$log(odds) = \color{red}{Intercept} + \left( \frac {\color{red}{E_{max}} \times \color{blue}{AUC}} {\color{red}{AUC_{50}} +\color{blue}{AUC} }\right)$$
+$$AUC = \left(\frac { \color{green}{Dose}} {\color{red}{CL} \times \left( \frac { \color{green}{Weight}} {70}\right)^{WTCL} \times exp(\eta{CL}) }\right)$$
+$$E_{max}= \color{red}{E_{max} \left(intercept \right)} + \color{red}{SevE_{max}}\times\left(\color{green}{Severity} = 1\right) $$
+$$log(odds) = \color{red}{intercept} + \left( \frac {E_{max} \times \color{blue}{AUC}} {\color{red}{AUC_{50}} +\color{blue}{AUC} }\right)$$
 
 ```{r, collapse=TRUE }
+set.seed(678549)
 thmeans <- c(10,0.75, #TVCL WTCL
              5,3, # TVEMAX  SEVEMAX
              7.5, # AUC50
@@ -151,14 +256,28 @@ for(i in 1:nsim) {
   dfsimunc <- as.data.frame(out%>% mutate(rep = i) )
   iter_sims <- rbind(iter_sims,dfsimunc)
 }
+```
 
-ggplot(iter_sims, aes(DOSE,P1,col=factor(SEV) ) )+
+
+```{r, collapse=TRUE }
+stdprobplot<- ggplot(iter_sims, aes(DOSE,P1,col=factor(SEV) ) )+
   geom_point(aes(group=interaction(ID,rep)),alpha=0.5,size=3)+
-  facet_grid(SEV~ WT,labeller = label_both)
+  geom_hline(yintercept=TypicalProb)+
+  facet_grid(SEV~ WT,labeller = label_both)+
+  labs(y="Probability of Response", colour="Severity")
+stdprobplot
+```
 
+```{r, fig.width=7 ,message=FALSE, include=FALSE}
+ # stdprobplot+theme(axis.title.y = element_text(size=15))+
+ # ggsave("stdprobplot.png", device="png",type="cairo-png",width = 7, height = 4)
+```
+
+
+```{r, fig.height= 7, collapse=TRUE }
 iter_sims <- iter_sims %>%
-  mutate(LGST = exp(LGST))%>%
-  gather(paramname,paramvalue,P1,LGST)%>% 
+  mutate(P1std=P1/TypicalProb)%>%
+  gather(paramname,paramvalue,P1std)%>% 
   ungroup() %>% 
   dplyr::mutate( covname = case_when(
     ID== 1 ~ "Weight",
@@ -196,10 +315,6 @@ iter_sims$covvalue <- factor(as.factor(iter_sims$covvalue),
                           "50 kg","60 kg","80 kg", "90 kg",
                           "70 kg\nNot Severe\n75 mg",  "Severe"))
 
-yvar_names <- c(
-  'LGST'="Odds Ratio",
-  'P1'="Probability"
-)
 
 ggplot(iter_sims,aes(x=paramvalue,y=covvalue))+
   stat_density_ridges(aes(fill=factor(..quantile..),height=..ndensity..),
@@ -215,19 +330,10 @@ ggplot(iter_sims,aes(x=paramvalue,y=covvalue))+
   theme_bw()+
   theme(axis.title = element_blank(),strip.placement = "outside")
 ```
-
-```{r  collapse=TRUE,include=FALSE }
-# uncertaintyplot<- ggplot(iter_sims, aes(AUC,DV,linetype=factor(SEV))) +
-#   facet_grid( ~WT,labeller = label_both,scales="free_x",space="free_x")+
-#   geom_point(position=position_jitter(height=0.02,width=0.1),
-#              aes(color=factor(DOSE)))+
-#   geom_smooth(method = "glm",se=FALSE,
-#               method.args = list(family = "binomial"),color="black")+
-#   labs(color="Dose (mg)",y="Probability of Being Cured",
-#        linetype="Severity")+
-#   theme_bw() + 
-#   theme(legend.position = "top")
-# uncertaintyplot
+```{r, fig.width=7 ,message=FALSE, include=FALSE}
+  #  last_plot()
+  # ggsave("expresp5.png", device="png",type="cairo-png",
+  #        width= 8, height = 5,dpi=72)
 ```
 
 ```{r plot3, collapse=TRUE }
@@ -238,30 +344,61 @@ coveffectsdatacovrep <- iter_sims %>%
     lower= quantile(paramvalue,0.025),
     upper = quantile(paramvalue,0.975))%>% 
   dplyr::filter(!is.na(mid))
+simoutbsvranges<-simoutbsvranges[simoutbsvranges$paramname=="P1std",]
 
-coveffectsdatacovrep <- coveffectsdatacovrep %>% 
+coveffectsdatacovrepbsv <- coveffectsdatacovrep[coveffectsdatacovrep$covname=="REF",]
+coveffectsdatacovrepbsv$covname <- "BSV"
+coveffectsdatacovrepbsv$covvalue <- "90% of patients"
+coveffectsdatacovrepbsv$label <-    "90% of patients"
+coveffectsdatacovrepbsv$lower <- simoutbsvranges$P05
+coveffectsdatacovrepbsv$upper <- simoutbsvranges$P95
+coveffectsdatacovrepbsv2 <- coveffectsdatacovrep[coveffectsdatacovrep$covname=="REF",]
+coveffectsdatacovrepbsv2$covname <- "BSV"
+coveffectsdatacovrepbsv2$covvalue <- "50% of patients"
+coveffectsdatacovrepbsv2$label <-    "50% of patients"
+coveffectsdatacovrepbsv2$lower <- simoutbsvranges$P25
+coveffectsdatacovrepbsv2$upper <- simoutbsvranges$P75
+
+coveffectsdatacovrepbsv<- rbind(coveffectsdatacovrep,coveffectsdatacovrepbsv2,
+                                coveffectsdatacovrepbsv)
+
+coveffectsdatacovrepbsv <- coveffectsdatacovrepbsv %>% 
   mutate(
     label= covvalue,
     LABEL = paste0(format(round(mid,2), nsmall = 2),
                    " [", format(round(lower,2), nsmall = 2), "-",
                    format(round(upper,2), nsmall = 2), "]"))
-coveffectsdatacovrep<- as.data.frame(coveffectsdatacovrep)
+coveffectsdatacovrepbsv<- as.data.frame(coveffectsdatacovrepbsv)
 
-ggplot(coveffectsdatacovrep,
-       aes(x=mid,y=covvalue))+
-  geom_pointrangeh(aes(xmin=lower,xmax=upper))+
-facet_grid(covname~paramname,scales="free",switch="both",
-             labeller = labeller(paramname=yvar_names)) +
-  theme(axis.title = element_blank(),strip.placement = "outside")
-png("./coveffectsplotexpresp.png",width =9 ,height = 6,units = "in",res=72)
-forest_plot(coveffectsdatacovrep,
+coveffectsdatacovrepbsv$label <-factor(as.factor(coveffectsdatacovrepbsv$label ),
+            levels = c("All Subjects","90% of patients","50% of patients",
+              "50 kg","60 kg","80 kg","90 kg",
+              "0 mg","25 mg","50 mg","100 mg","125 mg","150 mg",
+              "Severe","70 kg\nNot Severe\n75 mg"
+              ))
+    
+
+coveffectsdatacovrepbsv$covname <-factor(as.factor(coveffectsdatacovrepbsv$covname ),
+                    levels = c("SEV","Weight","DOSE","REF","BSV"))
+
+ref_legend_text      <- "Reference (vertical line)"
+png("./coveffectsplotexpresp.png",width =9 ,height = 7,units = "in",res=72)
+forest_plot(coveffectsdatacovrepbsv,
                             strip_placement = "outside",
-                            show_ref_area = FALSE,show_ref_value=FALSE,
-                            plot_table_ratio = 2,base_size = 12,
-                            table_text_size = 4,xlabel= " ",
+                            show_ref_area = FALSE,
+                            show_ref_value=TRUE,
+                            ref_legend_text = ref_legend_text,
+                            plot_table_ratio = 2,
+                            base_size = 12,
+                            table_text_size = 4,
+                            y_label_text_size      = 12,
+                            xlabel= " ",
                             facet_formula = "covname~paramname",
-                            facet_labeller = labeller(paramname=yvar_names),
-                            facet_scales = "free")
+                            facet_labeller      = labeller(paramname=yvar_names),
+                            facet_scales           = "free",
+                            logxscale              = TRUE,
+                            major_x_ticks          = c(0.1,0.25, 0.5,1,1.5),
+                            x_range                = c(0.1, 1.5))
 
 dev.off()
 

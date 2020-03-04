@@ -23,6 +23,8 @@ library(coveffectsplot)
 library(ggplot2)
 library(ggridges)
 suppressPackageStartupMessages( library(dplyr) )
+nuncertainty <- 10000
+nbsvsubjects <- 100000
 
 ```
 
@@ -54,12 +56,12 @@ Finally, since the BSV cannot be controlled for, showing the distribution of the
 ## Simulating Data and Outputs from a Modeling Exercise
 
 We will assume that the model fit had estimated parameters with relative standard errors of 15%. For this vignette, a simulation from a multivariate normal distribution with n= 10000 was used. The five first rows are shown in the table below. The assumed mean values for POPCL, dWTdCL and dSexdCL were 10, 0.75 and 1.5 respectively.
-For simplicity, we will also assume that there were equal number of Sex = 1 (Man) and Sex = 0 (Woman) and that men and women had mean weights of 75 and 65 kg and the same standard deviation of 20 kg. 
+For simplicity, we will also assume that there were equal number of Sex = 1 (Man) and Sex = 0 (Woman) and that men and women had mean weights of 75 and 65 kg and the same standard deviation of 20 kg. Note that unless we explicitly code the simulation in a way to prevent negative weights (e.g. using a log normal distribution) we will end up simulating some negative ones.
 
 ```{r, echo=TRUE, results='asis',fig.align = "center",fig.width = 6}
 set.seed(657687)
 df <- data.frame(
-MASS::mvrnorm(n = 10000,
+MASS::mvrnorm(n = nuncertainty,
                 mu = c(10,0.75,1.5),
                 Sigma=matrix(c((10*0.15)^2,
                                0.001,0.001,0.001,(0.75*0.15)^2,
@@ -82,7 +84,7 @@ ggplot2::ggplot(dflong,ggplot2::aes(x=value,fill=key))+
   ggplot2::guides(fill=ggplot2::guide_legend(reverse = FALSE))
 set.seed(657687)
 dfcov<- data.frame(
-MASS::mvrnorm(n=10000 ,
+MASS::mvrnorm(n=nbsvsubjects,
                 mu =c(65,75),
                 Sigma=matrix(c(20^2,0.01,0.01,20^2),2,2,byrow = TRUE) 
 ))
@@ -97,11 +99,10 @@ ggplot2::ggplot(dfcovlong,ggplot2::aes(x=value,fill=key))+
 
 
 dfcovlongquantile<- as.data.frame(
-  round(quantile(dfcovlong$value,probs=c(0,0.05,0.25,0.5,0.75,0.95,1)),0)
+  round(quantile(dfcovlong$value,probs=c(0.01,0.05,0.25,0.5,0.75,0.95,0.99)),0)
 )
 names(dfcovlongquantile)<- "Weightquantilevalue"
 dfcovlongquantile$quantile<- rownames(dfcovlongquantile)
-
 
 dfcovlongquantiletable<- t(dfcovlongquantile)
 knitr::kable(dfcovlongquantiletable[1,,drop=FALSE],row.names=FALSE)
@@ -112,30 +113,17 @@ A useful metric can be to compute the bounds where say 50% and 90% of the patien
 
 ```{r, echo=TRUE,fig.align = "center",fig.width = 6}
 set.seed(546789)
-CLBSVdistribution <- data.frame(CL= 10*exp(rnorm(10000,0,sd=0.09^0.5)))
+CLBSVdistribution <- data.frame(CL= 10*exp(rnorm(nbsvsubjects,0,sd=0.09^0.5)))
 CLBSVdistribution$CLBSV<- CLBSVdistribution$CL/10
 ```
 
 ```{r, echo=FALSE,fig.align = "center",fig.width = 6 ,fig.height=4}
 dfbsv<- as.data.frame(
-  round( quantile(CLBSVdistribution$CLBSV,probs=c(0,0.05,0.25,0.5,0.75,0.95,1)),2))
+  round( quantile(CLBSVdistribution$CLBSV,probs=c(0.01,0.05,0.25,0.5,0.75,0.95,0.99)),2))
 names(dfbsv)<- "BSVquantilevalue"
 dfbsv$quantile<- rownames(dfbsv)
-BSVLINE1<- data.frame(
-                       mid = 1,
-                       lower=quantile(CLBSVdistribution$CLBSV,c(0.05)),
-                       upper=quantile(CLBSVdistribution$CLBSV,c(0.95)),
-                       extent="BSV90%")
-
-BSVLINE2<- data.frame( 
-                       mid = 1,
-                       lower=quantile(CLBSVdistribution$CLBSV,c(0.25)),
-                       upper=quantile(CLBSVdistribution$CLBSV,c(0.75)),
-                       extent="BSV50%")
-
-BSVLINE <- rbind(BSVLINE1,BSVLINE2)
 CLBSVdistribution$paramname<- "CL"
-  ggplot(CLBSVdistribution, aes(
+bsvplot<-   ggplot(CLBSVdistribution, aes(
   x      = CLBSV,
   y      = paramname,
   fill   = factor(..quantile..),
@@ -158,17 +146,22 @@ CLBSVdistribution$paramname<- "CL"
     axis.title.y    = element_blank(),
     axis.text.x=ggplot2::element_text(size=12),
     axis.title.x=ggplot2::element_text(size=14)) +
-  scale_x_continuous(breaks=c(0.25,0.61,0.82,1,1.22,1.63,2))+
+  scale_x_continuous(breaks=c(0.61,0.82,1,1.22,1.63))+
   coord_cartesian(expand=FALSE,xlim = c(0.49,2.01))+
-  ggplot2::labs(x="Individual Clearances with BSV/Reference CL",
-                title="Illustrating 30% BSV")
+  ggplot2::labs(x="Standardized Individual Clearances with BSV",
+                title="Illustrating 30.7% BSV")
 
-
+bsvplot
 
 dfbsvtable<- t(dfbsv)
 knitr::kable(dfbsvtable[1,,drop=FALSE],row.names=FALSE)
 #bayestestR::hdi(CLBSVdistribution$CLBSV,ci = c(.50, .90))
 #0.55, 0.74, 1 , 1.12, 1.53
+```
+```{r,include=FALSE}
+# bsvplot
+# ggsave("Figure_2.png", device="png",
+#        type="cairo-png",width= 7, height = 5,dpi=300)
 ```
 
 ## Visualizing Covariate Effects with Distributions
@@ -185,7 +178,7 @@ dfeffects$SEX_FEMALE_WT_50 <- dfeffects$REF*(50/70)^dfeffects$dWTdCL
 dfeffects$SEX_FEMALE_WT_90 <-  dfeffects$REF*(90/70)^dfeffects$dWTdCL
 dfeffects$SEX_Male_WT_70 <- dfeffects$dSexdCL
 dfeffects$SEX_Male_WT_90 <- dfeffects$dSexdCL*dfeffects$REF*(90/70)^dfeffects$dWTdCL
-dfeffects$BSV<-  CLBSVdistribution$CLBSV
+dfeffects$BSV<-  sample(CLBSVdistribution$CLBSV, nuncertainty)
 
 dfeffects<- dfeffects[,c("SEX_FEMALE_WT_50",
                          "SEX_FEMALE_WT_90",

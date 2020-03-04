@@ -27,7 +27,7 @@ The data that is loaded to the app should have at a minimum the following column
 * paramname: Parameter on which the effects are shown e.g. CL, Cmax, AUC etc.  
 * covname: Covariate name that the effects belong to e.g. Weight, SEX, Dose etc.  
 * label: Covariate value that the effects of which is shown e.g. 50 kg, 50 kg\90 kg (here the reference value is contained in the label).   
-mid: Middle value for the effects usually the median from the uncertainty distribution.   
+* mid: Middle value for the effects usually the median from the uncertainty distribution.   
 * lower: Lower value for the effects usually the 2.5% or 5% from the uncertainty distribution.   
 * upper: Upper value for the effects usually the 97.5% or 95% from the uncertainty distribution.   
 
