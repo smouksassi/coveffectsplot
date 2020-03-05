@@ -108,7 +108,7 @@ dfcovlongquantiletable<- t(dfcovlongquantile)
 knitr::kable(dfcovlongquantiletable[1,,drop=FALSE],row.names=FALSE)
 ```
 
-The model had a between subject variability on CL $\omega_{CL}^{2}$ variance of 0.09 which translate to apparent CV of sqrt (exp (0.09) -1) = 0.3069. A common way to report this BSV is to say we have 30.7% BSV. But what does this really mean in practical terms? What are the chances that a patient with known covaraite values, will have very low or very high CL warranting dose changes?  
+The model had a between subject variability on CL $\omega_{CL}^{2}$ variance of 0.09 which translates to apparent CV of sqrt (exp (0.09) -1) = 0.3069. A common way to report this BSV is to say we have 30.7% BSV. But what does this really mean in practical terms? What are the chances that a patient with known covariate values, will have very low or very high CL warranting dose changes?  
 A useful metric can be to compute the bounds where say 50% and 90% of the patients will be located using simple quantile functions on simulated distributions. For the 30.7% BSV case, we compute that 50% of the patients will be within the 0.82 to 1.23 interval (dark red area) while 90% of the patients will be within the 0.61 to 1.63 interval (lighter red area). A table showing the various quantiles is also shown. For asymmetrical distribution we can also use the highest density intervals instead of percentiles but this is not shown here.
 
 ```{r, echo=TRUE,fig.align = "center",fig.width = 6}

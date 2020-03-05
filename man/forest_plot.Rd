@@ -69,6 +69,7 @@ forest_plot(
   legend_ncol_shape = 1,
   plot_margin = c(5.5, 5.5, 5.5, 5.5),
   table_margin = c(5.5, 5.5, 5.5, 5.5),
+  legend_margin = c(0, 0.1, -0.1, 0),
   parse_xlabel = FALSE,
   parse_ylabel = FALSE,
   return_list = FALSE
@@ -211,6 +212,9 @@ any other valid `facet_grid` labeller can be specified.}
 for the top, right, bottom and left sides.}
 
 \item{table_margin}{Control the white space around the table. Vector of four numeric values
+for the top, right, bottom and left sides.}
+
+\item{legend_margin}{Control the white space around the plot legend. Vector of four numeric values
 for the top, right, bottom and left sides.}
 
 \item{parse_xlabel}{treat xlabel as an expression. Logical FALSE TRUE.}

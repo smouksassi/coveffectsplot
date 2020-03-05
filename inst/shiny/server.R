@@ -230,6 +230,8 @@ function(input, output, session) {
                         ..(input$marginbottom),..(input$marginleft)),
         table_margin = c(..(input$tabletop),..(input$tableright),
                         ..(input$tablebottom),..(input$tableleft)),
+        legend_margin = c(..(input$legendtop),..(input$legendright),
+                         ..(input$legendbottom),..(input$legendleft)),
         parse_xlabel = ..(input$parsexaxistitle),
         parse_ylabel = ..(input$parseyaxistitle)
       )

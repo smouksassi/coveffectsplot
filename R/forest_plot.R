@@ -86,6 +86,8 @@ which0 <- function(x) {
 #' for the top, right, bottom and left sides.
 #' @param table_margin Control the white space around the table. Vector of four numeric values
 #' for the top, right, bottom and left sides.
+#' @param legend_margin Control the white space around the plot legend. Vector of four numeric values
+#' for the top, right, bottom and left sides.
 #' @param parse_xlabel treat xlabel as an expression. Logical FALSE TRUE.
 #' @param parse_ylabel treat ylabel as an expression. Logical FALSE TRUE.
 #' @param return_list What to return if True a list of the main and table plots is returned
@@ -287,6 +289,7 @@ forest_plot <- function(
   legend_ncol_shape = 1,
   plot_margin = c(5.5, 5.5, 5.5, 5.5),
   table_margin = c(5.5, 5.5, 5.5, 5.5),
+  legend_margin = c(0, 0.1, -0.1, 0),
   parse_xlabel = FALSE,
   parse_ylabel = FALSE,
   return_list = FALSE)
@@ -294,6 +297,7 @@ forest_plot <- function(
   ymax = ymin = x = fill = NULL
   plot_margin[ which(is.na(plot_margin) ) ] <- 0
   table_margin[ which(is.na(table_margin) ) ] <- 0
+  legend_margin[ which(is.na(legend_margin) ) ] <- 0
   facet_spacing[ which(is.na(facet_spacing) ) ] <- 0
   
   table_position <- match.arg(table_position)
@@ -535,7 +539,11 @@ forest_plot <- function(
       panel.spacing = ggplot2::unit(facet_spacing, "pt"),
       strip.placement  = strip_placement,
       legend.spacing.x = ggplot2::unit(legend_space_x_mult*11, "pt"),
-      legend.margin = ggplot2::margin(t = 0, r = 0.1, l = -0.1, b = 0, unit='cm'),
+      legend.margin = ggplot2::margin(t = legend_margin[1],
+                                      r = legend_margin[2],
+                                      b = legend_margin[3],
+                                      l = legend_margin[4],
+                                      unit='pt'),
       plot.margin =  ggplot2::margin(t = plot_margin[1],
                                      r = plot_margin[2],
                                      b = plot_margin[3],

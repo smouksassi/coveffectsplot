@@ -63,8 +63,8 @@ double KAi = KA;
 double Keli = CLi/Vi;
 
 $OMEGA
-0.3 
-0.01 0.3 
+0.09 
+0.01 0.09 
 
 $ODE
 dxdt_GUT  = -KAi*GUT;

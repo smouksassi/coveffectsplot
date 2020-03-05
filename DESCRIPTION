@@ -1,6 +1,6 @@
 Package: coveffectsplot
 Title: Produce Forest Plots to Visualize Covariate Effects
-Version: 0.0.5.9999
+Version: 1.0.0.9999
 Authors@R: c(
     person("Samer", "Mouksassi", email = "samermouksassi@gmail.com",
       role = c("aut", "cre"),comment = c(ORCID = "https://orcid.org/0000-0002-7152-6654")),
