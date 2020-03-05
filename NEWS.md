@@ -1,10 +1,12 @@
 # coveffectsplot 1.0.0.9999
+
 * Added code generation in the app (contributed by Dean Attali)
 * minor ui improvement and control for the facets x and y text hjust and vjust
 * added vignette on pediatric multivariate covariate simulations
 * added facet_labeller argument (function only not in the shiny app)
 * added legend margin controls
 * added possibility to supply xlabel and ylabel expressions `parse_xlabel` and `parse_ylabel`
+* bumped the version to 1.0 to correspond with the tutorial paper
 
 # coveffectsplot 0.0.5
 

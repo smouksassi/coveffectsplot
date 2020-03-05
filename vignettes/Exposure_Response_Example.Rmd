@@ -101,30 +101,22 @@ simout <- modexprespsim %>%
 This is a plot of the disease being cured versus PK exposure by disease severity and by Weight intervals.
 
 ```{r exprespmodeplotl, collapse=TRUE }
-ggplot(simout, aes(AUC,DV,linetype=factor(SEV))) +
+probplot<- ggplot(simout, aes(AUC,DV,linetype=factor(SEV))) +
   facet_grid( WT~SEV,labeller = label_both)+
   geom_point(position=position_jitter(height=0.02,width=0.1),
              aes(color=factor(DOSE)),size=1,alpha=0.5)+
-  geom_line(aes(y=P1),method = "smooth",se=FALSE,color="black",size=1.1)+
+  geom_line(aes(y=P1),color="black",size=1.1)+
   geom_label(data=data.frame(
-    x=8.5,y=TypicalProb,label=round(100*TypicalProb,1),SEV=0),
+    x=8.7,y=TypicalProb,label=paste(round(100*TypicalProb,1),"%"),SEV=0),
     aes(x=x,y=y,label=label),fill="transparent")+
-    geom_label(data=data.frame(
-    x=0.3,y=0.1,label=round(100*0.1,1),SEV=0),
+  geom_label(data=data.frame(
+    x=0.32,y=0.1,label=round(100*0.1,1),SEV=0),
     aes(x=x,y=y,label=label),fill="transparent")+
   labs(color="Dose (mg)",y="Probability of Being Cured",
        linetype="Severity")+
   theme_bw() + 
   theme(legend.position = "top")
-```
-
-```{r, fig.width=7 ,message=FALSE, include=FALSE}
-# last_plot()+theme_bw(base_size=18)+ geom_label(
-#   data=data.frame(x=7.5,y=0.576,label="57.6%",SEV=0,WT=70),
-#   aes(x=x,y=y,label=label),inherit.aes = FALSE)+ 
-#   theme(legend.position = "top")
-# ggsave("aucbsvresponse.png", device="png",type="cairo-png",width = 5,
-#        height = 5)
+probplot
 ```
 
 ```{r bsvrangeplot, collapse=TRUE }
@@ -191,13 +183,16 @@ simoutbsvranges
 ```
 
 ```{r, fig.width=7 ,message=FALSE, include=FALSE}
-# pbsvranges+theme_bw(base_size=22)+
+# probplot <-  probplot +theme_bw(base_size=18)+ 
+#    theme(legend.position = "top")
+# pbsvranges <- pbsvranges+theme_bw(base_size=22)+
 #   theme(
 #     legend.position = "none",
 #     axis.text.y     = element_blank(),
 #     axis.ticks.y    = element_blank(),
 #     axis.title.y    = element_blank())
-# ggsave("pbsvranges.png", device="png",type="cairo-png",width = 5, height = 5)
+# (probplot + pbsvranges)
+#  ggsave("Figure_8_1.png", device="png",type="cairo-png",width = 10, height = 5)
 ```
 
 ## Computing the Odds and Probabilities
@@ -269,8 +264,14 @@ stdprobplot
 ```
 
 ```{r, fig.width=7 ,message=FALSE, include=FALSE}
- # stdprobplot+theme(axis.title.y = element_text(size=15))+
- # ggsave("stdprobplot.png", device="png",type="cairo-png",width = 7, height = 4)
+#  stdprobplot<-  stdprobplot+
+#   theme(axis.title.y = element_text(size=15),
+#         legend.position = c(0.8,0.2))+
+#   scale_y_continuous( sec.axis = sec_axis(~ . /TypicalProb,
+#                                           name = "Standardized Probability"))
+# stdprobplot
+#   ggsave("Figure_8_2.png", device="png",type="cairo-png",
+#          width = 7, height = 4)
 ```
 
 
@@ -331,9 +332,11 @@ ggplot(iter_sims,aes(x=paramvalue,y=covvalue))+
   theme(axis.title = element_blank(),strip.placement = "outside")
 ```
 ```{r, fig.width=7 ,message=FALSE, include=FALSE}
-  #  last_plot()
-  # ggsave("expresp5.png", device="png",type="cairo-png",
-  #        width= 8, height = 5,dpi=72)
+  #   last_plot()+theme_bw(base_size = 16)+
+  # theme(legend.position = "none",
+  #       axis.title = element_blank(),strip.placement = "outside")
+  #  ggsave("Figure_8_3.png", device="png",type="cairo-png",
+  #         width= 7, height = 6,dpi=72)
 ```
 
 ```{r plot3, collapse=TRUE }
@@ -379,10 +382,10 @@ coveffectsdatacovrepbsv$label <-factor(as.factor(coveffectsdatacovrepbsv$label )
     
 
 coveffectsdatacovrepbsv$covname <-factor(as.factor(coveffectsdatacovrepbsv$covname ),
-                    levels = c("SEV","Weight","DOSE","REF","BSV"))
+                    levels = c("Weight","DOSE","SEV","REF","BSV"))
 
 ref_legend_text      <- "Reference (vertical line)"
-png("./coveffectsplotexpresp.png",width =9 ,height = 7,units = "in",res=72)
+png("./Figure_8_4.png",width =9 ,height = 7,units = "in",res=72)
 forest_plot(coveffectsdatacovrepbsv,
                             strip_placement = "outside",
                             show_ref_area = FALSE,
@@ -403,6 +406,6 @@ forest_plot(coveffectsdatacovrepbsv,
 dev.off()
 
 ```
-![Covariate Effects Plot.](./coveffectsplotexpresp.png)
+![Covariate Effects Plot.](./Figure_8_4.png)
 
 
