@@ -240,10 +240,10 @@ fluidPage(
         ),#tabpanel
         tabPanel(
           "Custom Legend Ordering/Spacing",
-          div(style="display:inline-block",
+          inline_ui(
               numericInput("ncolinterval",label = "Number of columns for the Interval legend",
                            value = 1,min=NA,max=NA,width='120px')),
-          div(style="display:inline-block",
+          inline_ui(
               numericInput("ncolshape",label = "Number of columns for the shape legend",
                            value = 1,min=NA,max=NA,width='120px')),
           
@@ -262,41 +262,40 @@ fluidPage(
           numericInput("panelspacing",label = "Strip Panel Spacing",
                        value = 5.5,min=0,step=0.1,
                        max=20,width='100%'),
-          
-          div(style="display:inline-block",
+          inline_ui(
               numericInput("margintop",label = "Plot Top Margin",
                            value = 0,min=0,max=NA,width='80px')),
-          div(style="display:inline-block",
+          inline_ui(
               numericInput("tabletop",label = "Table Top Margin",
                            value = 0,min=0,max=NA,width='80px')),
-          div(style="display:inline-block",
+          inline_ui(
               numericInput("legendtop",label = "Legend Top Margin",
                            value = 0,min=0,max=NA,width='80px')),
-          div(style="display:inline-block",
+          inline_ui(
               numericInput("marginleft",label = "Plot Left Margin",
                            value = 5.5,min=0,max=NA,width='80px')),
-          div(style="display:inline-block",
+          inline_ui(
               numericInput("tableleft",label = "Table Left Margin",
                            value = 5.5,min=0,max=NA,width='80px')),
-          div(style="display:inline-block",
+          inline_ui(
               numericInput("legendleft",label = "Legend Left Margin",
                            value = 5.5,min=0,max=NA,width='80px')),
-          div(style="display:inline-block",
+          inline_ui(
               numericInput("marginright",label = "Plot Right Margin",
                            value = 5.5,min=0,max=NA,width='80px')),
-         div(style="display:inline-block",
+          inline_ui(
               numericInput("tableright",label = "Table Right Margin",
                            value = 5.5,min=0,max=NA,width='80px')),
-         div(style="display:inline-block",
+          inline_ui(
              numericInput("legendright",label = "Legend Right Margin",
                           value = 5.5,min=0,max=NA,width='80px')),
-        div(style="display:inline-block",
+          inline_ui(
             numericInput("marginbottom",label = "Plot Bottom Margin",
                          value = 0,min=0,max=NA,width='80px')),
-        div(style="display:inline-block",
+          inline_ui(
             numericInput("tablebottom",label = "Table Bottom Margin",
                          value = 0,min=0,max=NA,width='80px')),
-        div(style="display:inline-block",
+          inline_ui(
             numericInput("legendbottom",label = "Legend Bottom Margin",
                          value = 0,min=0,max=NA,width='80px'))
           
