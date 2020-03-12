@@ -1,18 +1,31 @@
 # coveffectsplot 1.0.0.9999
 
 * Added code generation in the app (contributed by Dean Attali)
-* minor ui improvement and control for the facets x and y text hjust and vjust
-* added vignette on pediatric multivariate covariate simulations
-* added facet_labeller argument (function only not in the shiny app)
-* added legend margin controls
-* added possibility to supply xlabel and ylabel expressions `parse_xlabel` and `parse_ylabel`
+* ui improvements and controls for the new arguments
+* added `x/y_facet_text_vjust/hjust` arguments for the facets x/y text hjust/vjust
+* added `xy_facet_text_bold` argument to control facets text face
+* added `facet_spacing` argument to control facets spacing
+* added `facet_labeller` argument (function only not in the shiny app)
+* added `strip_outline` argument to allow the removal of strip.background
+* added `show_yaxis_gridlines` and `show_xaxis_gridlines` arguments to be able to remove axes grid lines
+* added `show_ref_value` and `ref_value_col` arguments for better controls on the ref line
+* added `plot_margin` argument (controls plot margins)
+* added `table_margin` argument (controls table margins)
+* added `legend_margin` argument (controls legend margins)
+* added `parse_xlabel` and `parse_ylabel` arguments to parse `xlabel`, `ylabel`
+* added `table_panel_border` argument to allow the removal of panel.border of the table plot
+* added `reserve_table_xaxis_label` argument to allow alignment of switched strips 
+* added `legend_position` argument to control the legend position
+* added `legend_ncol_interval` argument to conrol number of columns of the interval legend
+* added `legend_ncol_shape` argument to conrol number of columns of the shape legend
+* added vignette on pediatric multivariate covariate simulations and refreshed the rest
 * bumped the version to 1.0 to correspond with the tutorial paper
 
 # coveffectsplot 0.0.5
 
 * added an option to have different color and text for BSV (issue submitted by professor France Mentre)
 * added two vignettes showing how to simulate a PK , PK/PD and exposure response models from scratch.
-* added a switch to control theme_bw: base_size
+* added an argument to control theme_bw: `base_size`
 * added theming proposed by Benjamin Rich and arguments to add a table title and size.
 * added an argument to ensure alignment of strips between table and plot.
 * changing default rounding and padding for table numbers (proposed by Benjamin Rich)
