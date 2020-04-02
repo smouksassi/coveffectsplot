@@ -4,7 +4,8 @@
 \name{prezista}
 \alias{prezista}
 \title{Prezista Drug Label Data}
-\format{A dataset with 33 rows and 6 variables
+\format{
+A dataset with 33 rows and 6 variables
 \describe{
   \item{covname}{Covariate Name, a character variable with two values
    Protease Inihibitors and Other Antiretrovirals}
@@ -15,7 +16,8 @@
   \item{mid}{Middle value for the effects, the median from the uncertainty distribution}
   \item{lower}{Lower value for the effects usually the 5\% from the uncertainty distribution}
   \item{upper}{Upper value for the effects usually the 95\% from the uncertainty distribution}
-}}
+}
+}
 \source{
 Table 15 from \url{https://aidsinfo.nih.gov/drugs/397/darunavir/28/professional/}
 }

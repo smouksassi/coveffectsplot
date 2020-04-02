@@ -1,6 +1,5 @@
-# coveffectsplot 1.0.0.9999
+# coveffectsplot 0.0.9
 
-* Added code generation in the app (contributed by Dean Attali)
 * ui improvements and controls for the new arguments
 * added `x/y_facet_text_vjust/hjust` arguments for the facets x/y text hjust/vjust
 * added `xy_facet_text_bold` argument to control facets text face
@@ -16,7 +15,7 @@
 * added `table_panel_border` argument to allow the removal of panel.border of the table plot
 * added `reserve_table_xaxis_label` argument to allow alignment of switched strips 
 * added `legend_position` argument to control the legend position
-* added `legend_ncol_interval` argument to conrol number of columns of the interval legend
+* added `legend_ncol_interval` argument to control number of columns of the interval legend
 * added `legend_ncol_shape` argument to conrol number of columns of the shape legend
 * added vignette on pediatric multivariate covariate simulations and refreshed the rest
 * bumped the version to 1.0 to correspond with the tutorial paper
