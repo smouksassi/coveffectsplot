@@ -281,7 +281,8 @@ covcomb
 As a first step, we simulate without uncertainty and without BSV using `zero_re()` at unique combination of covariates and provide a plot to visualize the effects.  
 
 ```{r, fig.width=7 ,message=FALSE}
-idata <- copy(covcomb)[, covname := NULL]
+idata <- copy(covcomb)
+idata <- idata [, covname := NULL]
 ev1 <- ev(time=0, amt=100, cmt=1)
 data.dose <- as.data.frame(ev1)
 data.all <- data.table(idata, data.dose)

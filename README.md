@@ -41,10 +41,11 @@ The example data show where does 90 and 50% of the patients will be based on the
 
 The vignette [Introduction to coveffectsplot](https://cran.r-project.org/package=coveffectsplot/vignettes/introduction_to_coveffectsplot.html) will walk you through the background and  how to compute and build the required data that the shiny app or the function `forest_plot`expects. There is some data management steps that the app does automatically. Choosing to call the function will require you to build the table LABEL and to control the ordering of the variables. The `forest_plot` help has several examples.  
 The package also include vignettes with several step-by-step detailed examples:  
-<a href="https://cran.r-project.org/web/packages/coveffectsplot/vignettes/PK_Example.html">PK example</a>  
-<a href="https://cran.r-project.org/web/packages/coveffectsplot/vignettes/PKPD_Example.html">PK PD example</a>     
-<a href="https://cran.r-project.org/web/packages/coveffectsplot/vignettes/Exposure_Response_Example.html">Exposure Response</a>
-
+<a href="https://cran.r-project.org/package=coveffectsplot/vignettes/PK_Example.html">PK example</a>  
+<a href="https://cran.r-project.org/package=coveffectsplot/vignettes/Pediatric_Cov_Sim.html">Pediatric example</a>  
+<a href="https://cran.r-project.org/package=coveffectsplot/vignettes/PKPD_Example.html">PK PD example</a>      
+<a href="https://cran.r-project.org/package=coveffectsplot/vignettes/Exposure_Response_Example.html">Exposure Response</a>  
+ 
 ### Example using a real drug label data
 The prezista drug label data was extracted from the FDA label and calling the `forest_plot` function gives:
 ```
