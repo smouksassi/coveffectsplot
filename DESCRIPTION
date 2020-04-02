@@ -25,6 +25,7 @@ Imports:
     stats,
     tidyr,
     table1,
+    data.table,
     utils
 Suggests:
     clipr,
@@ -39,7 +40,6 @@ Suggests:
     bayestestR,
     plotly,
     scales,
-    data.table,
     shinyAce,
     Rcpp,
     gamlss.dist
