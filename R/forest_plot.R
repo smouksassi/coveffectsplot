@@ -682,8 +682,10 @@ forest_plot <- function(
     if (show_table_facet_strip=="none") {
       table_plot <- table_plot +
         ggplot2::theme(
-          strip.text = ggplot2::element_blank(),
-          strip.background = ggplot2::element_blank()
+          strip.text.x = ggplot2::element_blank(),
+          strip.text.y = ggplot2::element_blank(),
+          strip.background.x = ggplot2::element_blank(),
+          strip.background.y = ggplot2::element_blank()
         )
     }
     
