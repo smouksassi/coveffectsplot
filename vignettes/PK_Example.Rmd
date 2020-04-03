@@ -282,7 +282,7 @@ As a first step, we simulate without uncertainty and without BSV using `zero_re(
 
 ```{r, fig.width=7 ,message=FALSE}
 idata <- data.table::copy(covcomb)
-idata <- idata [, covname := NULL]
+idata$covname <-  NULL
 ev1 <- ev(time=0, amt=100, cmt=1)
 data.dose <- as.data.frame(ev1)
 data.all <- data.table(idata, data.dose)
@@ -351,7 +351,7 @@ head(sim_parameters)
 
 ```{r, fig.width=7,fig.height=4}
 idata <- data.table::copy(covcomb)
-idata <- idata [, covname := NULL]
+idata$covname <-  NULL
 ev1       <- ev(time=0, amt=100, cmt=1)
 data.dose <- as.data.frame(ev1)
 iter_sims <- NULL

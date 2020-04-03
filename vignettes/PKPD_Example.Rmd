@@ -274,7 +274,7 @@ covcomb
 ```
 ```{r, fig.width=7 ,message=FALSE, include=FALSE}
 idata <- data.table::copy(covcomb)
-idata <- idata [, covname := NULL]
+idata$covname <-  NULL
 ev1 <- ev(time=0, amt=100, cmt=1, ii = 24, addl = 20)
 data.dose <- as.data.frame(ev1)
 data.all <- data.table(idata, data.dose)
@@ -309,7 +309,7 @@ sim_parameters <- MASS::mvrnorm(nsim, theta, varcov, empirical=T) %>% as.data.ta
 head(sim_parameters)
 
 idata <- data.table::copy(covcomb)
-idata <- idata [, covname := NULL]
+idata$covname <-  NULL
 ev1 <- ev(time=0, amt=100, cmt=1, ii = 24, addl = 20)
 data.dose <- as.data.frame(ev1)
 
