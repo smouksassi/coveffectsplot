@@ -281,7 +281,7 @@ covcomb
 As a first step, we simulate without uncertainty and without BSV using `zero_re()` at unique combination of covariates and provide a plot to visualize the effects.  
 
 ```{r, fig.width=7 ,message=FALSE}
-idata <- copy(covcomb)
+idata <- data.table::copy(covcomb)
 idata <- idata [, covname := NULL]
 ev1 <- ev(time=0, amt=100, cmt=1)
 data.dose <- as.data.frame(ev1)
@@ -350,7 +350,7 @@ head(sim_parameters)
 * Third, we illustrate how you can iterate over a set of parameters value using a `for` loop. We then overlay the previous simulation results without uncertainty on the one with uncertainty to visualize the effect of adding it.
 
 ```{r, fig.width=7,fig.height=4}
-idata <- copy(covcomb)
+idata <- data.table::copy(covcomb)
 idata <- idata [, covname := NULL]
 ev1       <- ev(time=0, amt=100, cmt=1)
 data.dose <- as.data.frame(ev1)
