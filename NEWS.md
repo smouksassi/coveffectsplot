@@ -1,3 +1,9 @@
+# coveffectsplot 1.0.0.9999
+
+* Added back code generation in the app (contributed by Dean Attali)
+* bumped the version to 1.0 to correspond with the tutorial paper
+
+
 # coveffectsplot 0.0.9
 
 * ui improvements and controls for the new arguments

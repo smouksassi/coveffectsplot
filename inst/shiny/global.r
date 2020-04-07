@@ -9,7 +9,7 @@ suppressPackageStartupMessages({
   library(shinyjs)
   library(markdown)
   library(colourpicker)
-  #library(shinymeta)
+  library(shinymeta)
 })
 
 escape_newline <- function(s) {
