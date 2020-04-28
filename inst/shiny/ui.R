@@ -64,7 +64,7 @@ fluidPage(
                  sliderInput("facettextx", "Facet Text Size X",
                              min = 0, max = 32, step = 1, value = 22),
                  sliderInput("facettextyangle", "Facet Text Angle Y",
-                             min = 90, max = 180+90, step = 90, value = 180),
+                             min = 0, max = 180+90, step = 90, value = 0),
                  sliderInput("facettextxangle", "Facet Text Angle X",
                              min = 0, max = 90, step = 90, value = 0),
                  checkboxInput('boldfacettext', "Bold Facet Text", value = TRUE)

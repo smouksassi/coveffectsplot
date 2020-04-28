@@ -534,6 +534,7 @@ forest_plot <- function(
       legend.key.width = ggplot2::unit(3, "line"),
       strip.text.x = x.strip.text,
       strip.text.y = y.strip.text,
+      strip.text.y.left = y.strip.text,
       panel.grid.minor = ggplot2::element_line(colour = "gray", linetype = "dotted"),
       panel.grid.major = ggplot2::element_line(colour = "gray", linetype = "solid"),
       strip.background = ggplot2::element_rect(fill = strip_col),
