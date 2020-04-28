@@ -404,10 +404,12 @@ covcomb$covvalue[covcomb$covname=="ALB"] <- paste(covcomb$ALB[covcomb$covname=="
 covcomb$covvalue[covcomb$covname=="SEX"] <- "Male"
 covcomb$covvalue[covcomb$covname=="REF"] <- "85 kg\nFemale\n45 g/L"
 #covcomb[covname=="REF", covvalue := "85 kg Female 45 g/L"]
+covcomb <- as.data.table(covcomb)
 
 out.df.univariatecov.nca <- merge(
   out.df.univariatecov.nca,
-  covcomb[, .(ID, covname, covvalue)])
+  covcomb[, list(ID, covname, covvalue)]
+)
 
 setkey(out.df.univariatecov.nca, paramname)
 

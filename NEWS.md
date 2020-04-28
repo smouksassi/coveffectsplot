@@ -22,7 +22,7 @@
 * added `reserve_table_xaxis_label` argument to allow alignment of switched strips 
 * added `legend_position` argument to control the legend position
 * added `legend_ncol_interval` argument to control number of columns of the interval legend
-* added `legend_ncol_shape` argument to conrol number of columns of the shape legend
+* added `legend_ncol_shape` argument to control number of columns of the shape legend
 * added vignette on pediatric multivariate covariate simulations and removed the pk and pkpd ones
 
 # coveffectsplot 0.0.5

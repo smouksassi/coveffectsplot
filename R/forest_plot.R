@@ -8,6 +8,7 @@ which0 <- function(x) {
   result
 }
 
+
 #' Forest plot
 #'
 #' Produce forest plots to visualize covariate effects
@@ -92,7 +93,7 @@ which0 <- function(x) {
 #' @param parse_ylabel treat ylabel as an expression. Logical FALSE TRUE.
 #' @param return_list What to return if True a list of the main and table plots is returned
 #' instead of the gtable/plot.
-
+#' @rawNamespace import(data.table, except = c(last,between,first))
 
 #' @examples
 #' library(dplyr)
@@ -798,4 +799,5 @@ if (return_list){
   }
   result
 }
+
 

@@ -3,3 +3,4 @@
 export(forest_plot)
 export(get_sample_data)
 export(run_interactiveforestplot)
+import(data.table, except = c(last,between,first))

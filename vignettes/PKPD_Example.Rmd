@@ -356,6 +356,7 @@ refvalues <- out.df.univariatecov.nca[
   .(medparam = median(paramvalue)), by=paramname]
 refvalues
 
+covcomb <- as.data.table(covcomb)
 
 covcomb[covname=="WT",  covvalue := paste(WT,"kg")]
 covcomb[covname=="ALB", covvalue := paste(ALB,"g/L")]
@@ -365,7 +366,7 @@ covcomb[covname=="HEALTHY", covvalue := "Diseased"]
 covcomb[covname=="REF", covvalue := "85 kg-Female-45 g/L-40 years-healthy"]
 covcomb
 covcomb[covname=="REF", covvalue := "85 kg-Female\n45 g/L-40 years\nhealthy"]
-
+covcomb <- as.data.table(covcomb)
 out.df.univariatecov.nca <- merge(
   out.df.univariatecov.nca,
   covcomb[, .(ID, covname, covvalue)])
