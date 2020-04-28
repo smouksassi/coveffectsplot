@@ -311,9 +311,13 @@ forest_plot <- function(
   strip_placement <- match.arg(strip_placement)
   facet_formula <- stats::as.formula(facet_formula)
   
+  y_facet_text_angle<- ifelse(facet_switch %in% c("x","none"),
+         y_facet_text_angle-180,
+         y_facet_text_angle)
 
   if (x_facet_text_size <= 0) {
     x.strip.text <- ggplot2::element_blank()
+    table.x.strip.text <- x.strip.text
   } else {
     x.strip.text <- ggplot2::element_text(size = x_facet_text_size,
                                           angle= x_facet_text_angle,
@@ -321,26 +325,20 @@ forest_plot <- function(
                                           hjust = x_facet_text_hjust,
                                           vjust = x_facet_text_vjust
                                           )
+    table.x.strip.text <- x.strip.text
+
   }
   if (y_facet_text_size <= 0) {
     y.strip.text <- ggplot2::element_blank()
     table.y.strip.text <- y.strip.text
   } else {
     y.strip.text <- ggplot2::element_text(size = y_facet_text_size,
-                                          angle= ifelse(facet_switch %in% c("x","none"),
-                                                        y_facet_text_angle-180,
-                                                        y_facet_text_angle),
+                                          angle= y_facet_text_angle,
                                           face = ifelse(xy_facet_text_bold,"bold","plain"),
                                           hjust = y_facet_text_hjust,
                                           vjust = y_facet_text_vjust
                                           )
-   table.y.strip.text <- ggplot2::element_text(size = y_facet_text_size,
-                                               angle= ifelse(table_facet_switch %in% c("x","none"),
-                                                             y_facet_text_angle-180,
-                                                             y_facet_text_angle),
-                                               face = ifelse(xy_facet_text_bold,"bold","plain"),
-                                               hjust = y_facet_text_hjust,
-                                               vjust = y_facet_text_vjust) 
+   table.y.strip.text <- y.strip.text
   }
   
   if (theme_benrich && y_facet_text_size >0){
@@ -349,9 +347,7 @@ forest_plot <- function(
       vjust=1,
       face="bold",
       size=y_facet_text_size,
-      angle= ifelse(facet_switch %in% c("x","none"),
-                    y_facet_text_angle-180,
-                    y_facet_text_angle)
+      angle= y_facet_text_angle
     )
     
     table.y.strip.text <- ggplot2::element_text(
@@ -359,9 +355,7 @@ forest_plot <- function(
       vjust=1,
       face="bold",
       size=y_facet_text_size,
-      angle= ifelse(table_facet_switch %in% c("x","none"),
-                    y_facet_text_angle-180,
-                    y_facet_text_angle)
+      angle= y_facet_text_angle
     )
   }
 
@@ -607,10 +601,11 @@ forest_plot <- function(
     main_plot <- main_plot +
       ggplot2::theme(
        panel.spacing=ggplot2::unit(0, "pt"),
-       panel.grid=ggplot2::element_blank(),
-       panel.grid.minor=ggplot2::element_blank(),
-       strip.background=ggplot2::element_blank(),
+       panel.grid = ggplot2::element_blank(),
+       panel.grid.minor = ggplot2::element_blank(),
+       strip.background = ggplot2::element_blank(),
        strip.text.y = y.strip.text,
+       strip.text.y.left = y.strip.text,
        strip.text.x= x.strip.text,
        plot.margin = ggplot2::margin(t=3,r=3,b=3,l=3,unit="pt")
        )
@@ -654,10 +649,11 @@ forest_plot <- function(
           angle = 0,
           size = y_label_text_size
         ),
-        strip.text.x = x.strip.text,
+        strip.text.x = table.x.strip.text,
         axis.text.x = ggplot2::element_text(size = x_label_text_size),
         axis.ticks.x= ggplot2::element_blank(),
         strip.text.y = table.y.strip.text,
+        strip.text.y.left = table.y.strip.text,
         axis.title.x = ggplot2::element_blank(),
         axis.title.y = ggplot2::element_blank(),
         panel.grid.major.x = ggplot2::element_blank(),
@@ -686,6 +682,7 @@ forest_plot <- function(
         ggplot2::theme(
           strip.text.x = ggplot2::element_blank(),
           strip.text.y = ggplot2::element_blank(),
+          strip.text.y.left = ggplot2::element_blank(),
           strip.background.x = ggplot2::element_blank(),
           strip.background.y = ggplot2::element_blank()
         )
@@ -703,6 +700,7 @@ forest_plot <- function(
       table_plot <- table_plot +
         ggplot2::theme(
           strip.text.y = ggplot2::element_blank(),
+          strip.text.y.left = ggplot2::element_blank(),
           strip.background.y = ggplot2::element_blank()
         )
     }
@@ -746,28 +744,20 @@ forest_plot <- function(
       if (show_table_facet_strip %in% c("y")) {
         table_plot <- table_plot +
           ggplot2::theme(
-            strip.text.y= y.strip.text
+            strip.text.y= table.y.strip.text
           )
       }
       if (show_table_facet_strip %in% c("x")) {
         table_plot <- table_plot +
           ggplot2::theme(
-            strip.text.x=ggplot2::element_text(
-               face ="bold",
-               size = x_facet_text_size,
-               angle = x_facet_text_angle
-            )
+            strip.text.x = table.x.strip.text
           )
       }  
       if (show_table_facet_strip %in% c("both")) {
         table_plot <- table_plot +
           ggplot2::theme(
-            strip.text.y=y.strip.text,
-            strip.text.x=ggplot2::element_text(
-              face = "bold",
-              size =x_facet_text_size,
-              angle=x_facet_text_angle
-            )
+            strip.text.y= table.y.strip.text,
+            strip.text.x= table.x.strip.text
           )
       }    
            
