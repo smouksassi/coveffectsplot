@@ -4,7 +4,7 @@ inline_ui <- function(tag) {
 
 fluidPage(
   useShinyjs(),
-  titlePanel("ForestPlotteR!"),
+  titlePanel(paste0("coveffectsplot: ",utils::packageVersion("coveffectsplot"))),
   fluidRow(
     column(
       2,
