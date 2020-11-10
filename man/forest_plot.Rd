@@ -242,6 +242,7 @@ Produce forest plots to visualize covariate effects
 }
 \examples{
 library(dplyr)
+library(ggplot2)
 
 # Example 1
 

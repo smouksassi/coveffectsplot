@@ -8,6 +8,13 @@ which0 <- function(x) {
   result
 }
 
+label_wrap <- function(width) {
+  force(width)
+  function(x) {
+    unlist(lapply(strwrap(x, width = width, simplify = FALSE), 
+                  paste0, collapse = "\n"))
+  }
+}
 #' Forest plot
 #'
 #' Produce forest plots to visualize covariate effects
@@ -98,10 +105,10 @@ which0 <- function(x) {
 #' @param return_list What to return if True a list of the main and table plots is returned
 #' instead of the gtable/plot.
 #' @rawNamespace import(data.table, except = c(last,between,first))
-
 #' @examples
 #' library(dplyr)
-#'
+#' library(ggplot2)
+#' 
 #' # Example 1
 #'
 #' plotdata <- get_sample_data("forest-plot-table.csv")
@@ -304,7 +311,7 @@ forest_plot <- function(
   parse_ylabel = FALSE,
   return_list = FALSE)
 {
-  ymax = ymin = x = fill = NULL
+  ymax = ymin = x = fill = label_wrap_gen = NULL
   plot_margin[ which(is.na(plot_margin) ) ] <- 0
   table_margin[ which(is.na(table_margin) ) ] <- 0
   legend_margin[ which(is.na(legend_margin) ) ] <- 0
@@ -539,7 +546,7 @@ forest_plot <- function(
                             scales = facet_scales,
                             space = facet_space,
                             switch = facet_switch,
-                            labeller = label_wrap_gen(width =
+                            labeller = ggplot2::label_wrap_gen(width =
                                                         label_wrap_width,
                                                       multi_line =
                                                         facet_labeller_multiline)
@@ -550,7 +557,7 @@ forest_plot <- function(
                             scales = facet_scales,
                             space = facet_space,
                             switch = NULL,
-                            labeller = label_wrap_gen(width =
+                            labeller = ggplot2::label_wrap_gen(width =
                                                        label_wrap_width,
                                                       multi_line =
                                                         facet_labeller_multiline)
@@ -728,7 +735,7 @@ forest_plot <- function(
                               scales = facet_scales,
                               space = facet_space,
                               switch = table_facet_switch,
-                              labeller = label_wrap_gen(width =
+                              labeller = ggplot2::label_wrap_gen(width =
                                                           label_wrap_width,
                                                         multi_line =
                                                           facet_labeller_multiline)
@@ -739,7 +746,7 @@ forest_plot <- function(
                               scales = facet_scales,
                               space = facet_space,
                               switch = NULL,
-                              labeller = label_wrap_gen(width =
+                              labeller = ggplot2::label_wrap_gen(width =
                                                           label_wrap_width,
                                                         multi_line =
                                                           facet_labeller_multiline)
