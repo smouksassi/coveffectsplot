@@ -98,7 +98,6 @@ which0 <- function(x) {
 #' @param return_list What to return if True a list of the main and table plots is returned
 #' instead of the gtable/plot.
 #' @rawNamespace import(data.table, except = c(last,between,first))
-#' @rawNamespace importFrom(scales, label_wrap)
 
 #' @examples
 #' library(dplyr)

@@ -49,6 +49,8 @@ forest_plot(
   facet_scales = c("fixed", "free_y", "free_x", "free"),
   facet_space = c("fixed", "free_x", "free_y", "free"),
   facet_labeller = "label_value",
+  label_wrap_width = 55,
+  facet_labeller_multiline = FALSE,
   strip_placement = c("inside", "outside"),
   strip_outline = TRUE,
   facet_spacing = 5.5,
@@ -172,6 +174,11 @@ share the same text?}
 
 \item{facet_labeller}{Facet Labeller. Default "label_value"
 any other valid `facet_grid` labeller can be specified.}
+
+\item{label_wrap_width}{How many characters before breaking the line. Numeric value.
+any other valid `facet_grid` labeller can be specified.}
+
+\item{facet_labeller_multiline}{break facet strips into multiple lines. Logical TRUE FALSE.}
 
 \item{strip_placement}{Strip placement. Possible values: "inside", "outside".}
 
