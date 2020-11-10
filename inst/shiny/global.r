@@ -46,3 +46,12 @@ signif_pad <- function (x, digits = 3, round.integers = TRUE, round5up = TRUE)
   ifelse(is.na(x), NA, paste(cx, add.dec, pad, sep = ""))
 }
 ###from table1
+
+###from scales
+label_wrap <- function(width) {
+  force(width)
+  function(x) {
+    unlist(lapply(strwrap(x, width = width, simplify = FALSE), 
+                  paste0, collapse = "\n"))
+  }
+}

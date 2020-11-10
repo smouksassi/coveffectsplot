@@ -63,6 +63,9 @@ which0 <- function(x) {
 #' "free_y", "free".
 #' @param facet_labeller Facet Labeller. Default "label_value"
 #'  any other valid `facet_grid` labeller can be specified.
+#' @param label_wrap_width How many characters before breaking the line. Numeric value.
+#'  any other valid `facet_grid` labeller can be specified.
+#' @param facet_labeller_multiline break facet strips into multiple lines. Logical TRUE FALSE.
 #' @param strip_placement Strip placement. Possible values: "inside", "outside".
 #' @param strip_outline Draw rectangle around the Strip. Logical TRUE FALSE.
 #' @param facet_spacing Control the space between facets in points.
@@ -273,6 +276,8 @@ forest_plot <- function(
   facet_scales = c("fixed", "free_y", "free_x", "free"),
   facet_space = c("fixed", "free_x", "free_y", "free"),
   facet_labeller = "label_value",
+  label_wrap_width = 55,
+  facet_labeller_multiline = FALSE,
   strip_placement = c("inside", "outside"),
   strip_outline = TRUE,
   facet_spacing = 5.5,
@@ -317,7 +322,7 @@ forest_plot <- function(
   facet_formula <- stats::as.formula(facet_formula)
   
   y_facet_text_angle<- ifelse(facet_switch %in% c("x","none"),
-         y_facet_text_angle-180,
+         y_facet_text_angle-0,
          y_facet_text_angle)
 
   if (x_facet_text_size <= 0) {
@@ -502,23 +507,56 @@ forest_plot <- function(
     main_plot <- main_plot +
       ggplot2::aes_string(shape = "paramname")
   }
-
+  if (facet_labeller != "label_wrap_gen") {
   if (facet_switch != "none") {
     main_plot <- main_plot +
       ggplot2::facet_grid(facet_formula,
                           scales = facet_scales,
                           space = facet_space,
                           switch = facet_switch,
-                          labeller = facet_labeller)
+                          labeller = eval(parse(
+                            text=paste0("function(labs){",facet_labeller,
+                                        "(labs, multi_line = ",facet_labeller_multiline,")}")
+                          ,keep.source = FALSE))
+                          )
   } else {
     main_plot <- main_plot +
       ggplot2::facet_grid(facet_formula,
                           scales = facet_scales,
                           space = facet_space,
                           switch = NULL,
-                          labeller = facet_labeller)
+                          labeller = eval(parse(
+                            text=paste0("function(labs){",facet_labeller,
+                                        "(labs, multi_line = ",facet_labeller_multiline,")}")
+                            ,keep.source = FALSE))
+                          )
   }
-
+  }
+  if (facet_labeller == "label_wrap_gen") {
+    if (facet_switch != "none") {
+      main_plot <- main_plot +
+        ggplot2::facet_grid(facet_formula,
+                            scales = facet_scales,
+                            space = facet_space,
+                            switch = facet_switch,
+                            labeller = label_wrap_gen(width =
+                                                        label_wrap_width,
+                                                      multi_line =
+                                                        facet_labeller_multiline)
+        )
+    } else {
+      main_plot <- main_plot +
+        ggplot2::facet_grid(facet_formula,
+                            scales = facet_scales,
+                            space = facet_space,
+                            switch = NULL,
+                            labeller = label_wrap_gen(width =
+                                                       label_wrap_width,
+                                                      multi_line =
+                                                        facet_labeller_multiline)
+        )
+    }
+  }
   main_plot <- main_plot +
     ggplot2::theme_bw(base_size = base_size) +
     ggplot2::theme(
@@ -637,23 +675,56 @@ forest_plot <- function(
         size = table_text_size,
         position = ggstance::position_dodgev(height = vertical_dodge_height)
       )
-
+    if (facet_labeller != "label_wrap_gen") {
     if (table_facet_switch != "none") {
       table_plot <- table_plot +
         ggplot2::facet_grid(facet_formula,
                             scales = facet_scales,
                             space = facet_space,
                             switch = table_facet_switch,
-                            labeller = facet_labeller)
+                            labeller = eval(parse(
+                              text=paste0("function(labs){",facet_labeller,
+                                          "(labs, multi_line = ",facet_labeller_multiline,")}")
+                              ,keep.source = FALSE))
+                            )
     } else {
       table_plot <- table_plot +
         ggplot2::facet_grid(facet_formula,
                             scales = facet_scales,
                             space = facet_space,
                             switch = NULL,
-                            labeller = facet_labeller)
+                            labeller =  eval(parse(
+                              text=paste0("function(labs){",facet_labeller,
+                                          "(labs, multi_line = ",facet_labeller_multiline,")}")
+                              ,keep.source = FALSE))
+                            )
     }
-
+    }
+    if (facet_labeller == "label_wrap_gen") {
+      if (table_facet_switch != "none") {
+        table_plot <- table_plot +
+          ggplot2::facet_grid(facet_formula,
+                              scales = facet_scales,
+                              space = facet_space,
+                              switch = table_facet_switch,
+                              labeller = label_wrap_gen(width =
+                                                          label_wrap_width,
+                                                        multi_line =
+                                                          facet_labeller_multiline)
+                              )
+      } else {
+        table_plot <- table_plot +
+          ggplot2::facet_grid(facet_formula,
+                              scales = facet_scales,
+                              space = facet_space,
+                              switch = NULL,
+                              labeller = label_wrap_gen(width =
+                                                          label_wrap_width,
+                                                        multi_line =
+                                                          facet_labeller_multiline)
+                              )
+      }
+    }
     table_plot <- table_plot +
       ggplot2::theme_bw(base_size = base_size) +
       ggplot2::theme(

@@ -53,7 +53,8 @@ fluidPage(
         ), # tabPanel
         tabPanel("Facets",
                  selectInput(  "facetformula", "Facet Formula:",
-                               choices = c("covname ~ .","covname~paramname"),
+                               choices = c("covname ~ .",
+                                           "covname ~ paramname"),
                                selected = c("covname ~ ."),
                                multiple = FALSE),
                  
@@ -78,6 +79,23 @@ fluidPage(
                                       min = 0, max = 1, step = 0.1, value = 0.5),
                  sliderInput("y_facet_text_hjust", "Facet Text Horizontal Justification y",
                                       min = 0, max = 1, step = 0.1, value = 0.5)
+                 ),
+                 tabPanel("Facet Labels",
+                          selectInput('facetlabeller' ,'Facet Label:',c(
+                            "Variable(s) Name(s) and Value(s)" ="label_both",
+                            "Value(s)"="label_value",
+                            "Parsed Expression" ="label_parsed",
+                            "Depends on Context" ="label_context",
+                            "Wrap lines" ="label_wrap_gen"),
+                            selected="label_value"),
+                          conditionalPanel(
+                            condition = "input.facetlabeller== 'label_wrap_gen'  " ,
+                            sliderInput("labelwrapwidth", "N Characters to Wrap Labels:",
+                                        min=1, max=100, value=c(25),step=1)
+                          ),
+                          checkboxInput('facetwrapmultiline',
+                                        'Strip labels on multiple lines?',
+                                        value = TRUE)
                  )
                  ),
                  selectizeInput(  "stripplacement", "Strip Placement:",
@@ -98,7 +116,10 @@ fluidPage(
         tabPanel(
           "X/Y Axes",
           sliderInput("ylablesize", "Y axis labels size", min=1, max=32, value=24,step=0.5),
-          sliderInput("ylabeltextwidth", "Y axis labels width", min=1, max=40, value=25, step=1),
+          checkboxInput('breakylabel', "Break long Y axis labels?", value = FALSE),
+          conditionalPanel(
+            condition = "input.breakylabel" ,
+            sliderInput("ylabeltextwidth", "Y axis Width to break at:", min=1, max=40, value=25, step=1)),
           sliderInput("xlablesize", "X axis labels size", min=1, max=32, value=24,step=0.5),
           checkboxInput('showyaxisgridlines', "Keep Y axis Gridlines", value = TRUE),
           checkboxInput('showxaxisgridlines', "Keep X axis Gridlines", value = TRUE),
