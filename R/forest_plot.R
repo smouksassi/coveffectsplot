@@ -27,7 +27,8 @@ which0 <- function(x) {
 #' @param xy_facet_text_bold Bold Facet text. Logical TRUE FALSE.
 #' @param x_label_text_size X axis labels size.
 #' @param y_label_text_size Y axis labels size.
-#' @param y_label_text_width Number of characters to break long Y axis labels.
+#' @param break_ylabel Split Y axis labels into multiple lines. Logical FALSE TRUE.
+#' @param y_label_text_width Number of characters to break Y axis labels.
 #' @param table_text_size Table text size.
 #' @param base_size theme_bw base_size for the plot and table.
 #' @param theme_benrich apply Benjamin Rich's theming.
@@ -94,7 +95,7 @@ which0 <- function(x) {
 #' @param return_list What to return if True a list of the main and table plots is returned
 #' instead of the gtable/plot.
 #' @rawNamespace import(data.table, except = c(last,between,first))
-#' @rawNamespace importFrom(scales, wrap_format)
+#' @rawNamespace importFrom(scales, label_wrap)
 
 #' @examples
 #' library(dplyr)
@@ -235,7 +236,7 @@ forest_plot <- function(
   x_facet_text_size = 13,
   y_facet_text_size = 13,
   x_facet_text_angle = 0,
-  y_facet_text_angle = 180,
+  y_facet_text_angle = 0,
   x_facet_text_vjust = 0.5,
   y_facet_text_vjust = 0.5,
   x_facet_text_hjust = 0.5,
@@ -243,6 +244,7 @@ forest_plot <- function(
   xy_facet_text_bold = TRUE,
   x_label_text_size  = 16,
   y_label_text_size  = 16,
+  break_ylabel = FALSE,
   y_label_text_width = 25,
   table_text_size = 7,
   base_size = 22,
@@ -524,6 +526,10 @@ forest_plot <- function(
         angle = 0,
         size = y_label_text_size
       ),
+      axis.text.y.left = ggplot2::element_text(
+        angle = 0,
+        size = y_label_text_size
+      ),
       axis.text.x = ggplot2::element_text(size = x_label_text_size),
       legend.position = legend_position,
       legend.justification = c(0.5, 0.5),
@@ -585,9 +591,11 @@ forest_plot <- function(
   }
   
   main_plot <- main_plot +
-    ggplot2::scale_x_continuous(trans = ifelse(logxscale,"log","identity"))+
-    ggplot2::scale_y_discrete(labels = wrap_format(y_label_text_width))
-  
+    ggplot2::scale_x_continuous(trans = ifelse(logxscale,"log","identity"))
+  if (break_ylabel) {
+    main_plot <- main_plot +
+      ggplot2::scale_y_discrete(labels = label_wrap(y_label_text_width))
+  }
   if (length(major_x_ticks) || length(minor_x_ticks)) {
     main_plot <- main_plot +
       ggplot2::scale_x_continuous(trans = ifelse(logxscale,"log","identity"),
@@ -653,6 +661,10 @@ forest_plot <- function(
           angle = 0,
           size = y_label_text_size
         ),
+        axis.text.y.left = ggplot2::element_text(
+          angle = 0,
+          size = y_label_text_size
+        ),
         strip.text.x = table.x.strip.text,
         axis.text.x = ggplot2::element_text(size = x_label_text_size),
         axis.ticks.x= ggplot2::element_blank(),
@@ -715,6 +727,7 @@ forest_plot <- function(
         ggplot2::theme(
           axis.title.y = ggplot2::element_blank(),
           axis.text.y = ggplot2::element_blank(),
+          axis.text.y.left = ggplot2::element_blank(),
           axis.ticks.y = ggplot2::element_blank()
         )
     }
@@ -764,8 +777,11 @@ forest_plot <- function(
             strip.text.x= table.x.strip.text
           )
       }    
-           
       
+      if (break_ylabel) {
+        table_plot <- table_plot +
+          ggplot2::scale_y_discrete(labels = label_wrap(y_label_text_width)) 
+      }
     }
   }
 

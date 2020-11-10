@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   dev.args = list(png = list(type = "cairo"))
 )
+options(rmarkdown.html_vignette.check_title = FALSE)
 library(coveffectsplot)
 library(mrgsolve)
 library(ggplot2)
@@ -26,9 +27,9 @@ library(ggridges)
 library(tidyr)
 library(dplyr)
 library(table1)
-library(patchwork)
 library(egg)
 library(data.table)
+library(patchwork)
 theme_set(theme_bw())
 #utility function to simulate varying one covariate at a time keeping the rest at the reference
 expand.modelframe <- function(..., rv, covcol="covname") {
@@ -131,16 +132,16 @@ plotdata <- outputsim[ID %in% sample(unique(ID), 500)]
 
 p1 <- ggplot(plotdata, aes(time, CP, group = ID)) +
   geom_line(alpha = 0.2, size = 0.1) +
-  facet_grid(ALB ~ WT + SEX, labeller = label_both) +
+  facet_grid(~ WT + SEX + ALB, labeller = label_both) +
   labs(y = "Plasma Concentrations", x = "Time (h)")
 
 p2 <- ggplot(plotdata, aes(time, CP, group = ID)) +
   geom_line(alpha = 0.2, size = 0.1) +
-  facet_grid(ALB ~ WT + SEX, labeller = label_both) +
+  facet_grid(~ WT + SEX + ALB, labeller = label_both) +
   scale_y_log10() +
   labs(y = expression(Log[10]~Plasma~Concentrations), x = "Time (h)")
 
-p1+p2
+egg::ggarrange(p1, p2, ncol = 2)
 ```
 
 ### Compute PK Parameters, Plot and Summarize BSV
@@ -591,6 +592,7 @@ coveffectsplot::forest_plot(fpdata[paramname=="AUC"],
                             strip_placement        = "inside",
                             base_size              = 18,
                             y_label_text_size      = 12,
+                            y_facet_text_angle     = 0,
                             xlabel                 = "Fold Change Relative to Reference",
                             ref_legend_text        = ref_legend_text,
                             area_legend_text       = area_legend_text,
@@ -626,6 +628,7 @@ coveffectsplot::forest_plot(fpdata[paramname=="AUC"],
                             x_range = c(0.5,2),
                             xlabel = "Fold Change Relative to Reference",
                             x_label_text_size= 10,
+                            y_facet_text_angle     = 0,
                             facet_formula = "covname~paramname",
                             theme_benrich = TRUE,
                             table_title_size = 15,

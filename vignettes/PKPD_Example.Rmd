@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   dev.args = list(png = list(type = "cairo"))
 )
+options(rmarkdown.html_vignette.check_title = FALSE)
 library(coveffectsplot)
 library(mrgsolve)
 library(ggplot2)
@@ -524,6 +525,7 @@ coveffectsplot::forest_plot(coveffectsdatacovrepbsv,
                             strip_placement = "outside",
                             base_size = 16,
                             y_label_text_size = 12,
+                            y_label_text_width = 50,
                             xlabel = "Fold Change Relative to Reference",
                             ref_legend_text = ref_legend_text,
                             area_legend_text =area_legend_text,

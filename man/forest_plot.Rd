@@ -12,7 +12,7 @@ forest_plot(
   x_facet_text_size = 13,
   y_facet_text_size = 13,
   x_facet_text_angle = 0,
-  y_facet_text_angle = 180,
+  y_facet_text_angle = 0,
   x_facet_text_vjust = 0.5,
   y_facet_text_vjust = 0.5,
   x_facet_text_hjust = 0.5,
@@ -20,6 +20,8 @@ forest_plot(
   xy_facet_text_bold = TRUE,
   x_label_text_size = 16,
   y_label_text_size = 16,
+  break_ylabel = FALSE,
+  y_label_text_width = 25,
   table_text_size = 7,
   base_size = 22,
   theme_benrich = FALSE,
@@ -105,6 +107,10 @@ forest_plot(
 \item{x_label_text_size}{X axis labels size.}
 
 \item{y_label_text_size}{Y axis labels size.}
+
+\item{break_ylabel}{Split Y axis labels into multiple lines. Logical FALSE TRUE.}
+
+\item{y_label_text_width}{Number of characters to break Y axis labels.}
 
 \item{table_text_size}{Table text size.}
 
@@ -281,6 +287,7 @@ forest_plot(plotdata,
             x_facet_text_size = 10,
             y_facet_text_size = 10,
             y_label_text_size = 10,
+            y_label_text_width = 15,
             x_label_text_size = 10,
             facet_switch = "both",
             show_table_facet_strip = "both",
