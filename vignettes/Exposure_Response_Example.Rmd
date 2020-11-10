@@ -131,7 +131,7 @@ simoutbsvplacebo <- simout %>%
   mutate(LGST =LGST)%>%
   gather(paramname, paramvalue,LGST,P1)%>%
   group_by(paramname)%>%
-  summarize(P50 = quantile(paramvalue, 0.5)
+  dplyr::summarize(P50 = quantile(paramvalue, 0.5)
 )
 simoutbsv <- simout %>% 
   mutate(logodds =LGST)%>% 
@@ -179,7 +179,7 @@ pbsvranges
 
 simoutbsvranges <- simoutbsvlong %>%
   group_by(paramname)%>%
-  summarize(
+  dplyr::summarize(
    P05 = quantile(paramvalue, 0.05),
     P25 = quantile(paramvalue, 0.25),
     P50 = quantile(paramvalue, 0.5),
