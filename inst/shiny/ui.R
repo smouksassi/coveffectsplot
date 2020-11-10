@@ -98,6 +98,7 @@ fluidPage(
         tabPanel(
           "X/Y Axes",
           sliderInput("ylablesize", "Y axis labels size", min=1, max=32, value=24,step=0.5),
+          sliderInput("ylabeltextwidth", "Y axis labels width", min=1, max=40, value=25, step=1),
           sliderInput("xlablesize", "X axis labels size", min=1, max=32, value=24,step=0.5),
           checkboxInput('showyaxisgridlines', "Keep Y axis Gridlines", value = TRUE),
           checkboxInput('showxaxisgridlines', "Keep X axis Gridlines", value = TRUE),
@@ -124,9 +125,13 @@ fluidPage(
           ),
           checkboxInput('logxscale', 'Log-scale X axis ?', value = FALSE),
           textInput("yaxistitle", label = "Y axis Title", value = ""),
-          checkboxInput('parseyaxistitle', 'Parse Y axis Title?', value = FALSE),
+          conditionalPanel(
+            condition = "input.yaxistitle!=''" ,
+          checkboxInput('parseyaxistitle', 'Parse Y axis Title?', value = FALSE)),
           textInput("xaxistitle", label = "X axis Title", value = ""),
-          checkboxInput('parsexaxistitle', 'Parse X axis Title?', value = FALSE)
+          conditionalPanel(
+            condition = "input.xaxistitle!=''" ,
+          checkboxInput('parsexaxistitle', 'Parse X axis Title?', value = FALSE))
         ),
         tabPanel(
           "How To",

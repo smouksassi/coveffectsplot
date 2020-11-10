@@ -8,7 +8,6 @@ which0 <- function(x) {
   result
 }
 
-
 #' Forest plot
 #'
 #' Produce forest plots to visualize covariate effects
@@ -28,6 +27,7 @@ which0 <- function(x) {
 #' @param xy_facet_text_bold Bold Facet text. Logical TRUE FALSE.
 #' @param x_label_text_size X axis labels size.
 #' @param y_label_text_size Y axis labels size.
+#' @param y_label_text_width Number of characters to break long Y axis labels.
 #' @param table_text_size Table text size.
 #' @param base_size theme_bw base_size for the plot and table.
 #' @param theme_benrich apply Benjamin Rich's theming.
@@ -94,6 +94,7 @@ which0 <- function(x) {
 #' @param return_list What to return if True a list of the main and table plots is returned
 #' instead of the gtable/plot.
 #' @rawNamespace import(data.table, except = c(last,between,first))
+#' @rawNamespace importFrom(scales, wrap_format)
 
 #' @examples
 #' library(dplyr)
@@ -150,6 +151,7 @@ which0 <- function(x) {
 #'             x_facet_text_size = 10,
 #'             y_facet_text_size = 10,
 #'             y_label_text_size = 10,
+#'             y_label_text_width = 15,
 #'             x_label_text_size = 10,
 #'             facet_switch = "both",
 #'             show_table_facet_strip = "both",
@@ -239,8 +241,9 @@ forest_plot <- function(
   x_facet_text_hjust = 0.5,
   y_facet_text_hjust = 0.5,
   xy_facet_text_bold = TRUE,
-  x_label_text_size = 16,
-  y_label_text_size = 16,
+  x_label_text_size  = 16,
+  y_label_text_size  = 16,
+  y_label_text_width = 25,
   table_text_size = 7,
   base_size = 22,
   theme_benrich = FALSE,
@@ -582,7 +585,8 @@ forest_plot <- function(
   }
   
   main_plot <- main_plot +
-    ggplot2::scale_x_continuous(trans = ifelse(logxscale,"log","identity"))
+    ggplot2::scale_x_continuous(trans = ifelse(logxscale,"log","identity"))+
+    ggplot2::scale_y_discrete(labels = wrap_format(y_label_text_width))
   
   if (length(major_x_ticks) || length(minor_x_ticks)) {
     main_plot <- main_plot +

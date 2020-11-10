@@ -180,6 +180,7 @@ function(input, output, session) {
         xy_facet_text_bold = ..(input$boldfacettext),
         x_label_text_size = ..(input$xlablesize),
         y_label_text_size = ..(input$ylablesize),
+        y_label_text_width= ..(input$ylabeltextwidth),
         table_text_size = ..(input$tabletextsize),
         base_size = ..(input$base_size),
         theme_benrich = ..(input$theme_benrich),
