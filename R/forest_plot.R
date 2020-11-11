@@ -443,8 +443,8 @@ forest_plot <- function(
       xmin = "lower",
       xmax = "upper"
     )) +
-    ggstance::geom_pointrangeh(
-      position = ggstance::position_dodgev(height = vertical_dodge_height),
+    ggplot2::geom_pointrange(
+      position = ggplot2::position_dodge(width = vertical_dodge_height),
       ggplot2::aes_string(color = "pointintervalcolor"),
       size = 1,
       alpha = 0
@@ -483,8 +483,8 @@ forest_plot <- function(
       )
   }
   main_plot <- main_plot+
-    ggstance::geom_pointrangeh(
-      position = ggstance::position_dodgev(height = vertical_dodge_height),
+    ggplot2::geom_pointrange(
+      position = ggplot2::position_dodge(width = vertical_dodge_height),
       ggplot2::aes_string(color = "pointintervalcolor"),
       size = 1,
       alpha = 0.8
@@ -700,7 +700,7 @@ forest_plot <- function(
           hjust = 0.5
         ),
         size = table_text_size,
-        position = ggstance::position_dodgev(height = vertical_dodge_height)
+        position = ggplot2::position_dodge(width = vertical_dodge_height)
       )
     if ( !is.function(facet_labeller))  {
     if (facet_labeller != "label_wrap_gen") {
