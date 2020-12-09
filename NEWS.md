@@ -1,5 +1,5 @@
 # coveffectsplot 1.0.0.9999
-
+* Conditional use of cairo png to avoid CRAN failures
 * Added back code generation in the app (contributed by Dean Attali)
 * bumped the version to 1.0 to correspond with the tutorial paper
 * added back pk and pkpd vignettes after fixing R 4.0 issues
