@@ -69,7 +69,7 @@ function(input, output, session) {
       df$covname <- factor(df$covname)
       df$label <- factor(df$label)
       df$exposurename <- df$paramname
-      sigdigits <- ..(input$sigdigits)
+      sigdigits <- input$sigdigits
       summarydata <- df %>%
         group_by(paramname, covname, label) %>%
         mutate(
@@ -205,7 +205,7 @@ summarydata <- plotdataprepare()
         facet_space = input$facetspace,
         facet_labeller = input$facetlabeller,
         label_wrap_width = input$labelwrapwidth,
-        facet_labeller_multiline = ..(input$facetwrapmultiline),        
+        facet_labeller_multiline = input$facetwrapmultiline,        
         strip_placement = input$stripplacement,
         strip_outline = input$removestrip,
         facet_spacing = input$panelspacing,
