@@ -15,6 +15,6 @@
 #'   \item{lower}{Lower value for the effects usually the 5\% from the uncertainty distribution}
 #'   \item{upper}{Upper value for the effects usually the 95\% from the uncertainty distribution}
 #' }
-#' @source Table 15 from \url{https://aidsinfo.nih.gov/drugs/397/darunavir/28/professional/}
+#' @source Table 16 from \url{https://www.accessdata.fda.gov/drugsatfda_docs/label/2017/021976s045_202895s020lbl.pdf}
 "prezista"
 
