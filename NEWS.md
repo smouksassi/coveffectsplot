@@ -1,7 +1,5 @@
-# coveffectsplot 1.0.0.9999
+# coveffectsplot 0.0.9.5
 * Conditional use of cairo png to avoid CRAN failures
-* Added back code generation in the app (contributed by Dean Attali)
-* bumped the version to 1.0 to correspond with the tutorial paper
 * added back pk and pkpd vignettes after fixing R 4.0 issues
 * added `break_y_label` and `y_label_text_width` arguments to break long y axis labels
 * Added `facet_labeller` options in the shiny app

@@ -165,9 +165,9 @@ fluidPage(
     column(
       8,
       plotOutput('plot', height = "auto", width = "100%"),
-      shinyjs::hidden(
-        actionButton("get_code", "Show Code", icon = icon("code")), br(), br()
-      )
+      # shinyjs::hidden(
+      #   actionButton("get_code", "Show Code", icon = icon("code")), br(), br()
+      # )
     ), # column6
 
     column(
