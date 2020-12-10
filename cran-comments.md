@@ -7,6 +7,7 @@
 
 0 errors | 0 warnings | 1 note
 
+* Second submission to fix URLs and https as communicated by Prof Uwe Ligges
 * This is a hotfix for failure communicated by Prof Ripley due to using cairo on MAC
 * added vignettes and as such the note on invalid URL are for these vignettes
 * some Notes from the previous builds on some platforms are false positives since these are used in the shiny app code and are required for it.
