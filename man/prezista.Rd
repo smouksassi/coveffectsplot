@@ -19,7 +19,7 @@ A dataset with 33 rows and 6 variables
 }
 }
 \source{
-Table 15 from \url{https://aidsinfo.nih.gov/drugs/397/darunavir/28/professional/}
+Table 16 from \url{https://www.accessdata.fda.gov/drugsatfda_docs/label/2017/021976s045_202895s020lbl.pdf}
 }
 \usage{
 prezista
