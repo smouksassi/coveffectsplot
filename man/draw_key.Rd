@@ -3,9 +3,12 @@
 \name{draw_key}
 \alias{draw_key}
 \alias{draw_key_hpath}
+\alias{draw_key_pointrangeh}
 \title{Horizontal key drawing functions from ggstance in case it is deprecated}
 \usage{
 draw_key_hpath(data, params, size)
+
+draw_key_pointrangeh(data, params, size)
 }
 \arguments{
 \item{data}{A single row data frame containing the scaled aesthetics to

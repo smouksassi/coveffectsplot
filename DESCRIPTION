@@ -18,6 +18,7 @@ Imports:
     colourpicker,
     dplyr,
     egg,
+    grid,
     ggplot2 (>= 3.3.2),
     markdown,
     shiny,
