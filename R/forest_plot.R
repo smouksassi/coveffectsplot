@@ -39,7 +39,7 @@ label_wrap <- function(width) {
 #' @param table_text_size Table text size.
 #' @param base_size theme_bw base_size for the plot and table.
 #' @param theme_benrich apply Benjamin Rich's theming.
-#' @param table_title with theme_benrich on what text to use for table title.
+#' @param table_title What text to use for table title (theme_benrich has a default).
 #' @param table_title_size table title size.
 #' @param ref_legend_text Reference legend text.
 #' @param area_legend_text Area legend text.
@@ -385,7 +385,7 @@ forest_plot <- function(
     ylabel <-   parse(text=ylabel)
   }
   
-  if (table_title == "") {
+  if (table_title == "" && theme_benrich) {
     table_title <- "Median [95% CI]"
   }
   if (ref_legend_text == "") {
@@ -447,7 +447,8 @@ forest_plot <- function(
       position = ggplot2::position_dodge(width = vertical_dodge_height),
       ggplot2::aes_string(color = "pointintervalcolor"),
       size = 1,
-      alpha = 0
+      alpha = 0,
+      key_glyph = "pointrangeh"
     )# dummy to prevent a scales bug that I reported to ggplot2 maintainers
 
   if (show_ref_area) {
@@ -487,7 +488,8 @@ forest_plot <- function(
       position = ggplot2::position_dodge(width = vertical_dodge_height),
       ggplot2::aes_string(color = "pointintervalcolor"),
       size = 1,
-      alpha = 0.8
+      alpha = 0.8,
+      key_glyph = "pointrangeh"
     )+
     ggplot2::scale_colour_manual("", breaks = colbreakvalues,
                                  values = c(interval_col,bsv_col)) +
@@ -857,6 +859,16 @@ forest_plot <- function(
           axis.ticks.x= ggplot2::element_blank()
         )
     }
+    if (table_title!="") {
+      table_plot <- table_plot +
+      ggplot2::ggtitle(table_title)+
+        ggplot2::theme(
+          plot.title = ggplot2::element_text(
+            size = table_title_size, hjust=0.5, vjust=1,
+            margin = ggplot2::margin(b = ggplot2::unit(6, "pt")))
+        )
+    }
+    
     if (!table_panel_border) {
       table_plot <- table_plot +
         ggplot2::theme(
@@ -869,7 +881,7 @@ forest_plot <- function(
         ggplot2::ggtitle(table_title)+
          ggplot2::theme(
            plot.title=ggplot2::element_text(
-             size=table_title_size,hjust=0.5, vjust=1,margin=
+             size=table_title_size,hjust=0.5, vjust=1, margin=
                ggplot2::margin(b=ggplot2::unit(6, "pt"))),
            strip.background=ggplot2::element_blank(),
            panel.border = ggplot2::element_blank(),
