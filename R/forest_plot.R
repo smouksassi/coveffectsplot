@@ -943,3 +943,24 @@ if (return_list){
 }
 
 
+
+#' Horizontal key drawing functions from ggstance in case it is deprecated
+#'
+#' @inheritParams ggplot2::draw_key
+#' @return A grid grob.
+#' @name draw_key
+globalVariables(c("alpha", ".pt"))
+
+#' @rdname draw_key
+#' @export
+draw_key_hpath <- function(data, params, size) {
+  segmentsGrob(0.1, 0.5, 0.9, 0.5,
+               gp = gpar(
+                 col = alpha(data$colour, data$alpha),
+                 lwd = data$size * .pt,
+                 lty = data$linetype,
+                 lineend = "butt"
+               ),
+               arrow = params$arrow
+  )
+}

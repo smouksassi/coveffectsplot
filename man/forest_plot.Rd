@@ -120,7 +120,7 @@ forest_plot(
 
 \item{theme_benrich}{apply Benjamin Rich's theming.}
 
-\item{table_title}{with theme_benrich on what text to use for table title.}
+\item{table_title}{What text to use for table title (theme_benrich has a default).}
 
 \item{table_title_size}{table title size.}
 

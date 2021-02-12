@@ -9,6 +9,7 @@ suppressPackageStartupMessages({
   library(shinyjs)
   library(markdown)
   library(colourpicker)
+  library(grid)
   library(shinymeta)
 })
 
