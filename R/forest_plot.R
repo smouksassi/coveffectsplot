@@ -61,6 +61,7 @@ label_wrap <- function(width) {
 #' @param ref_value X intercept of reference line.
 #' @param ref_area_col Reference area background color.
 #' @param ref_value_col Reference line color.
+#' @param ref_value_size Reference line size.
 #' @param interval_col Point range color. One value.
 #' @param interval_size Point range size. Default to 1
 #' @param interval_fatten Point range fatten. Default to 4
@@ -280,6 +281,7 @@ forest_plot <- function(
   ref_value = 1,
   ref_area_col = "#BEBEBE50",
   ref_value_col = "black",
+  ref_value_size = 1,
   interval_col = "blue",
   interval_size = 1,
   interval_fatten = 4,
@@ -487,7 +489,7 @@ forest_plot <- function(
     main_plot <- main_plot +
       ggplot2::geom_vline(
         ggplot2::aes(xintercept = ref_value, linetype = ref_legend_text),
-        size = 1, color = ref_value_col 
+        size = ref_value_size, color = ref_value_col 
       )
   }
   main_plot <- main_plot+

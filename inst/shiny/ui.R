@@ -221,7 +221,9 @@ fluidPage(
                                     showColour = "both",allowTransparent=TRUE,
                                     returnName = TRUE),
           div( actionButton("colorrefvaluereset", "Reset Reference Line Color"),
-               style="text-align: right")
+               style="text-align: right"),
+          sliderInput("sizerefvalue", "Reference Line Size:",
+                      min = 0, max = 10, step = 0.1, value = 1)
           ),#tabpanel
         
         tabPanel(
@@ -237,13 +239,12 @@ fluidPage(
                                     "Point Range Colour:",
                                     value="blue",
                                     showColour = "both",allowTransparent=TRUE, returnName = TRUE),
-          
+          div( actionButton("colourpointrangereset", "Reset Point Range Colour"),
+               style="text-align: right"),
           sliderInput("sizepointrange", "Point range size",
                       min = 0, max = 10, step = 0.1, value = 1),
           sliderInput("fattenpointrange", "Point range fatten",
                       min = 0, max = 10, step = 0.1, value = 4),
-          div( actionButton("colourpointrangereset", "Reset Point Range Colour"),
-               style="text-align: right"),
           colourpicker::colourInput("colourbsvrange",
                                     "BSV Range Colour:",
                                     value="red",
