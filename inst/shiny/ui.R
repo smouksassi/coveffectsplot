@@ -223,7 +223,11 @@ fluidPage(
           div( actionButton("colorrefvaluereset", "Reset Reference Line Color"),
                style="text-align: right"),
           sliderInput("sizerefvalue", "Reference Line Size:",
-                      min = 0, max = 10, step = 0.1, value = 1)
+                      min = 0, max = 10, step = 0.1, value = 1),
+          selectInput('linetyperefvalue',
+                      'Reference Line Linetype:',c("solid","dashed",
+                                     "dotted", "dotdash",
+                                     "longdash", "twodash","blank"),selected = "dashed")
           ),#tabpanel
         
         tabPanel(

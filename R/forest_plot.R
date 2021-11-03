@@ -62,6 +62,7 @@ label_wrap <- function(width) {
 #' @param ref_area_col Reference area background color.
 #' @param ref_value_col Reference line color.
 #' @param ref_value_size Reference line size.
+#' @param ref_value_linetype Reference line linetype.
 #' @param interval_col Point range color. One value.
 #' @param interval_size Point range size. Default to 1
 #' @param interval_fatten Point range fatten. Default to 4
@@ -282,6 +283,7 @@ forest_plot <- function(
   ref_area_col = "#BEBEBE50",
   ref_value_col = "black",
   ref_value_size = 1,
+  ref_value_linetype = "dashed",
   interval_col = "blue",
   interval_size = 1,
   interval_fatten = 4,
@@ -501,7 +503,7 @@ forest_plot <- function(
     )+
     ggplot2::scale_colour_manual("", breaks = colbreakvalues,
                                  values = c(interval_col,bsv_col)) +
-    ggplot2::scale_linetype_manual("", breaks = ref_legend_text, values = 2) +
+    ggplot2::scale_linetype_manual("", breaks = ref_legend_text, values = ref_value_linetype) +
     ggplot2::scale_fill_manual("", breaks = area_legend_text, values = ref_area_col)+
     ggplot2::guides(colour = guide_interval,
                     linetype = guide_linetype,

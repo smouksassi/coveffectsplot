@@ -201,6 +201,7 @@ function(input, output, session) {
         ref_area_col = ..(input$fillrefarea),
         ref_value_col = ..(input$colorrefvalue),
         ref_value_size = ..(input$sizerefvalue),
+        ref_value_linetype = ..(input$linetyperefvalue),
         interval_col = ..(input$colourpointrange),
         interval_size = ..(input$sizepointrange),
         interval_fatten = ..(input$fattenpointrange),
