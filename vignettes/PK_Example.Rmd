@@ -391,9 +391,9 @@ pkprofileuncertainty
 ### Compute PK Parameters and Boxplots   
 Similar to an earlier section, we compute the PK parameters by patient and by replicate standardize by the computed median for reference subject and provide a plot. We add some data manipulation to construct more informative labels that will help in the plotting.
 
-```{r, fig.width=7, include=FALSE, message=FALSE}
+```{r, fig.width=7, include=TRUE, message=FALSE}
 out.df.univariatecov.nca <- iter_sims[, derive.exposure(time, CP), by=.(rep, ID, WT, SEX, ALB)]
-out.df.univariatecov.nca
+#out.df.univariatecov.nca
 
 refvalues <- out.df.univariatecov.nca[
   ALB==45 & WT==85 & SEX=="Female",

@@ -201,6 +201,8 @@ function(input, output, session) {
         ref_area_col = ..(input$fillrefarea),
         ref_value_col = ..(input$colorrefvalue),
         interval_col = ..(input$colourpointrange),
+        interval_size = ..(input$sizepointrange),
+        interval_fatten = ..(input$fattenpointrange),
         bsv_col      = ..(input$colourbsvrange),
         strip_col = ..(input$stripbackgroundfill),
         paramname_shape = ..(input$shapebyparamname),

@@ -15,6 +15,11 @@ label_wrap <- function(width) {
                   paste0, collapse = "\n"))
   }
 }
+
+"%||%" <- function(a, b) {
+  if (!is.null(a)) a else b
+}
+
 #' Forest plot
 #'
 #' Produce forest plots to visualize covariate effects
@@ -57,7 +62,10 @@ label_wrap <- function(width) {
 #' @param ref_area_col Reference area background color.
 #' @param ref_value_col Reference line color.
 #' @param interval_col Point range color. One value.
+#' @param interval_size Point range size. Default to 1
+#' @param interval_fatten Point range fatten. Default to 4
 #' @param bsv_col  BSV pointinterval color. One value.
+#' @param bsv_text_id Text string(s) to identify BSV. Default to c("BSV","bsv","IIV","Bsv")
 #' @param interval_bsv_text BSV legend text.
 #' @param strip_col Strip background color.
 #' @param paramname_shape Map symbol to parameter(s)?
@@ -273,7 +281,10 @@ forest_plot <- function(
   ref_area_col = "#BEBEBE50",
   ref_value_col = "black",
   interval_col = "blue",
+  interval_size = 1,
+  interval_fatten = 4,
   bsv_col = "red",
+  bsv_text_id = c("BSV","bsv","IIV","Bsv"),
   interval_bsv_text = "",
   strip_col = "#E5E5E5",
   paramname_shape = FALSE,
@@ -424,8 +435,7 @@ forest_plot <- function(
   if( shape_pos==0) guide_shape = FALSE
   
   data$label <- factor(data$label)
-  data$pointintervalcolor <-  ifelse( !data$covname%in%
-                                        c("BSV","bsv","IIV","Bsv"),
+  data$pointintervalcolor <-  ifelse( !data$covname%in% bsv_text_id,
                                       interval_legend_text,
                                       interval_bsv_text)
   data$pointintervalcolor <- factor(data$pointintervalcolor,
@@ -443,12 +453,9 @@ forest_plot <- function(
       xmin = "lower",
       xmax = "upper"
     )) +
-    ggplot2::geom_pointrange(
+    ggplot2::geom_blank(
       position = ggplot2::position_dodge(width = vertical_dodge_height),
       ggplot2::aes_string(color = "pointintervalcolor"),
-      size = 1,
-      alpha = 0,
-      key_glyph = "pointrangeh"
     )# dummy to prevent a scales bug that I reported to ggplot2 maintainers
 
   if (show_ref_area) {
@@ -487,8 +494,7 @@ forest_plot <- function(
     ggplot2::geom_pointrange(
       position = ggplot2::position_dodge(width = vertical_dodge_height),
       ggplot2::aes_string(color = "pointintervalcolor"),
-      size = 1,
-      alpha = 0.8,
+      size = interval_size, fatten = interval_fatten,
       key_glyph = "pointrangeh"
     )+
     ggplot2::scale_colour_manual("", breaks = colbreakvalues,
@@ -954,9 +960,9 @@ globalVariables(c("alpha", ".pt"))
 draw_key_hpath <- function(data, params, size) {
   grid::segmentsGrob(0.1, 0.5, 0.9, 0.5,
                gp = grid::gpar(
-                 col = alpha(data$colour, data$alpha),
-                 lwd = data$size * .pt,
-                 lty = data$linetype,
+                 col = alpha(data$colour %||% data$fill %||% "black", data$alpha),
+                 lwd = (data$size %||% 0.5) * .pt,
+                 lty = data$linetype %||% 1,
                  lineend = "butt"
                ),
                arrow = params$arrow
@@ -968,6 +974,6 @@ draw_key_hpath <- function(data, params, size) {
 draw_key_pointrangeh <- function(data, params, size) {
   grid::grobTree(
     draw_key_hpath(data, params, size),
-    ggplot2::draw_key_point(transform(data, size = data$size * 4), params)
+    ggplot2::draw_key_point(transform(data, size = (data$size %||% 1.5) * 4), params)
   )
 }

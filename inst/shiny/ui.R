@@ -237,6 +237,11 @@ fluidPage(
                                     "Point Range Colour:",
                                     value="blue",
                                     showColour = "both",allowTransparent=TRUE, returnName = TRUE),
+          
+          sliderInput("sizepointrange", "Point range size",
+                      min = 0, max = 10, step = 0.1, value = 1),
+          sliderInput("fattenpointrange", "Point range fatten",
+                      min = 0, max = 10, step = 0.1, value = 4),
           div( actionButton("colourpointrangereset", "Reset Point Range Colour"),
                style="text-align: right"),
           colourpicker::colourInput("colourbsvrange",
