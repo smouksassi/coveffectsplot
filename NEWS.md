@@ -1,6 +1,10 @@
 # coveffectsplot 1.0.0.9999
-* Added back code generation in the app (contributed by Dean Attali)
+* shinymeta on CRAN! Added back code generation in the app (contributed by Dean Attali)
 * bumped the version to 1.0 to correspond with the tutorial paper
+* added arguments to control pointinterval size interval_size and interval_fatten
+* added arguments to control ref value  ref_value_size and 
+ref_value_linetype
+* added arguments to control which text is detected as bsv bsv_text_id
 
 # coveffectsplot 0.0.9.1
 * Conditional use of cairo png to avoid CRAN failures

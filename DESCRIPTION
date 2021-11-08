@@ -23,6 +23,7 @@ Imports:
     markdown,
     shiny,
     shinyjs,
+    shinymeta,
     stats,
     tidyr,
     table1,
@@ -44,10 +45,9 @@ Suggests:
     shinyAce,
     Rcpp,
     gamlss.dist
-Remotes: rstudio/shinymeta
 License: MIT + file LICENSE
 SystemRequirements: pandoc with https support
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Encoding: UTF-8

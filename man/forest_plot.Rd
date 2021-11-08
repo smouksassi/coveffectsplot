@@ -39,8 +39,13 @@ forest_plot(
   ref_value = 1,
   ref_area_col = "#BEBEBE50",
   ref_value_col = "black",
+  ref_value_size = 1,
+  ref_value_linetype = "dashed",
   interval_col = "blue",
+  interval_size = 1,
+  interval_fatten = 4,
   bsv_col = "red",
+  bsv_text_id = c("BSV", "bsv", "IIV", "Bsv"),
   interval_bsv_text = "",
   strip_col = "#E5E5E5",
   paramname_shape = FALSE,
@@ -151,9 +156,19 @@ share the same text?}
 
 \item{ref_value_col}{Reference line color.}
 
+\item{ref_value_size}{Reference line size.}
+
+\item{ref_value_linetype}{Reference line linetype.}
+
 \item{interval_col}{Point range color. One value.}
 
+\item{interval_size}{Point range size. Default to 1}
+
+\item{interval_fatten}{Point range fatten. Default to 4}
+
 \item{bsv_col}{BSV pointinterval color. One value.}
+
+\item{bsv_text_id}{Text string(s) to identify BSV. Default to c("BSV","bsv","IIV","Bsv")}
 
 \item{interval_bsv_text}{BSV legend text.}
 
