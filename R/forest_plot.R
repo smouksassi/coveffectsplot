@@ -112,6 +112,7 @@ label_wrap <- function(width) {
 #' for the top, right, bottom and left sides.
 #' @param parse_xlabel treat xlabel as an expression. Logical FALSE TRUE.
 #' @param parse_ylabel treat ylabel as an expression. Logical FALSE TRUE.
+#' @param plot_title main plot title default to a line break.
 #' @param return_list What to return if True a list of the main and table plots is returned
 #' instead of the gtable/plot.
 #' @rawNamespace import(data.table, except = c(last,between,first))
@@ -324,6 +325,7 @@ forest_plot <- function(
   legend_margin = c(0, 0.1, -0.1, 0),
   parse_xlabel = FALSE,
   parse_ylabel = FALSE,
+  plot_title = NULL,
   return_list = FALSE)
 {
   ymax = ymin = x = fill = label_wrap_gen = NULL
@@ -631,10 +633,15 @@ forest_plot <- function(
                                      b = plot_margin[3],
                                      l = plot_margin[4],
                                      unit='pt')
-    ) +
-    ggplot2::ggtitle("\n") 
-  
-  
+    )  
+  if (is.null(plot_title)) {
+    main_plot <- main_plot +
+      ggplot2::ggtitle("\n")
+  }
+  if (!is.null(plot_title)) {
+    main_plot <- main_plot +
+      ggplot2::ggtitle(plot_title)
+  }
   
   if (!strip_outline) {
     main_plot <- main_plot +

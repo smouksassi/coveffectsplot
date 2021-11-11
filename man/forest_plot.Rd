@@ -81,6 +81,7 @@ forest_plot(
   legend_margin = c(0, 0.1, -0.1, 0),
   parse_xlabel = FALSE,
   parse_ylabel = FALSE,
+  plot_title = NULL,
   return_list = FALSE
 )
 }
@@ -248,6 +249,8 @@ for the top, right, bottom and left sides.}
 \item{parse_xlabel}{treat xlabel as an expression. Logical FALSE TRUE.}
 
 \item{parse_ylabel}{treat ylabel as an expression. Logical FALSE TRUE.}
+
+\item{plot_title}{main plot title default to a line break.}
 
 \item{return_list}{What to return if True a list of the main and table plots is returned
 instead of the gtable/plot.}
