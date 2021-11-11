@@ -338,6 +338,7 @@ fluidPage(
         ),#tabpanel
         tabPanel(
           "Custom Legend Text",
+          textInput("customplottitle", label ="Plot Title",value = " \\n"),
           textInput("customcolourtitle", label ="Pointinterval Legend text",
                     value="Median (points)\\n95% CI (horizontal lines)"),
           textInput("custombsvtitle", label ="BSV Legend text",

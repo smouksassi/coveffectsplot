@@ -242,7 +242,8 @@ function(input, output, session) {
         legend_margin = c(..(input$legendtop),..(input$legendright),
                          ..(input$legendbottom),..(input$legendleft)),
         parse_xlabel = ..(input$parsexaxistitle),
-        parse_ylabel = ..(input$parseyaxistitle)
+        parse_ylabel = ..(input$parseyaxistitle),
+        plot_title = escape_newline(..(input$customplottitle))
       )
       plot
     })

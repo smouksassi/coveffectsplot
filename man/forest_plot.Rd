@@ -81,7 +81,7 @@ forest_plot(
   legend_margin = c(0, 0.1, -0.1, 0),
   parse_xlabel = FALSE,
   parse_ylabel = FALSE,
-  plot_title = NULL,
+  plot_title = "\\n",
   return_list = FALSE
 )
 }

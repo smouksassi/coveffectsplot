@@ -325,7 +325,7 @@ forest_plot <- function(
   legend_margin = c(0, 0.1, -0.1, 0),
   parse_xlabel = FALSE,
   parse_ylabel = FALSE,
-  plot_title = NULL,
+  plot_title = "\n",
   return_list = FALSE)
 {
   ymax = ymin = x = fill = label_wrap_gen = NULL
@@ -634,11 +634,8 @@ forest_plot <- function(
                                      l = plot_margin[4],
                                      unit='pt')
     )  
-  if (is.null(plot_title)) {
-    main_plot <- main_plot +
-      ggplot2::ggtitle("\n")
-  }
-  if (!is.null(plot_title)) {
+
+  if (!is.null(plot_title) & plot_title!="") {
     main_plot <- main_plot +
       ggplot2::ggtitle(plot_title)
   }
