@@ -944,7 +944,8 @@ forest_plot <- function(
     )
   }
 if (return_list){
-  result <-  list(main_plot,table_plot)
+  if(table_position == "none") result <-  list(main_plot)
+  if(table_position != "none") result <-  list(main_plot,table_plot)
 }
   if (!return_list){
   result <- result
