@@ -13,6 +13,7 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
+  dev = "png",
   collapse = TRUE,
   message =FALSE,
   warning =FALSE,
@@ -81,7 +82,7 @@ ggplot2::ggplot(dflong,ggplot2::aes(x=value,fill=key))+
   ggplot2::geom_density(alpha=0.2)+
     ggplot2::facet_wrap(~key,scales="free",ncol=1)+
     ggplot2::labs(fill="",x="Uncertainty Distribution (RSE 15%) of the Parameters")+
-  ggplot2::theme(legend.position = "right",legend.background = 
+  ggplot2::theme(legend.position = "none",legend.background = 
                    ggplot2::element_rect(fill="transparent"),
                  axis.ticks.y = element_blank(),axis.text.y =element_blank())+
   ggplot2::guides(fill=ggplot2::guide_legend(reverse = FALSE))
@@ -93,9 +94,9 @@ MASS::mvrnorm(n=nbsvsubjects,
 ))
 names(dfcov)<- c("WTWOMAN","WTMAN")
 dfcovlong <- tidyr::gather(dfcov)
-ggplot2::ggplot(dfcovlong,ggplot2::aes(x=value,fill=key))+
-  ggplot2::geom_density(alpha=0.2)+
-  ggplot2::labs(fill="",x="Weight (kg)")+
+ggplot2::ggplot(dfcovlong,ggplot2::aes(x=value,linetype=key))+
+  ggplot2::geom_density(alpha=0.2,fill="darkgreen",size=2)+
+  ggplot2::labs(linetype="",x="Weight (kg)")+
   ggplot2::theme(legend.position = "right",legend.background = 
                    ggplot2::element_rect(fill="transparent"),axis.ticks.y = element_blank(),axis.text.y =element_blank())+
   ggplot2::guides(fill=ggplot2::guide_legend(reverse = FALSE))
@@ -223,14 +224,15 @@ ggplot2::ggplot(dfeffects)+
   ggplot2::geom_density(data=dfcovlong,
                         ggplot2::aes(x=(value/70)^0.75 ,
                                 y=..scaled..,col="b.Weight\nMean=70 kg, sd=20 kg"))+
-  ggplot2::geom_density(data=CLBSVdistribution ,ggplot2::aes(x=CLBSV,
-                                     y=..scaled..,col="c.Between subject variability\nCV=30%"))+
+  ggplot2::geom_density(data=CLBSVdistribution ,ggplot2::aes(x=CLBSV,y=..scaled..,
+                                                             col="c.Between subject variability\nCV=30%"))+
   ggplot2::theme_bw(base_size = 16)+
   ggplot2::theme(axis.text.y = ggplot2::element_blank(),
         axis.ticks.y = ggplot2::element_blank())+
   ggplot2::scale_x_continuous(breaks=c(0.25,0.5,0.8,1,1.25,1.5,2,3))+
   ggplot2::coord_cartesian(xlim=c(0.25,2))+
-  ggplot2::labs(color="",x="Effects Standardized Relative to the Typical Value",y= "Scaled Density")
+  ggplot2::labs(color="",x="Effects Standardized Relative to the Typical Value",y= "Scaled Density")+
+  ggplot2::scale_color_manual(values=c("blue","green","red"))
 
 ```
 
@@ -297,7 +299,8 @@ plotdata$label <- reorder(as.factor(plotdata$label) , c(1,3,2,4,5,6))
   ggplot2::facet_grid(covname~.,scales="free_y",switch="y")+
   ggplot2::labs(y="",x="Effects Relative to Reference Value",
                 colour="",linetype="")+
-  ggplot2::theme_bw()
+  ggplot2::theme_bw()+
+    ggplot2::scale_color_manual(values=c("blue"))
 ```
 
 ```{r,dpi = 72}

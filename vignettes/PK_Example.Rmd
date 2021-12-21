@@ -12,6 +12,7 @@ vignette: >
 ---
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
+  dev = "png",
   collapse = TRUE,
   message =FALSE,
   warning =FALSE,
@@ -376,7 +377,7 @@ pkprofileuncertainty<- ggplot(iter_sims, aes(x=time, y=CP, col=factor(WT), linet
   geom_line(aes(group=interaction(ID, rep)), alpha=0.1, size=0.1) +
   geom_line(data = outcovcomb, aes(group=interaction(ID)),
             alpha= 1, size=0.7, colour = "black") +
-  facet_grid(ALB ~ WT, labeller=label_both) +
+  facet_grid(ALB +SEX ~ WT, labeller= labeller(ALB = label_both, SEX = label_value, WT = label_both)) +
   labs(
     x        = "Time (h)",
     y        = "Plasma Concentrations",
