@@ -9,8 +9,8 @@ Authors@R: c(
     )
 Description: Produce forest plots to visualize covariate effects using either
     the command line or an interactive 'Shiny' application.
-URL: https://github.com/smouksassi/interactiveforestplot
-BugReports: https://github.com/smouksassi/interactiveforestplot/issues
+URL: https://github.com/smouksassi/coveffectsplot
+BugReports: https://github.com/smouksassi/coveffectsplot/issues
 Depends:
     R (>= 3.6.0),
     data.table (>= 1.9.8)
@@ -39,11 +39,9 @@ Suggests:
     ggrepel,
     ggstance,
     patchwork,
-    bayestestR,
     plotly,
     scales,
     shinyAce,
-    formatR,
     Rcpp,
     gamlss.dist
 License: MIT + file LICENSE
