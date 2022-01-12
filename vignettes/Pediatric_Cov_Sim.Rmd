@@ -10,7 +10,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-In this vignette we illustrate how to study the effects of covariates in a pediatric population between 2 to 6 years old. Since Age and Weight in kids are highly correlated, we will not simulate varying one covariate at a time rather we will incorporate a **distribution** of realistic Age/Weight pairs.
+In this vignette we illustrate how to simulate joint effects of covariates in a pediatric population between 2 to 6 years old. Since Age and Weight in kids are highly correlated, we will not simulate varying one covariate at a time rather we will incorporate a **distribution** of realistic Age/Weight pairs. This approach is recommended when a database of realistic covariates distribution is available.
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -39,7 +39,7 @@ nsubj <- 1000
 ```
 ## Specifying A Pediatric Simulation Model
 Here we have a simple one-compartment PK model with first-order absorption where clearance and volume are allometrically scaled. The reference subject is a 4 year old female with a weight of 15.9 kg.  
-* First we plot a typical PK profile with between subject variability (BSV).
+First, we plot a typical PK profile with between subject variability (BSV).
 
 ```{r pedpkmodel, collapse=TRUE }
 pedpkmodelcov <- '
@@ -115,7 +115,7 @@ p1
 ```
 
 ## PK Parameters and Associated BSV ranges
-* Second we compute the PK parameters AUC and Cmax, standardize and compute between subject variability ranges.
+Second, we compute the PK parameters AUC and Cmax, standardize and compute between subject variability ranges.
 
 ```{r ncapedpkmodel, collapse=TRUE }
 derive.exposure <- function(time, CP) {
@@ -225,7 +225,7 @@ wtvsageplot
 ```
 
 ## Simulation with the Multivariate Realistic Distribution
-The section above generated 4900 Age/Weight/Sex distribution values that we will use for the simulation. We will remove the between subject variability to focus on the covariate effects. We show a plot of the PK profiles and the normalized PK parameters versus Age and versus Weight.
+The section above generated 4900 Age/Weight/Sex distribution values that we will use for the simulation. We will remove the between subject variability to focus on the covariate effects. We show a plot of the PK profiles and the normalized PK parameters versus Age and versus Weight. Since we are dealing with a distribution and not specific covariate values we split into quartile ranges of the covariate distribution.
 
 ```{r simcovariatemodelpk,fig.height=6, collapse=TRUE }
 idata <- as.data.frame(simwtageoutput)

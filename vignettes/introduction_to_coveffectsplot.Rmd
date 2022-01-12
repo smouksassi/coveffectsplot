@@ -436,4 +436,4 @@ dev.off()
 ```
 ![](coveffectsplot2.png)
 
-In this introductory vignette we covered univariate covariate effects where we vary one at a time. Refer to the other vignettes for more advanced examples illustrating full simulation of PK or PK/PD or exposure-response models including the use of full covariate distributions.
+In this introductory vignette we covered univariate covariate effects where we vary one at a time. Refer to the other vignettes for more advanced examples illustrating full simulation of PK or PK/PD or exposure-response models including the use of full covariate distributions. Returning lists of plots allows the user to further modify and edit the ggplot objects using any other third party packages and tools.

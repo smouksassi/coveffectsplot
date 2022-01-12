@@ -55,7 +55,7 @@ round_pad <- function(x, digits = 2, round5up = TRUE) {
   formatC(round(x + eps, digits), digits = digits, format = "f", flag = "0")
 }
 ```
-Here we illustrate the approach with a two-compartment PK model defined with an ordinary differential equation (ODE) and covariates on the PK parameters Clearance (CL) and Volume (V). Weight, Albumin and Sex had effects on CL while Weight and Sex had effects on V. For simplicity no covariates had effects on peripheral clearance or volume. The approach is general and simulation based and can be easily extended to any ODE model with multiple covariate effects.
+Here we illustrate the varying one covariate at a time approach, keeping all the others at the reference value or category. A two-compartment pharmacokinetic (PK) model defined with ordinary differential equations (ODEs) is used. Covariates Weight, Albumin and Sex had effects on the Clearance (CL) model parameter while Weight and Sex had effects on the Volume of distribution (V) model parameter. For simplicity, there were no included covariates effects on other PK parameters such as peripheral clearance or volume. The approach is general and can be easily extended to any other ODEs model with multiple covariate effects on multiple model parameters.
 
 ## Specifying a PK Model using `mrgsolve`
 
@@ -264,7 +264,7 @@ bsvranges
 ## Generate and Simulate at Combinations of Covariate of Interest
 Based on our observed covariate data, we compute percentiles of interest that we will use to simulate data at. Common practice is to compute the 5,25,75,95 percentiles (the median being the reference). In some cases, we might want to explore the min, max or other extreme case scenarios. Care should be taken as this approach might generate unrealistic combination of covariates that can never appear in a real patient. The utility function expand.modelframe (written by Benjamin Rich) is defined in the setup section of the vignette and can be found in the source code. It facilitates the creation of a set of covariate values varying one at a time. 
 
-**Dataframe Holding Combinations of Covariates:**
+### Generate a Dataset Holding Combinations of Covariates:
 ```{r covcomb , fig.width=7 }
 reference.values <- data.frame(WT = 85, ALB = 45, SEX = 0)   
 
@@ -314,7 +314,7 @@ ggplot(outcovcomb, aes(x=time, y=CP, col=factor(WT), linetype=SEX)) +
 ```
 
 ### Adding Uncertainty from a Varcov Matrix
-* First, we will invent a varcov matrix by assuming 15% relative standard errors and correlations of 0.2 across the board. We then simulate a 100 set of parameters using a multivariate normal (kept at 100 for the vignette, use more replicates for a real project). Also, unless the model was written in a way to allow unconstrained parameter values, care should be taken to make sure the simulated parameters are valid and make sense. When available, use the set of parameters from a bootstrap run.  
+First, we will invent a varcov matrix by assuming 15% relative standard errors and correlations of 0.2 across the board. We then simulate a 100 set of parameters using a multivariate normal (kept at 100 for the vignette, use more replicates for a real project). Also, unless the model was written in a way to allow unconstrained parameter values, care should be taken to make sure the simulated parameters are valid and make sense. When available, use the set of parameters from bootstrap replicates.
 
 **Variance Covariance Matrix of fixed effects:**
 ```{r, fig.width=7}
@@ -341,7 +341,7 @@ as.data.frame(varcov)
 ```
 
 ### Generating Sets of Parameters with Uncertainty
-* Second, we generate the sim_parameters dataset using `mvrnorm` and then incorporate the uncertainty by simulating using a different set of parameters (row) for each replicate.  
+Second, we generate the sim_parameters dataset using `mvrnorm` and then incorporate the uncertainty by simulating using a different set of parameters (row) for each replicate.  
 
 **First Few Rows of a Dataset Containing Simulated Fixed Effects with Uncertainty:**
 ```{r, fig.width=7}
@@ -352,7 +352,7 @@ head(sim_parameters)
 ```
 
 ### Iterative Simulation to Apply the Uncertainty
-* Third, we illustrate how you can iterate over a set of parameters value using a `for` loop. We then overlay the previous simulation results without uncertainty on the one with uncertainty to visualize the effect of adding it.
+Third, we illustrate how you can iterate over a set of parameters value using a `for` loop. We then overlay the previous simulation results without uncertainty on the one with uncertainty to visualize the effect of adding it.
 
 ```{r, fig.width=7,fig.height=4}
 idata <- data.table::copy(covcomb)
@@ -542,7 +542,7 @@ ggplot(out.df.univariatecov.nca, aes(
 ```
 
 
-### Adding the BSV and Using `forest_plot`
+### Adding the BSV Ranges and Putting it all Together Using `forest_plot`
 To contrast the covariate effects with random unexplained variability we add to the data the BSV intervals computed in an earlier section. We then do some data manipulation and formatting to produce a plot from the package function `forest_plot`. To simplify we will only keep AUC before revisiting more than one parameter plots at the end. 
 
 ```{r, fig.width=7, fig.height=6}
@@ -619,7 +619,7 @@ dev.off()
 ![Covariate Effects Plot With BSV.](./Figure4_6.png)
 
 ## Customization of the Plots
-In this section, we first show a `forest_plot` built-in theme, then how you to get the ggplots as a list for further editing using ggplot code.
+In this section, we first show a `forest_plot` built-in theme, then how you return the ggplot objects as a list for further editing using regular 'ggplot2' code.
 
 ### Using `theme_benrich` along Additional Options
 This is achieved by setting `theme_benrich = TRUE`, specifying that you want no legend
@@ -662,7 +662,6 @@ You can get the underlying ggplots as a list for further editing by setting `ret
 
 ```{r,message=FALSE,fig.width=7}
 png("./coveffectsplot0.png",width =9 ,height = 6,units = "in",res=72)
-
 plotlists <- coveffectsplot::forest_plot(fpdata[paramname=="AUC"],
                             ref_area = c(0.8, 1/0.8),
                             xlabel = "Fold Change Relative to Reference",
@@ -737,10 +736,11 @@ dev.off()
 ![Customized Covariate Effects Plot.](./coveffectsplot5.png)
 
 ### Launch the Shiny App for Point and Click Editing
-Alternatively, you can launch the app by typing `run_interactiveforestplot(yourdataname)` for point and click editing. This will help you in quickly generating the plot you want.
+Alternatively, you can launch the shiny app by typing `run_interactiveforestplot(yourdataname)`. The app will allow you to interactively edit how the plot looks like using point and click.
+
 ```{r ,echo=FALSE}
 # uncomment in interactive mode
-# run_interactiveforestplot(coveffectsdatacovrepbsv)
+# run_interactiveforestplot(fpdata[paramname=="AUC"])
 ```
 ## Plots with Multiple PK Parameters
 You can also have plots with more than one PK parameter. You may want to facet by parameter, or to use different shape by parameter.

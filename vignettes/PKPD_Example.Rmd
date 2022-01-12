@@ -61,8 +61,13 @@ round_pad <- function(x, digits = 2, round5up = TRUE) {
   formatC(round(x + eps, digits), digits = digits, format = "f", flag = "0")
 }
 ```
+Here we illustrate how the ordinary differential equations (ODEs) model and the approach of varying one covariate at a time, can be expanded.  
+We link the same two-compartment PK model (from the PK Example vignette) to an indirect response pharmacodynamic (PD) model where the drug concentrations inhibit the rate constant of input (Kin).  
+The covariates model included several covariates effects on Clearance, Volume and Kin. The baseline PD value is controlled by the ratio of Kin/Kout.  
+In this vignette we do not go into a lot of details, as we assume that the user has read and run the code of the  Introduction to `coveffectsplot` and PK Example vignettes and that the reader is familiar with PK/PD concepts.  
+At the end we show how we can add a table under a multiple parameters forest plot.
+
 ## Specifying a PK/PD Model using `mrgsolve`
-Here we use the same two-compartment PK model linked to an indirect response PD model with the drug inhibiting the rate constant of input (Kin). The model included several covariates effects on Clearance, Volume and Kin. The baseline PD value is controlled by the ratio of Kin/Kout.
 ```{r pkpdmodel, collapse=TRUE }
 codepkpdmodelcov <- '
 $PARAM @annotated
@@ -176,6 +181,7 @@ ggplot(data =outputpkpdsimlong ,
 
 ### Compute PD Parameters and Summarize BSV 
 Here we compute the PD baseline (where we start), nadir response (minimum response achieved) and the delta (difference) between the baseline and nadir. We then summarize and report the BSV around these parameters as ranges of 50 and 90% of patients. We then show a plot of the first 10 replicates as an example of the simulated PD profiles. Since the code is similar to the PK Example vignette it is not shown.
+
 ```{r computenca , fig.width=7,  message=FALSE }
 derive.exposure <- function(time, PDRESP) {
   x <- c(
@@ -339,8 +345,8 @@ pdprofiles <- ggplot(iter_sims[iter_sims$rep<=10,], aes(time/24,PDRESP,col=facto
   geom_line(aes(group=interaction(ID,rep)),alpha=0.3,size=0.3)+
   geom_line(data=outcovcomb,aes(group=interaction(ID)),color="black")+
   facet_grid(SEX+ALB~ AGE+WT,labeller = label_both)+
-  labs(linetype="No Uncertainty\nHealthy",
-       colour="Uncertainty\nReplicates\n(1 to 10)\nWeight (kg)",
+  labs(linetype="Black Lines\nNo Uncertainty\nHealthy Status",
+       colour="Colored Lines\nUncertainty\nReplicates\n(1 to 10)\nWeight (kg)",
        caption ="Simulation\nwith Uncertainty without BSV" ,
        x="Days", y = "PD Values")+
   guides(colour = guide_legend(override.aes = list(alpha = 1)))
@@ -466,8 +472,9 @@ pdggridges
 
 ```
 
-### Summarize, add BSV and Use `forest_plot`
-We will show how a multiple parameters, multiple covariates plot and table can be done.
+## Summarize, add the BSV Ranges and Putting it all Together Using `forest_plot`
+Here we show how a multiple parameters, multiple covariates and table can be done.
+
 ```{r, fig.width=7, fig.height=7 ,message=FALSE}
 coveffectsdatacovrep <- out.df.univariatecov.nca %>% 
   dplyr::group_by(paramname,covname,covvalue) %>% 
