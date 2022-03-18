@@ -187,10 +187,10 @@ p4
 ```
 
 ## Simulating Age/Weight Pairs Using NHANES LMS Values
-The NHANES website provides a csv file containing the smoothed growth charts distribution parameters at specific ages for boys and girls. The `gamlss.dist::rBCCG` function is used to show how we can use these parameters to generate a realistic pediatric Age/Weight/Sex distribution. 
+The NHANES website provides a csv file containing the smoothed growth charts distribution parameters at specific ages for boys and girls. The `gamlss.dist::rBCCG` function is used to show how we can use these parameters to generate a realistic pediatric Age/Weight/Sex distribution. Wehe dataset is now part of the package.
 
 ```{r simcovariate, collapse=TRUE }
-wtage <- read.csv (url("https://www.cdc.gov/growthcharts/data/zscore/wtage.csv"))
+#wtage <- read.csv (url("https://www.cdc.gov/growthcharts/data/zscore/wtage.csv"))
 #boys 1 and girls 2 in this file
 wtage<-  wtage[wtage$Agemos<=6*12,] # keeps only 2 to 6 years
 

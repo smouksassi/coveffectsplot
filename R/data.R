@@ -18,3 +18,28 @@
 #' @source Table 16 from \url{https://www.accessdata.fda.gov/drugsatfda_docs/label/2017/021976s045_202895s020lbl.pdf}
 "prezista"
 
+
+#' Weight Age CDC growth charts data
+#'
+#' Weight-for-age, 2 to 20 years, LMS parameters and selected smoothed weight percentiles in kilograms, by sex and age.
+#'
+#' @format A dataset with 436 rows and 14 variables
+#' \describe{
+#'   \item{Sex}{1=male; 2=female}
+#'   \item{Agemos}{Age in months}
+#'   \item{L}{skewness ditribution parameter}
+#'   \item{M}{location ditribution parameter}
+#'   \item{S}{scale ditribution parameter}
+#'   \item{P3}{}
+#'   \item{P5}{}
+#'   \item{P10}{}
+#'   \item{P25}{}
+#'   \item{P50}{}
+#'   \item{P75}{}
+#'   \item{P90}{}
+#'   \item{P95}{}
+#'   \item{P97}{}
+#' }
+#' @source CDC website \url{https://www.cdc.gov/growthcharts/data/zscore/wtage.csv}
+"wtage"
+

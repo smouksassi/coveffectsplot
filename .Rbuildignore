@@ -8,3 +8,4 @@
 ^revdep$
 ^\.Rhistory
 ^\.github$
+^CRAN-SUBMISSION$
