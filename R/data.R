@@ -30,15 +30,15 @@
 #'   \item{L}{skewness ditribution parameter}
 #'   \item{M}{location ditribution parameter}
 #'   \item{S}{scale ditribution parameter}
-#'   \item{P3}{}
-#'   \item{P5}{}
-#'   \item{P10}{}
-#'   \item{P25}{}
-#'   \item{P50}{}
-#'   \item{P75}{}
-#'   \item{P90}{}
-#'   \item{P95}{}
-#'   \item{P97}{}
+#'   \item{P3}{Smoothed third percentile}
+#'   \item{P5}{Smoothed fifth percentile}
+#'   \item{P10}{Smoothed tenth percentile}
+#'   \item{P25}{Smoothed twenty fifth percentile}
+#'   \item{P50}{Smoothed fiftieth percentile}
+#'   \item{P75}{Smoothed seventy fifth percentile}
+#'   \item{P90}{Smoothed ninetieth percentile}
+#'   \item{P95}{Smoothed ninety fifth percentile}
+#'   \item{P97}{Smoothed ninety seventh percentile}
 #' }
 #' @source CDC website \url{https://www.cdc.gov/growthcharts/data/zscore/wtage.csv}
 "wtage"

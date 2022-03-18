@@ -1,3 +1,7 @@
+# coveffectsplot 1.0.1
+* cran fix for url not avaiable wtage is now a dataset that ships with the package
+
+
 # coveffectsplot 1.0.0
 * bumped the version to 1.0 to correspond with the PSP tutorial paper (under review)
 * shinymeta on CRAN! Added back code generation in the app (contributed by Dean Attali)
