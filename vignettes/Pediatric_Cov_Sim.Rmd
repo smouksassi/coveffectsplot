@@ -192,8 +192,8 @@ The NHANES website provides a csv file containing the smoothed growth charts dis
 ```{r simcovariate, collapse=TRUE }
 #wtage <- read.csv (url("https://www.cdc.gov/growthcharts/data/zscore/wtage.csv"))
 #boys 1 and girls 2 in this file
-wtage<-  wtage[wtage$Agemos<=6*12,] # keeps only 2 to 6 years
 
+wtage<-  wtage[wtage$Agemos<=6*12,] # keeps only 2 to 6 years
 wtage[wtage$Agemos>=4*12-1&wtage$Agemos<=4*12 +1,] %>%
   group_by(Sex) %>% 
   summarize(Median=median(M))
@@ -202,6 +202,7 @@ nweightsperage <- 50 # simulate 50 kid at each age/sex
 simwtageoutput <- data.frame(matrix(NA, nrow = nrow(wtage),ncol = nweightsperage))
 names(simwtageoutput) <- paste0("Var", 1:nweightsperage)
 set.seed(209321)
+wtage <- as.data.frame(wtage)
 for (i in 1:nrow(wtage)) {#
   simpoints <- gamlss.dist::rBCCG(nweightsperage,
                                   mu = wtage[i,"M"],

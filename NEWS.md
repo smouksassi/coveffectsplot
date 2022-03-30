@@ -1,5 +1,5 @@
 # coveffectsplot 1.0.1
-* cran fix for url not avaiable wtage is now a dataset that ships with the package
+* cran fix for url not available wtage is now a dataset that ships with the package
 
 
 # coveffectsplot 1.0.0
