@@ -1,6 +1,6 @@
 Package: coveffectsplot
 Title: Produce Forest Plots to Visualize Covariate Effects
-Version: 1.0.1
+Version: 1.0.1.9999
 Authors@R: c(
     person("Samer", "Mouksassi", email = "samermouksassi@gmail.com",
       role = c("aut", "cre"),comment = c(ORCID = "https://orcid.org/0000-0002-7152-6654")),
@@ -16,19 +16,19 @@ Depends:
     data.table (>= 1.9.8)
 Imports:
     colourpicker,
-    dplyr,
     egg,
     grid,
     ggplot2 (>= 3.3.2),
-    markdown,
     shiny,
-    shinyjs,
-    shinymeta,
     stats,
-    tidyr,
-    table1,
     utils
 Suggests:
+    markdown,
+    dplyr,
+    tidyr,
+    shinyjs,
+    shinymeta,
+    table1,
     clipr,
     formatR,
     MASS,
