@@ -43,7 +43,10 @@ Suggests:
     scales,
     shinyAce,
     Rcpp,
-    gamlss.dist
+    gamlss.dist,
+    ggh4x,
+    ggpmisc,
+    quantreg
 License: MIT + file LICENSE
 SystemRequirements: pandoc with https support
 LazyData: true

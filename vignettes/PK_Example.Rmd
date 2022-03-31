@@ -149,7 +149,7 @@ egg::ggarrange(p1, p2, ncol = 2)
 ```
 
 ### Compute PK Parameters, Plot and Summarize BSV
-In this section we compute the PK parameters of interest, provide a plot of the parameters as well as of the standardized ones. We also summarize and report the BSV as ranges of 50 and 90% of patients for each PK parameter.
+In this section we compute the PK parameters of interest, provide a plot of the parameters as well as of the standardized ones. We also summarize and report the BSV as ranges of 50 and 90% of patients for each PK parameter. Later on we might chooose to include these ranges in the coveffectsplot or not.
 
 ```{r computenca , fig.width=7 , message=FALSE }
 derive.exposure <- function(time, CP) {
@@ -197,7 +197,7 @@ p4 <- ggplot(refbsv, aes(
         y      = paramname,
         fill   = factor(..quantile..),
         height = ..ndensity..)) +
-  facet_wrap(~ paramname, scales="free_y", ncol=1) +
+  facet_wrap(~ paramname, scales="free", ncol=1) +
   stat_density_ridges(
     geom="density_ridges_gradient", calc_ecdf=TRUE,
     quantile_lines=TRUE, rel_min_height=0.001, scale=0.9,
@@ -216,38 +216,9 @@ p4 <- ggplot(refbsv, aes(
     axis.title.y    = element_blank()) +
   labs(x="Standardized PK Parameters", y="") +
   scale_x_log10() +
-  coord_cartesian(expand=FALSE)
+  coord_cartesian(expand=FALSE, xlim = c(0.3,3))
 
 p3+p4
-```
-
-```{r, fig.width=7 ,message=FALSE, include=FALSE}
-# p2<- p2 + theme_bw(base_size=18)
-# 
-# p3<- p3+theme_bw(base_size=18) +
-#   theme(
-#     axis.title.x =element_text(size=12),
-#     legend.position = "none",
-#     strip.background = element_blank(),
-#     strip.text = element_blank(),
-#     plot.margin = margin(0,0,0,0))+
-#   xlab("Reference Subject\nPK Parameters with BSV")
-# p4 <- p4+theme_bw(base_size=18) +
-#   theme(
-#         axis.title.x =element_text(size=12),
-#        axis.text.y     = element_blank(),
-#     axis.ticks.y    = element_blank(),
-#     legend.position = "none",
-#     strip.background = element_blank(),
-#     strip.text = element_blank(),
-#     panel.spacing = unit(10,"mm"),
-#     plot.margin = margin(0,0,0,0))+
-#   xlab("Reference Subject\nStandardized PK Parameters")
-# (p2 + p3 +p4)
-# 
-# ggsave("Figure_4_1.png", device="png",type="cairo-png",
-#        dpi=125, width =9 ,height=4)
-
 ```
 
 **Ranges of BSV for each PK Parameter:**
@@ -285,7 +256,7 @@ covcomb
 ### Simulation at Unique Combinations of Covariates
 As a first step, we simulate without uncertainty and without BSV using `zero_re()` at unique combination of covariates and provide a plot to visualize the effects.  
 
-```{r, fig.width=7 ,message=FALSE}
+```{r, fig.width=7 ,message=FALSE, fig.height=5}
 idata <- data.table::copy(covcomb)
 idata$covname <-  NULL
 ev1 <- ev(time=0, amt=100, cmt=1)
@@ -301,16 +272,25 @@ outcovcomb<- modcovsim %>%
 
 outcovcomb$SEX <- factor(outcovcomb$SEX, labels=c("Female", "Male"))
 
-ggplot(outcovcomb, aes(x=time, y=CP, col=factor(WT), linetype=SEX)) +
+pkprofiletypical <- ggplot(outcovcomb, aes(x=time, y=CP, col=factor(WT), linetype=SEX)) +
   geom_line(aes(group=ID), alpha=1, size=1.5) +
-  facet_grid(ALB ~ WT, labeller=label_both) +
+  facet_grid(ALB +SEX ~ WT, labeller= labeller(ALB = label_both, SEX = label_value, WT = label_both),
+             switch = "y") +
   labs(
     x        = "Time (h)",
     y        = "Plasma Concentrations",
     linetype = "Sex",
     colour   = "Weight",
-    caption  = "Simulation without Uncertainty\nwithout BSV") +
-  coord_cartesian(ylim=c(0,3.5))
+    caption  = "Simulation without Uncertainty and without BSV") +
+  coord_cartesian(ylim=c(0,4))
+
+pkprofiletypical <- pkprofiletypical +theme_bw(base_size = 13)+
+  theme(axis.title.y = element_text(size=15))+
+  guides(colour=guide_legend(override.aes = list(alpha=1,size=0.5)),
+         linetype=guide_legend(override.aes = list(size=0.5)))+
+  coord_cartesian(ylim=c(0,4))
+pkprofiletypical
+
 ```
 
 ### Adding Uncertainty from a Varcov Matrix
@@ -352,9 +332,9 @@ head(sim_parameters)
 ```
 
 ### Iterative Simulation to Apply the Uncertainty
-Third, we illustrate how you can iterate over a set of parameters value using a `for` loop. We then overlay the previous simulation results without uncertainty on the one with uncertainty to visualize the effect of adding it.
+Third, we illustrate how you can iterate over a set of parameters value using a `for` loop. We then overlay the previous simulation results without uncertainty on the one with uncertainty to visualize the effect of adding it. 
 
-```{r, fig.width=7,fig.height=4}
+```{r, fig.width=7,fig.height=4, fig.height=5}
 idata <- data.table::copy(covcomb)
 idata$covname <-  NULL
 ev1       <- ev(time=0, amt=100, cmt=1)
@@ -373,20 +353,28 @@ for(i in 1:nsim) {
 }
 iter_sims$SEX <- factor(iter_sims$SEX, labels = c("Female", "Male"))
 
-pkprofileuncertainty<- ggplot(iter_sims, aes(x=time, y=CP, col=factor(WT), linetype=SEX)) +
+pkprofileuncertainty <- ggplot(iter_sims, aes(x=time, y=CP, col=factor(WT), linetype=SEX)) +
   geom_line(aes(group=interaction(ID, rep)), alpha=0.1, size=0.1) +
   geom_line(data = outcovcomb, aes(group=interaction(ID)),
             alpha= 1, size=0.7, colour = "black") +
-  facet_grid(ALB +SEX ~ WT, labeller= labeller(ALB = label_both, SEX = label_value, WT = label_both)) +
+  facet_grid(ALB +SEX ~ WT, labeller= labeller(ALB = label_both, SEX = label_value, WT = label_both),
+             switch = "y") +
   labs(
     x        = "Time (h)",
     y        = "Plasma Concentrations",
-    linetype = "No Uncertainty\nSex",
+    linetype = "Sex",
     colour   = "Uncertainty\nReplicates\nWeight",
-    caption  = "Simulation with Uncertainty\nwithout BSV") +
+    caption  = "Simulation with Uncertainty, without BSV") +
   coord_cartesian(ylim=c(0,3.5))+
-  guides(colour = guide_legend(override.aes = list(alpha = 1)))
+  guides(colour = guide_legend(override.aes = list(alpha = 1)))+
+  theme_bw(base_size = 13)+
+  theme(axis.title.y = element_text(size=15))+
+  guides(colour=guide_legend(override.aes = list(alpha=1,size=0.5)),
+         linetype=guide_legend(override.aes = list(size=0.5)))+
+  coord_cartesian(ylim=c(0,4))
+
 pkprofileuncertainty
+
 ```
 
 ### Compute PK Parameters and Boxplots   
@@ -394,12 +382,13 @@ Similar to an earlier section, we compute the PK parameters by patient and by re
 
 ```{r, fig.width=7, include=TRUE, message=FALSE}
 out.df.univariatecov.nca <- iter_sims[, derive.exposure(time, CP), by=.(rep, ID, WT, SEX, ALB)]
-#out.df.univariatecov.nca
+
 
 refvalues <- out.df.univariatecov.nca[
   ALB==45 & WT==85 & SEX=="Female",
-  .(medparam = median(paramvalue)), by=paramname]
-data.frame(refvalues)
+  .(medparam = median(paramvalue)), by= .(rep,paramname) ]
+head(data.frame(refvalues))
+
 ```
 
 **Median Parameter Values for the Reference:**
@@ -416,13 +405,15 @@ out.df.univariatecov.nca <- merge(
   covcomb[, list(ID, covname, covvalue)]
 )
 
-setkey(out.df.univariatecov.nca, paramname)
+setkey(out.df.univariatecov.nca, paramname,rep)
 
 out.df.univariatecov.nca <- merge(
   out.df.univariatecov.nca,
   refvalues)
 
 out.df.univariatecov.nca[, paramvaluestd := paramvalue/medparam]
+
+
 
 boxplotdat <- out.df.univariatecov.nca[covname!="REF"]
 boxplotdat[covname=="WT",  covname2 := "Weight"]
@@ -466,23 +457,6 @@ pkparametersboxplot<- ggplot(boxplotdat, aes(x=covvalue, y=paramvalue))+
 pkparametersboxplot
 ```
 
-```{r, fig.width=7 ,message=FALSE, include=FALSE}
-# pkprofileuncertainty <- pkprofileuncertainty +theme_bw(base_size = 13)+
-#   theme(axis.title.y = element_text(size=15))+
-#   guides(colour=guide_legend(override.aes = list(alpha=1,size=0.5)),
-#          linetype=guide_legend(override.aes = list(size=0.5)))+
-#   coord_cartesian(ylim=c(0,4))
-# pkprofileuncertainty
-# ggsave("Figure_4_3.png", device="png",type="cairo-png",width= 7, height = 4,dpi=72)
-# 
-# pkparametersboxplot
-# ggsave("Figure_4_4.png", device="png",type="cairo-png",width= 7, height = 4,dpi=72)
-# 
-# png("Figure_4_34.png", type="cairo-png",width= 2*7*72, height =5*72)
-# egg::ggarrange(pkprofileuncertainty,pkparametersboxplot,nrow=1)
-# dev.off()
-```
-
 ### Alternative View of the Data: Distributions and Intervals 
 Here we provide an alternative visual summary of the standardized PK parameters. It shows the distribution, quantiles of interest. It isolates each covariate effects in one panel keeping the reference on its own. It is exactly the same data as the boxplots. Which visual presentation do you prefer? Which one enables you to clearly see and compare the covariate effects?  
 
@@ -499,7 +473,7 @@ out.df.univariatecov.nca[, covvalue   := factor(covvalue, levels=unique(covvalue
 out.df.univariatecov.nca[, covname2   := factor(covname2, levels=unique(covname2))]
 out.df.univariatecov.nca[, paramname2 := factor(paramname2, levels=unique(paramname2))]
 
-ggplot(out.df.univariatecov.nca, aes(
+ggplot(out.df.univariatecov.nca[out.df.univariatecov.nca$covname!="REF",], aes(
     x      = paramvaluestd,
     y      = covvalue,
     fill   = factor(..quantile..),
@@ -535,15 +509,8 @@ ggplot(out.df.univariatecov.nca, aes(
   scale_x_continuous(breaks=c(0.25,0.5,0.8,1/0.8,1/0.5,1/0.25),trans ="log" )
 ```
 
-```{r, fig.width=7 ,message=FALSE, include=FALSE}
- #  last_plot()+theme(legend.position="none")
- # ggsave("Figure_4_5.png", device="png",type="cairo-png",
- #        width= 7, height = 4,dpi=72)
-```
-
-
 ### Adding the BSV Ranges and Putting it all Together Using `forest_plot`
-To contrast the covariate effects with random unexplained variability we add to the data the BSV intervals computed in an earlier section. We then do some data manipulation and formatting to produce a plot from the package function `forest_plot`. To simplify we will only keep AUC before revisiting more than one parameter plots at the end. 
+To contrast the covariate effects with random unexplained variability we add to the data the BSV intervals computed in an earlier section. We then do some data manipulation and formatting to produce a plot from the package function `forest_plot`. To simplify we will only keep AUC before revisiting more than one parameter plots at the end. The user can also compute an show the BSV for all presented effects not just for the reference.
 
 ```{r, fig.width=7, fig.height=6}
 fpdata <- out.df.univariatecov.nca[,
@@ -590,7 +557,9 @@ ref_legend_text      <- "Reference (vertical line)\nClinically relevant limits\n
 area_legend_text     <- "Reference (vertical line)\nClinically relevant limits\n(gray area)"
 
 png("./Figure4_6.png",width =9 ,height = 6,units = "in",res=72)
-coveffectsplot::forest_plot(fpdata[paramname=="AUC"],
+coveffectsplot::forest_plot(fpdata[paramname=="AUC" & 
+                                     covname!="Reference" &
+                                     covname!="BSV",],
                             ref_area               = c(0.8, 1/0.8),
                             x_range                = c(0.5, 2),
                             strip_placement        = "inside",
@@ -622,8 +591,8 @@ dev.off()
 In this section, we first show a `forest_plot` built-in theme, then how you return the ggplot objects as a list for further editing using regular 'ggplot2' code.
 
 ### Using `theme_benrich` along Additional Options
-This is achieved by setting `theme_benrich = TRUE`, specifying that you want no legend
-`legend_position = "none"`. With this theme active you can also control the `table_title` text and `table_title_size` arguments.
+This is achieved by setting `theme_benrich = TRUE`, specifying that you want no legend `legend_position = "none"`.  
+With this theme active you can also control the `table_title` text and `table_title_size` arguments.
 
 ```{r,message=FALSE,fig.width=7}
 png("./coveffectsplot4.png",width =9 ,height = 6,units = "in",res=72)

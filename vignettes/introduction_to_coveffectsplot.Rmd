@@ -26,18 +26,20 @@ if (capabilities(("cairo"))) {
 library(coveffectsplot)
 library(ggplot2)
 library(ggridges)
+library(tidyr)
 suppressPackageStartupMessages( library(dplyr) )
 nuncertainty <- 10000
 nbsvsubjects <- 100000
 
 ```
 
-The use of forest plots to summarize the impact of various intrinsic and extrinsic factors on the pharmacokinetics (PK) of drugs is becoming a standard practice and a key part of submission packages to the FDA. The forest plots format make it easier for clinicians to quickly find and interpret the information they need.^[Essential pharmacokinetic information for drug dosage decisions: a concise visual presentation in the drug label. Clin Pharmacol Ther. 2011 Sep;90(3):471-4.]
+The use of forest plots to summarize the impact of various intrinsic and extrinsic factors on the pharmacokinetics (PK) of drugs is becoming a standard practice and a key part of submission packages to the FDA. The forest plots format make it easier for clinicians to quickly find and interpret the information they need.^[Essential pharmacokinetic information for drug dosage decisions: a concise visual presentation in the drug label. Clin Pharmacol Ther. 2011 Sep;90(3):471-4.] Additional information can be found in the updated <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/population-pharmacokinetics">FDA Pop PK Guidance.</a>^[Population Pharmacokinetics Guidance for Industry February 2022.]
 
 ## Motivation
-Traditionally, a paragraph describing the various doses in various group is part of the official drug label and often a table is provided. The advantages of table versus graphs has been previously discussed and each has its own merits. While web-based interactive graphics allow on-demand mouse hovering to show the graph numbers, this is not possible on a printed sheet of paper or on a static PDF as required for a drug label. As such, combining a graphic representation of the data with a side table provides the best of both worlds and provide to the clinician an efficient way to interpret the data.
+Traditionally, a paragraph describing the various doses in various group is part of the official drug label and often a table is provided. The advantages of table versus graphs has been previously discussed and each has its own merits. While web-based interactive graphics allow on-demand mouse hovering to show the graph numbers, this is not possible on a printed sheet of paper or on a static PDF as required for a drug label. As such, combining a graphic representation of the data with a side table provides the best of both worlds and provide to the clinician an efficient way to interpret the data.    
+The `coveffectsplot` R  package aims to facilitate the creation of forest plots using the `forest_plot` function.
 
-## Background on a Fictitious Drug
+## Example 
 Let us assume that we have a drug following a first-order absorption one-compartment PK model with parameters absorption constant (Ka), Clearance (CL) and Volume of distribution (V). Usually, a nonlinear mixed effects model is fitted to the PK data and covariates covering intrinsic and extrinsic are tested on the various parameters. For simplicity, let us assume that the covariate modeling did not add any covariate on Ka and V and provided the following model for CL:
 
 $$CL = {POPCL} \times \left( \frac { \color{blue}{Weight}} {70}\right)^{dWTdCL}\times \left( dSexdCL\times \left( \color{blue}{Sex}== 1  \right) \right)\times \left(  exp(\eta{CL})\right)$$
@@ -47,17 +49,50 @@ The above equation shows that we have two covariates on CL one is Weight (kg) a 
 $$log(CL) = {log(POPCL)} + dWTdCL\times log\left(\frac { \color{blue}{Weight}} {70}\right)+ \ log(dSexdCL)\times\left(\color{blue}{Sex}== 1 \right)  +\eta{CL}$$
 and where the individual level random effect describes the between subject variability (BSV) and is:
 $$\eta{CL}\sim \mathcal{N}(0,\,\omega_{CL}^{2})$$
-The modeling output would give you the value of the fixed effects parameters (POPCL, dWTdCL and dSexdCL), the variance covariance matrix of the random effects as well as the associated uncertainty from the estimated asymptotic variance covariance matrix of the various estimated parameters. Alternatively, the uncertainty can also be obtained using a nonparametric bootstrap resampling of the individuals. Oftentimes, the uncertainty is reported as a standard error or relative standard error (%). If we are interested in reporting the standard error of CL in Men there is several ways we can use to compute it: 1) error propagation using the delta method. 2) simulation from the variance covariance matrix. 3) using the bootstrap distribution.
 
-The observed distribution of the covariates Weight and Sex in the studied population is important because, to compute the covariates effects, we need to choose values for all covariates included in the model. It is desirable to provide sensible values that would provide a good sense on where most of the patients are. A common practice is to report the effects of the 75th percentile to the 25th percentile which will cover 50% of the population, some would also want to cover 90% of the population (5th to the 95th percentiles). Of note is that we need to cover enough of the covariate range and steps(e.g. show effects at the 5th, 25th, 50th, 75th and 95th percentiles) to illustrate a nonlinear relationship like the power model.
+As mentioned in the FDA guidance there is two ways to conduct simulations.
 
-Alternatively, we might be interested to compute effects for clinically meaningful difference e.g. 20 kg and then we report effects at 50, 70 and 90 kg. Some clinical covariates like eGFR have predefined cutoffs that we want to cover. 
+1. Simulations Based on Uncertainty of Fixed-Effect Estimates:  
+Where fixed effects and uncertainty are included without between subject variability.  
+"For example, forest plots that illustrate the effect of covariates on the area under the concentration time curve (AUC) or other parameters can be generated based on simulations with uncertainty in fixed-effect parameters, thereby facilitating the interpretation of the relative importance of covariates on exposure.  
+... These types of simulations are also useful to evaluate the performance of new
+dosing regimens for testing in future trials. Additionally, simulations with parameter uncertainty
+can be used to graphically illustrate the effect of parameter precision on PK profiles."
 
-If the assumption of varying one covariate at a time does not hold we recommend the use of a realistic distribution of correlated covariates (simulated or real). 
+2. Simulations Based on Estimates of Between-Subject Variability:  
+"Between-subject variability in PK parameters is accounted for in simulations when the purpose is
+to show the range of individual predictions of concentrations in the studied population. Residual
+error is added to the individual prediction when the range of observed concentrations is the main
+interest. If the purpose is to predict the observed concentration range of a future population, then
+uncertainty in the between-subject variability should be accounted for in addition to the fixed effect parameters and residual error.
+The correlation between random effects should be accounted for to avoid unrealistic parameter
+combinations in subjects. Simulations that account for between-subject variability and include
+covariate effects should be conducted in a population with realistic demographic variables.
+Demographic variables can be obtained from databases or generated by resampling with
+replacement of the individuals in the original study or by sampling the covariate distributions and
+their correlations in the target population."
 
-Finally, since the BSV cannot be controlled for, showing the distribution of the BSV is important to contrast and compare with the estimated covariate related effects as this will allow us to understand where a random subject given a known set of covariates could possibly belong. We also suggest that precomputing, BSV ranges based on percentiles of the BSV distribution is more helpful than letting the user guess the ranges from visual inspection. 
 
-## Simulating Data and Outputs from a Modeling Exercise
+The pharmacometrician will need to decide what factors to include in the simulations of covariate effects depending on the goal of the simulation:
+
+1. Fixed effects (POPCL, dWTdCL and dSexdCL from the model) : Always
+2. Random effects ? (Omega matrix from the model): To illustrate range of possible outcomes in the population coupled with realistic covariate distribution
+3. Uncertainty on fixed and random effects ? (from model varcov or bootstrap): Always
+4. Covariate values or distributions ? (modeled data or a database): Univariate to determine relative importance, multivariate for range of possible outcomes
+5. Residual error and its uncertainty ? (from model): only when there is interest in the predicted concentrations distributions.
+
+
+For the univariate covariate approach where we vary one covariate at a time keeping all the others at the reference values, a common practice is to report the effects of the 75th percentile to the 25th percentile which will cover 50% of the population. However most of the time we also want to cover 90% of the population (5th to the 95th percentiles) and then we end up showing  effects at the 5th, 25th, 50th, 75th and 95th percentiles. For some clinical covariates some cutoffs at specific values have clinical significance and they are used as is.
+
+Finally, since the BSV cannot be controlled for, showing the distribution of the BSV is important to contrast and compare with the estimated covariate related effects as this will allow us to understand where a random subject given a known set of covariates (e.g. at reference values) could possibly belong.
+
+In many situations, the assumption of varying one covariate at a time does not hold and  we recommend to also conduct simulations with realistic distribution of correlated covariates.  
+
+Both methods are complementary and the first shows us the relative importance of covarites while the second will illustrate the full distribution of possible outcomes in the population,
+
+
+
+## Simulating Data to Mimick Outputs from a Modeling Exercise
 
 We will assume that the model fit had estimated parameters with relative standard errors of 15%. For this vignette, a simulation from a multivariate normal distribution with n= 10000 was used. The five first rows are shown in the table below. The assumed mean values for POPCL, dWTdCL and dSexdCL were 10, 0.75 and 1.5 respectively.
 For simplicity, we will also assume that there were equal number of Sex = 1 (Man) and Sex = 0 (Woman) and that men and women had mean weights of 75 and 65 kg and the same standard deviation of 20 kg. Note that unless we explicitly code the simulation in a way to prevent negative weights (e.g. using a log normal distribution) we will end up simulating some negative ones.
@@ -76,16 +111,16 @@ knitr::kable(head(round(df,2),5))
 ```
 
 ```{r, echo=FALSE, results='asis',fig.align = "center",fig.width = 6}
-dflong <- tidyr::gather(df)
+dflong <- gather(df)
 
-ggplot2::ggplot(dflong,ggplot2::aes(x=value,fill=key))+
-  ggplot2::geom_density(alpha=0.2)+
-    ggplot2::facet_wrap(~key,scales="free",ncol=1)+
-    ggplot2::labs(fill="",x="Uncertainty Distribution (RSE 15%) of the Parameters")+
-  ggplot2::theme(legend.position = "none",legend.background = 
-                   ggplot2::element_rect(fill="transparent"),
+ggplot(dflong,aes(x=value,fill=key))+
+  geom_density(alpha=0.2)+
+    facet_wrap(~key,scales="free",ncol=1)+
+    labs(fill="",x="Uncertainty Distribution (RSE 15%) of the Parameters")+
+  theme(legend.position = "none",legend.background = 
+                   element_rect(fill="transparent"),
                  axis.ticks.y = element_blank(),axis.text.y =element_blank())+
-  ggplot2::guides(fill=ggplot2::guide_legend(reverse = FALSE))
+  guides(fill=guide_legend(reverse = FALSE))
 set.seed(657687)
 dfcov<- data.frame(
 MASS::mvrnorm(n=nbsvsubjects,
@@ -93,13 +128,14 @@ MASS::mvrnorm(n=nbsvsubjects,
                 Sigma=matrix(c(20^2,0.01,0.01,20^2),2,2,byrow = TRUE) 
 ))
 names(dfcov)<- c("WTWOMAN","WTMAN")
-dfcovlong <- tidyr::gather(dfcov)
-ggplot2::ggplot(dfcovlong,ggplot2::aes(x=value,linetype=key))+
-  ggplot2::geom_density(alpha=0.2,fill="darkgreen",size=2)+
-  ggplot2::labs(linetype="",x="Weight (kg)")+
-  ggplot2::theme(legend.position = "right",legend.background = 
-                   ggplot2::element_rect(fill="transparent"),axis.ticks.y = element_blank(),axis.text.y =element_blank())+
-  ggplot2::guides(fill=ggplot2::guide_legend(reverse = FALSE))
+dfcovlong <- gather(dfcov)
+ggplot(dfcovlong,aes(x=value,linetype=key))+
+  geom_density(alpha=0.2,fill="darkgreen",size=2)+
+  labs(linetype="",x="Weight (kg)")+
+  theme(legend.position = "right",legend.background = 
+                   element_rect(fill="transparent"),axis.ticks.y = element_blank(),axis.text.y =element_blank())+
+  guides(fill=guide_legend(reverse = FALSE))+
+  theme_bw()
 
 
 dfcovlongquantile<- as.data.frame(
@@ -148,11 +184,11 @@ bsvplot<-   ggplot(CLBSVdistribution, aes(
     axis.text.y     = element_blank(),
     axis.ticks.y    = element_blank(),
     axis.title.y    = element_blank(),
-    axis.text.x=ggplot2::element_text(size=12),
-    axis.title.x=ggplot2::element_text(size=14)) +
+    axis.text.x=element_text(size=12),
+    axis.title.x=element_text(size=14)) +
   scale_x_continuous(breaks=c(0.61,0.82,1,1.22,1.63))+
   coord_cartesian(expand=FALSE,xlim = c(0.49,2.01))+
-  ggplot2::labs(x="Standardized Individual Clearances with BSV",
+  labs(x="Standardized Individual Clearances with BSV",
                 title="Illustrating 30.7% BSV")
 
 bsvplot
@@ -162,21 +198,40 @@ knitr::kable(dfbsvtable[1,,drop=FALSE],row.names=FALSE)
 #bayestestR::hdi(CLBSVdistribution$CLBSV,ci = c(.50, .90))
 #0.55, 0.74, 1 , 1.12, 1.53
 ```
-```{r,include=FALSE}
-# bsvplot
-# ggsave("Figure_2.png", device="png",
-#        type="cairo-png",width= 7, height = 5,dpi=300)
+
+*Here we overlay the various sources of variability to compare them head to head:*
+```{r,fig.width= 7}
+dfeffects <- df
+dfeffects$REF <- dfeffects$POPCL/ median(dfeffects$POPCL)
+
+ggplot(dfeffects)+
+  geom_density(aes(x=REF,y=..scaled..,col="a.Uncertainty\nRSE=15%"))+
+  geom_density(data=dfcovlong,
+                        aes(x=(value/70)^0.75 ,
+                                y=..scaled..,col="b.Weight\nMean=70 kg, sd=20 kg"))+
+  geom_density(data=CLBSVdistribution ,aes(x=CLBSV,y=..scaled..,
+  col="c.Between subject variability\nCV=30.1%"))+
+  theme_bw(base_size = 16)+
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())+
+  scale_x_continuous(breaks=c(0.25,0.5,0.8,1,1.25,1.5,2,3))+
+  coord_cartesian(xlim=c(0.25,2))+
+  labs(color="",x="Effects Standardized Relative\nto the Typical Value",y= "Scaled Density")+
+  scale_color_manual(values=c("blue","green","red"))
+
 ```
+
+
 
 ## Visualizing Covariate Effects with Distributions
 
 * First, we will divide the POPCL uncertainty distribution by its median to standardize it. This will make everything relative to the reference where all covariates are held at the reference value(s) here Sex = 0 and Weight = 70 kg.
 * Second, We will compute the effects of Weight = 50 kg and 90 kg as compared to the 70 kg.
 We keep dSexdCL as is, it represents the effects of Sex = 1 effects when weight is held at its reference value = 70 kg.
-* Third, we optionally compute the effects for combination of covariates of interest e.g. Weight = 90 kg and Sex = 1. A clinical relevance areas e.g. between 0.8 and 1.25 of the reference value is shown since this is often regarded as the zone of PK equivalence. Usually, a covariate need to have effects driving PK exposures outside of this zone to trigger actions requiring dose changes. * Finally, we will make a plot that compare the magnitude of uncertainty, covariate distribution and between subject variability effects.
+* Third, we optionally compute the effects for combination of covariates of interest e.g. Weight = 90 kg and Sex = 1. A clinical relevance areas e.g. between 0.8 and 1.25 of the reference value is shown since this is often regarded as the zone of PK equivalence. Usually, a covariate need to have effects driving PK exposures outside of this zone to trigger actions requiring dose changes.  
+* Finally, we will make a plot that compare the magnitude of uncertainty, covariate distribution and between subject variability effects.
 
 ```{r,fig.width= 7}
-dfeffects <- df
 dfeffects$REF <- dfeffects$POPCL/ median(dfeffects$POPCL)
 dfeffects$SEX_FEMALE_WT_50 <- dfeffects$REF*(50/70)^dfeffects$dWTdCL
 dfeffects$SEX_FEMALE_WT_90 <-  dfeffects$REF*(90/70)^dfeffects$dWTdCL
@@ -193,16 +248,16 @@ dfeffects<- dfeffects[,c("SEX_FEMALE_WT_50",
 
 
 dflong <- tidyr::gather(dfeffects)
-ggplot2::ggplot(dflong,ggplot2::aes(x=value,y=key,fill=factor(..quantile..)))+
+ggplot(dflong,aes(x=value,y=key,fill=factor(..quantile..)))+
 ggridges::stat_density_ridges(
   geom = "density_ridges_gradient", calc_ecdf = TRUE,
   quantile_lines = TRUE, rel_min_height = 0.01,
   quantiles = c(0.05,0.5, 0.95)) +
-  ggplot2::scale_fill_manual(
+  scale_fill_manual(
     name = "Probability", values = c("#FF0000A0", "white","white", "#0000FFA0"),
     labels = c("(0, 0.05]", "(0.05, 0.5]","(0.5, 0.95]", "(0.95, 1]")
   )+
-      ggplot2::annotate(
+      annotate(
         "rect",
         xmin = 0.8,
         xmax = 1.25,
@@ -210,38 +265,23 @@ ggridges::stat_density_ridges(
         ymax = Inf,
         fill = "gray",alpha=0.4
       )+
-  ggplot2::geom_vline(
-      ggplot2::aes(xintercept = 1),
+  geom_vline(
+      aes(xintercept = 1),
       size = 1
     )+
-  ggplot2::theme_bw()+
-  ggplot2::labs(x="Effects Relative to parameter reference value",y="")
+  theme_bw()+
+  labs(x="Effects Relative to parameter reference value",y="")
 ```
-*Here we overlay the various sources of variability to compare them head to head:*
-```{r,fig.width= 7}
-ggplot2::ggplot(dfeffects)+
-  ggplot2::geom_density(ggplot2::aes(x=REF,y=..scaled..,col="a.Uncertainty\nRSE=15%"))+
-  ggplot2::geom_density(data=dfcovlong,
-                        ggplot2::aes(x=(value/70)^0.75 ,
-                                y=..scaled..,col="b.Weight\nMean=70 kg, sd=20 kg"))+
-  ggplot2::geom_density(data=CLBSVdistribution ,ggplot2::aes(x=CLBSV,y=..scaled..,
-                                                             col="c.Between subject variability\nCV=30%"))+
-  ggplot2::theme_bw(base_size = 16)+
-  ggplot2::theme(axis.text.y = ggplot2::element_blank(),
-        axis.ticks.y = ggplot2::element_blank())+
-  ggplot2::scale_x_continuous(breaks=c(0.25,0.5,0.8,1,1.25,1.5,2,3))+
-  ggplot2::coord_cartesian(xlim=c(0.25,2))+
-  ggplot2::labs(color="",x="Effects Standardized Relative to the Typical Value",y= "Scaled Density")+
-  ggplot2::scale_color_manual(values=c("blue","green","red"))
 
-```
 
 ## Simplifying the Distributions into Ranges of Effects
 The above plots might be overloading the reader with information. We will simplify it by removing unnecessary details and by computing the desired stats in advance.
+The reference value is one by definition and at each simulation replicate the effects are relative to the reference of the replicate.
 
 ```{r,}
 dfeffects$SEX_Male_WT_90<- NULL
-dfeffectslong<- tidyr::gather(dfeffects)
+dfeffects$REF <- 1
+dfeffectslong<- gather(dfeffects)
 dfeffectslong<- dplyr::group_by(dfeffectslong,key)
 dfeffectslongsummaries<- dplyr::summarise(dfeffectslong,mid=quantile(value,0.5),
                                    lower=quantile(value,0.05),
@@ -281,38 +321,37 @@ plotdata$covname <- as.factor(plotdata$covname)
 plotdata$covname <- reorder(plotdata$covname , c(3,4,4,2,1,1))
 
 plotdata$label <- reorder(as.factor(plotdata$label) , c(1,3,2,4,5,6))
-  ggplot2::ggplot(data = plotdata, ggplot2::aes_string(
+  ggplot(data = plotdata[plotdata$covname!="REF",], aes_string(
       y = "label",
       x = "mid",
       xmin = "lower",
       xmax = "upper"
     )) +
-    ggstance::geom_pointrangeh(
-      position = ggstance::position_dodgev(height = 0.75),
-      ggplot2::aes(color = "90 %CI\nCovariate Effects"),
+      geom_pointrange(
+      aes(color = "90 %CI\nCovariate Effects"),
       size = 1,
       alpha = 1
     )+
-  ggplot2::annotate("rect", xmin = min(0.8), 
+  annotate("rect", xmin = min(0.8), 
       xmax = max(1.25), ymin = -Inf, ymax = Inf, fill = "gray",alpha=0.1)+
-  ggplot2::geom_vline(ggplot2::aes(xintercept = 1,linetype="Reference"))+ 
-  ggplot2::facet_grid(covname~.,scales="free_y",switch="y")+
-  ggplot2::labs(y="",x="Effects Relative to Reference Value",
+  geom_vline(aes(xintercept = 1,linetype="Reference"))+ 
+  facet_grid(covname~.,scales="free_y",switch="y")+
+  labs(y="",x="Effects Relative to Reference Value",
                 colour="",linetype="")+
-  ggplot2::theme_bw()+
-    ggplot2::scale_color_manual(values=c("blue"))
+  theme_bw()+
+    scale_color_manual(values=c("blue"))
 ```
 
 ```{r,dpi = 72}
 png("./coveffectsplot.png",width =9 ,height = 6,units = "in",res=72)
- coveffectsplot::forest_plot(plotdata,
+ coveffectsplot::forest_plot(plotdata[plotdata$covname!="REF",],
             ref_area = c(0.8, 1/0.8),
             x_facet_text_size = 13,
             y_facet_text_size = 13,
             interval_legend_text = "Median (points)\n90% CI (horizontal lines)",
             ref_legend_text = "Reference (vertical line)\n+/- 20% ratios (gray area)",
             area_legend_text = "Reference (vertical line)\n+/- 20% ratios (gray area)",
-            xlabel = "Fold Change Relative to Parameter",
+            xlabel = "Fold Change Relative to a 70kg Woman",
             facet_formula = "covname~.",
             facet_switch = "both",
             facet_scales = "free",
@@ -421,10 +460,10 @@ png("./coveffectsplot2.png",width =9 ,height = 6,units = "in",res=72)
             return_list = TRUE)
 egg::ggarrange(
       plotlist[[1]]+ 
-   ggplot2::labs(x= expression(paste("Changes Relative to ",
+   labs(x= expression(paste("Changes Relative to ",
                                      CL["subscript"]^alpha["beta"], " Reference"),
                                sep=""))+
-      ggplot2::theme(strip.text.y =  ggplot2::element_text(colour="blue")),
+      theme(strip.text.y =  element_text(colour="blue")),
        plotlist[[2]] ,
       nrow = 1,
       widths = c(4, 1)
@@ -436,4 +475,4 @@ dev.off()
 ```
 ![](coveffectsplot2.png)
 
-In this introductory vignette we covered univariate covariate effects where we vary one at a time. Refer to the other vignettes for more advanced examples illustrating full simulation of PK or PK/PD or exposure-response models including the use of full covariate distributions. Returning lists of plots allows the user to further modify and edit the ggplot objects using any other third party packages and tools.
+In this introductory vignette we covered univariate covariate effects where we vary one at a time. Refer to the other vignettes for more advanced examples illustrating full simulation of PK or PK/PD or exposure-response models including the use of full covariate distributions with BSV. Returning lists of plots allows the user to further modify and edit the ggplot objects using any other third party packages and tools.
