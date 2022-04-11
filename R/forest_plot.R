@@ -185,8 +185,43 @@ label_wrap <- function(width) {
 #'             table_position = "below",
 #'             plot_table_ratio = 1)
 #'\dontrun{
-#' # Example 3
 #'
+#' # Example 3a
+#' 
+#' plotdata <- get_sample_data("forest-plot-table.csv")
+#' plotdata <- plotdata %>%
+#'   mutate(midlabel = format(round(mid,2), nsmall = 2),
+#'          lowerlabel = format(round(lower,2), nsmall = 2),
+#'          upperlabel = format(round(upper,2), nsmall = 2),
+#'          LABEL = paste0(midlabel, " [", lowerlabel, "-", upperlabel, "]"))
+#' plotdata$covname <- reorder(plotdata$covname,plotdata$upper,FUN =max)
+#' plotdata$label <- reorder(plotdata$label,plotdata$scen)
+#' 
+#' plotdata$compound <- c(rep("1-OH",18),rep("BZD",18))
+#' plotdata$paramname <- c(rep("AUC",9),rep("CMAX",9),rep("AUC",9),rep("CMAX",9))
+#' 
+#' forest_plot(plotdata,
+#'             ref_area = c(0.8, 1.2),
+#'            x_facet_text_size = 13,
+#'            y_facet_text_size = 13,
+#'             ref_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
+#'             area_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
+#'             xlabel = "Fold Change Relative to Parameter",
+#'             facet_formula = covname~compound,
+#'             facet_switch = "both",
+#'             facet_scales = "free",
+#'             facet_space = "fixed",
+#'             paramname_shape = TRUE,            paramname_color =  FALSE,
+#'             combine_interval_shape_legend = FALSE,
+#'             table_position = "right", plot_title = "",
+#'             ref_area_col = rgb( col2rgb("gray50")[1], col2rgb("gray50")[2],col2rgb("gray50")[3],
+#'                                 max = 255, alpha = 0.1*255 ) ,
+#'             interval_col = c("steelblue"),
+#'             strip_col = "lightblue",
+#'             plot_table_ratio = 1)
+#'
+#' # Example 3
+#' 
 #' plotdata <- get_sample_data("forestplotdatacpidata.csv")
 #' forest_plot(plotdata,
 #'             ref_area = c(0.8, 1.2),

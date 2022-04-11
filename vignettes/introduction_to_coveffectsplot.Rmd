@@ -112,8 +112,8 @@ knitr::kable(head(round(df,2),5))
 ```{r, echo=FALSE, results='asis',fig.align = "center",fig.width = 6}
 dflong <- gather(df)
 
-ggplot(dflong,aes(x=value,fill=key))+
-  geom_density(alpha=0.2)+
+ggplot(dflong,aes(x=value))+
+  geom_density(alpha=0.6, fill = "blue")+
     facet_wrap(~key,scales="free",ncol=1)+
     labs(fill="",x="Uncertainty Distribution (RSE 15%) of the Parameters")+
   theme(legend.position = "none",legend.background = 
@@ -201,10 +201,10 @@ knitr::kable(dfbsvtable[1,,drop=FALSE],row.names=FALSE)
 *Here we overlay the various sources of variability to compare them head to head:*
 ```{r,fig.width= 7}
 dfeffects <- df
-dfeffects$REF <- dfeffects$POPCL/ median(dfeffects$POPCL)
+dfeffects$REFrange <- dfeffects$POPCL/ median(dfeffects$POPCL)
 
 ggplot(dfeffects)+
-  geom_density(aes(x=REF,y=..scaled..,col="a.Uncertainty\nRSE=15%"))+
+  geom_density(aes(x=REFrange,y=..scaled..,col="a.Uncertainty\nRSE=15%"))+
   geom_density(data=dfcovlong,
                         aes(x=(value/70)^0.75 ,
                                 y=..scaled..,col="b.Weight\nMean=70 kg, sd=20 kg"))+
@@ -231,22 +231,22 @@ We keep dSexdCL as is, it represents the effects of Sex = 1 effects when weight 
 * Finally, we will make a plot that compare the magnitude of uncertainty, covariate distribution and between subject variability effects.
 
 ```{r,fig.width= 7}
-dfeffects$REF <- dfeffects$POPCL/ median(dfeffects$POPCL)
-dfeffects$SEX_FEMALE_WT_50 <- dfeffects$REF*(50/70)^dfeffects$dWTdCL
-dfeffects$SEX_FEMALE_WT_90 <-  dfeffects$REF*(90/70)^dfeffects$dWTdCL
+dfeffects$REF <- 1
+dfeffects$SEX_FEMALE_WT_50 <- (50/70)^dfeffects$dWTdCL
+dfeffects$SEX_FEMALE_WT_90 <-  (90/70)^dfeffects$dWTdCL
 dfeffects$SEX_Male_WT_70 <- dfeffects$dSexdCL
-dfeffects$SEX_Male_WT_90 <- dfeffects$dSexdCL*dfeffects$REF*(90/70)^dfeffects$dWTdCL
-dfeffects$BSV<-  sample(CLBSVdistribution$CLBSV, nuncertainty)
+dfeffects$SEX_Male_WT_90 <- dfeffects$dSexdCL*(90/70)^dfeffects$dWTdCL
+dfeffects$BSV_REF<-  sample(CLBSVdistribution$CLBSV, nuncertainty)
 
 dfeffects<- dfeffects[,c("SEX_FEMALE_WT_50",
                          "SEX_FEMALE_WT_90",
                          "SEX_Male_WT_70",
                          "SEX_Male_WT_90",
                          "REF",
-                         "BSV")]
+                         "BSV_REF")]
 
 
-dflong <- tidyr::gather(dfeffects)
+dflong <- tidyr::gather(dfeffects,key,value,-REF)
 ggplot(dflong,aes(x=value,y=key,fill=factor(..quantile..)))+
 ggridges::stat_density_ridges(
   geom = "density_ridges_gradient", calc_ecdf = TRUE,
