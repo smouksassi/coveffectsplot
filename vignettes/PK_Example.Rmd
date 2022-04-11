@@ -1,5 +1,5 @@
 ---
-title: "PK Model: Assessing the Impact of Covariates on Drug Exposure"
+title: "PK Model: Assessing the Marginal Impact of Covariates on Drug Exposure"
 output: 
   rmarkdown::html_vignette:
     toc: true
@@ -47,13 +47,49 @@ expand.modelframe <- function(..., rv, covcol="covname") {
   })
   do.call(rbind, res)
 }
-nbsvsubjects <- 1000
-nsim <- 100 # uncertainty replicates for vignette you might want a higher number
-
 round_pad <- function(x, digits = 2, round5up = TRUE) {
   eps <- if (round5up) x * (10^(-(digits + 3))) else 0
   formatC(round(x + eps, digits), digits = digits, format = "f", flag = "0")
 }
+
+
+derive.exposure <- function(time, CP) {
+  n <- length(time)
+  x <- c(
+    Cmax = max(CP),
+    Clast = CP[n],
+    AUC = sum(diff(time) * (CP[-1] + CP[-n])) / 2
+  )
+  data.table(paramname=names(x), paramvalue=x)
+}
+
+cor2cov <- function (cor, sd) 
+{
+  if (missing(sd)) {
+    sd <- diag(cor)
+  }
+  diag(cor) <- 1
+  n <- nrow(cor)
+  diag(sd, n) %*% cor %*% diag(sd, n)
+}
+
+stat_sum_df <- function(fun, geom="point", ...) {
+  stat_summary(fun.data = fun,  geom=geom,  ...)
+}
+
+summary_conc <- function(CP) {
+  x <- c(
+    Cmed = median(CP),
+    Clow = quantile(CP, probs = 0.05),
+    Cup =  quantile(CP, probs = 0.95)
+  )
+  data.table(paramname=names(x), paramvalue=x)
+}
+
+nbsvsubjects <- 1000
+nsim <- 100 # uncertainty replicates for vignette you might want a higher number
+
+
 ```
 Here we illustrate the varying one covariate at a time approach, keeping all the others at the reference value or category. A two-compartment pharmacokinetic (PK) model defined with ordinary differential equations (ODEs) is used. Covariates Weight, Albumin and Sex had effects on the Clearance (CL) model parameter while Weight and Sex had effects on the Volume of distribution (V) model parameter. For simplicity, there were no included covariates effects on other PK parameters such as peripheral clearance or volume. The approach is general and can be easily extended to any other ODEs model with multiple covariate effects on multiple model parameters.
 
@@ -303,16 +339,6 @@ theta[c("WT", "SEX", "ALB")] <- NULL
 theta <- unlist(theta)
 as.data.frame(t(theta))
 
-cor2cov <- function (cor, sd) 
-{
-    if (missing(sd)) {
-        sd <- diag(cor)
-    }
-    diag(cor) <- 1
-    n <- nrow(cor)
-    diag(sd, n) %*% cor %*% diag(sd, n)
-}
-
 varcov <- cor2cov(
   matrix(0.2, nrow=length(theta), ncol=length(theta)),
   sd=theta*0.15)
@@ -373,7 +399,34 @@ pkprofileuncertainty <- ggplot(iter_sims, aes(x=time, y=CP, col=factor(WT), line
          linetype=guide_legend(override.aes = list(size=0.5)))+
   coord_cartesian(ylim=c(0,4))
 
-pkprofileuncertainty
+
+
+iter_sims_sum <- iter_sims[, summary_conc(CP), by=.( time, WT, SEX, ALB)]
+iter_sims_sum <- spread(iter_sims_sum,paramname,paramvalue)
+iter_sims_sum <- as.data.frame(iter_sims_sum)
+
+pkprofileuncertainty_sum <- ggplot(iter_sims_sum, aes(x=time, col=factor(WT),
+                      fill=factor(WT),
+                      linetype=SEX)) +
+  geom_ribbon((aes(ymin= `Clow.5%` ,ymax=`Cup.95%`)), alpha=0.4,linetype=0)+
+  geom_line(aes(y=Cmed),alpha=1 , color ="black")+
+  facet_grid(ALB +SEX ~ WT, labeller= labeller(ALB = label_both, SEX = label_value, WT = label_both),switch = "y") +
+  labs(
+    x        = "Time (h)",
+    y        = "Plasma Concentrations",
+    linetype = "Sex",
+    colour   = "Uncertainty\nReplicates\nWeight",
+    fill   = "Uncertainty\nReplicates\nWeight",
+    caption  = "Simulation with Uncertainty, without BSV") +
+  theme_bw(base_size = 13)+
+  theme(axis.title.y = element_text(size=15))+
+  guides(colour=guide_legend(override.aes = list(alpha=0.4,size=0.4)),
+         fill=guide_legend(override.aes = list(alpha=0.4,size=0.4)),
+         linetype=guide_legend(override.aes = list(size=0.5)))+
+  coord_cartesian(ylim=c(0,4))
+
+pkprofileuncertainty_sum
+
 
 ```
 
@@ -510,7 +563,7 @@ ggplot(out.df.univariatecov.nca[out.df.univariatecov.nca$covname!="REF",], aes(
 ```
 
 ### Adding the BSV Ranges and Putting it all Together Using `forest_plot`
-To contrast the covariate effects with random unexplained variability we add to the data the BSV intervals computed in an earlier section. We then do some data manipulation and formatting to produce a plot from the package function `forest_plot`. To simplify we will only keep AUC before revisiting more than one parameter plots at the end. The user can also compute an show the BSV for all presented effects not just for the reference.
+To contrast the covariate effects with random unexplained variability we add to the data the BSV intervals computed in an earlier section. We then do some data manipulation and formatting to produce a plot from the package function `forest_plot`. To simplify we will only keep AUC before revisiting more than one parameter plots at the end. The user can also compute an show the BSV for all presented effects not just for the reference. Refer to the approach that incorporate BSV and full covariate distributions presented in another vignette.
 
 ```{r, fig.width=7, fig.height=6}
 fpdata <- out.df.univariatecov.nca[,
