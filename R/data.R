@@ -43,3 +43,17 @@
 #' @source CDC website \url{https://www.cdc.gov/growthcharts/data/zscore/wtage.csv}
 "wtage"
 
+#' Correlated Covariates data
+#'
+#' A example dataset used to illustrate multivariate joint covariate effects.
+#'
+#' @format A dataset with 2000 rows and 5 variables
+#' \describe{
+#'   \item{ID}{Subject ID}
+#'   \item{AGE}{Age in years}
+#'   \item{WT}{Weight in kg}
+#'   \item{Sex}{0=male; 1=female}
+#'   \item{ALB}{Albumin in g/dL}
+#' }
+#' @source simulated based on a real dataset
+"covdatasim"
