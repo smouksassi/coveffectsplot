@@ -22,6 +22,7 @@ function(input, output, session) {
     shinyjs::show("covariates")
     shinyjs::show("covvalueorder")
     shinyjs::show("shapebyparamname")
+    shinyjs::show("colourbyparamname")
     shinyjs::show("vdodgeheight")
     shinyjs::show("get_code")
   })
@@ -193,7 +194,7 @@ function(input, output, session) {
         interval_bsv_text = escape_newline(..(input$custombsvtitle)),
         legend_order = ..(input$legendordering),
         combine_area_ref_legend = ..(input$combineareareflegend),
-        combine_interval_shape_legend = FALSE,
+        combine_interval_shape_legend = ..(input$combineintervalshapelegend),
         legend_position = ..(input$legendposition),
         show_ref_area = ..(input$showrefarea),
         ref_area = ..(input$refareain),
@@ -209,7 +210,7 @@ function(input, output, session) {
         bsv_col      = ..(input$colourbsvrange),
         strip_col = ..(input$stripbackgroundfill),
         paramname_shape = ..(input$shapebyparamname),
-        paramname_color = FALSE,
+        paramname_color = ..(input$colourbyparamname),
         legend_shape_reverse = ..(input$legendshapereverse),
         facet_switch = ..(input$facetswitch),
         facet_scales = ..(input$facetscales),

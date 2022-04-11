@@ -54,8 +54,7 @@ label_wrap <- function(width) {
 #' if an item is absent the legend will be omitted.
 #' @param combine_area_ref_legend Combine reference and area legends if they
 #' share the same text?
-#' @param combine_interval_shape_legend Combine interval and shape legends if they
-#' share the same text?
+#' @param combine_interval_shape_legend Combine interval and shape legends when paramname_color=TRUE ?
 #' @param legend_position where to put the legend: "top", "bottom","right","none"
 #' @param show_ref_area Show reference window?
 #' @param ref_area Reference area. Two-element numeric vector multiplying the ref_value.
@@ -386,6 +385,13 @@ forest_plot <- function(
   strip_placement <- match.arg(strip_placement)
   facet_formula <- stats::as.formula(facet_formula)
   
+  
+  l_u <- length(unique(as.character(data$paramname)))
+  if ( paramname_color & 
+      (length(interval_col) < l_u ) ){
+    interval_col <- rep(c(interval_col,bsv_col), l_u)
+  } 
+  
   y_facet_text_angle<- ifelse(facet_switch %in% c("x","none"),
          y_facet_text_angle-0,
          y_facet_text_angle)
@@ -471,16 +477,18 @@ forest_plot <- function(
   guide_linetype <- ggplot2::guide_legend("", order = linetype_pos)
   
   guide_interval <- ggplot2::guide_legend("", order = interval_pos,
+                                          reverse = legend_shape_reverse,
                                           ncol = legend_ncol_interval)
   guide_shape    <- ggplot2::guide_legend("", order = shape_pos,
                                        override.aes = list(linetype = 0,
                                       colour = "gray"),
                                       reverse = legend_shape_reverse,
                                       ncol = legend_ncol_shape)
-  
-  if (combine_interval_shape_legend) {
+
+  if (paramname_color & combine_interval_shape_legend) {
     shape_pos <- interval_pos
     guide_interval <- ggplot2::guide_legend("", order = interval_pos,
+                                            reverse = legend_shape_reverse,
                                             ncol = legend_ncol_interval)
     guide_shape    <- ggplot2::guide_legend("", order = shape_pos,
                                             reverse = legend_shape_reverse,

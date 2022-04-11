@@ -28,6 +28,7 @@ fluidPage(
               width = '800px'
             ),
             checkboxInput('shapebyparamname', 'Change Symbol by Parameter(s) ?', value = TRUE),
+            checkboxInput('colourbyparamname', 'Change Color by Parameter(s) ?', value = FALSE),
             sliderInput("vdodgeheight", "Vertical Space Between Parameters(s)",
                         min=0.5, max=2, value=0.8,width = '800px'),
             selectizeInput(
@@ -348,7 +349,9 @@ fluidPage(
           textInput("customfilltitle", label ="Area Legend text",
                     value="Reference (vertical line)\\nClinically relevant limits (colored area)"),
           checkboxInput('combineareareflegend',
-                        'Combine Ref and Area Legends if they share the same text ?',value = TRUE)
+                        'Combine Ref and Area Legends if they share the same text ?',value = TRUE),
+          checkboxInput('combineintervalshapelegend',
+                        'Combine Interval and Shape Legends?',value = TRUE)
         )#tabpanel
       )  # tabsetpanel
     ) # closes the column 3

@@ -145,8 +145,7 @@ if an item is absent the legend will be omitted.}
 \item{combine_area_ref_legend}{Combine reference and area legends if they
 share the same text?}
 
-\item{combine_interval_shape_legend}{Combine interval and shape legends if they
-share the same text?}
+\item{combine_interval_shape_legend}{Combine interval and shape legends when paramname_color=TRUE ?}
 
 \item{legend_position}{where to put the legend: "top", "bottom","right","none"}
 
