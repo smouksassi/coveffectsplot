@@ -275,8 +275,6 @@ Based on our observed covariate data, we compute percentiles of interest that we
 ### Generate a Dataset Holding Combinations of Covariates:
 ```{r covcomb , fig.width=7 }
 reference.values <- data.frame(WT = 85, ALB = 45, SEX = 0)   
-
-covdatasim <- read.csv("./covdatasim.csv")
 covdatasim$SEX<- ifelse(covdatasim$SEX==0,1,0)
 covdatasim$SEX <- as.factor(covdatasim$SEX )
 covdatasim$SEX <- factor(covdatasim$SEX,labels = c("Female","Male"))
