@@ -37,25 +37,24 @@ The use of forest plots to summarize the impact of various intrinsic and extrins
 
 ## Motivation
 Traditionally, a paragraph describing the various doses in various group is part of the official drug label and often a table is provided. The advantages of table versus graphs has been previously discussed and each has its own merits. While web-based interactive graphics allow on-demand mouse hovering to show the graph numbers, this is not possible on a printed sheet of paper or on a static PDF as required for a drug label. As such, combining a graphic representation of the data with a side table provides the best of both worlds and provide to the clinician an efficient way to interpret the data.    
-The `coveffectsplot` R  package aims to facilitate the creation of forest plots using the `forest_plot` function.
+The `coveffectsplot` R  package aims to facilitate the creation of forest plots using the `forest_plot()`and `run_interactiveforestplot()` functions.
 
 ## Example 
 Let us assume that we have a drug following a first-order absorption one-compartment PK model with parameters absorption constant (Ka), Clearance (CL) and Volume of distribution (V). Usually, a nonlinear mixed effects model is fitted to the PK data and covariates covering intrinsic and extrinsic are tested on the various parameters. For simplicity, let us assume that the covariate modeling did not add any covariate on Ka and V and provided the following model for CL:
 
-$$CL = {POPCL} \times \left( \frac { \color{blue}{Weight}} {70}\right)^{dWTdCL}\times \left( dSexdCL\times \left( \color{blue}{Sex}== 1  \right) \right)\times \left(  exp(\eta{CL})\right)$$
+$$CL = \color{blue}{POPCL} \times \left( \frac { \color{green}{Weight}} {70}\right)^\color{blue}{dWTdCL}\times \left(\color{blue} {dSexdCL}\times \left( \color{green}{Sex}== 1  \right) \right)\times exp(\color{red}\eta\color{red}{CL})$$
 
 The above equation shows that we have two covariates on CL one is Weight (kg) a continuous variable with reference value of 70 (kg) and influencing CL with a power model with coefficient dWTdCL. The second is Sex which is an indicator variable taking the value of 0 (Woman, used as the reference category) and 1 (Man) influencing CL with a coefficient dSexdCL. The last term denotes the individual deviations from the population (random effects) which assumes that CL in the population is log normally distributed. The same model can be more familiar to statisticians if re-written into a log-linear additive form:
 
-$$log(CL) = {log(POPCL)} + dWTdCL\times log\left(\frac { \color{blue}{Weight}} {70}\right)+ \ log(dSexdCL)\times\left(\color{blue}{Sex}== 1 \right)  +\eta{CL}$$
-and where the individual level random effect describes the between subject variability (BSV) and is:
+$$log(CL) = {log(\color{blue}{POPCL})} + \color{blue}{dWTdCL}\times log\left(\frac { \color{green}{Weight}} {70}\right)+ \ log(\color{blue}{dSexdCL})\times\left(\color{green}{Sex}== 1 \right) +\color{red}\eta\color{red}{CL} $$
+and where the individual level random effect describes the between subject variability (BSV):
 $$\eta{CL}\sim \mathcal{N}(0,\,\omega_{CL}^{2})$$
 
-As mentioned in the FDA guidance there is two ways to conduct simulations.
+As mentioned in the FDA guidance there is two ways to conduct simulations:
 
 1. Simulations Based on Uncertainty of Fixed-Effect Estimates:  
 Where fixed effects and uncertainty are included without between subject variability.  
-"For example, forest plots that illustrate the effect of covariates on the area under the concentration time curve (AUC) or other parameters can be generated based on simulations with uncertainty in fixed-effect parameters, thereby facilitating the interpretation of the relative importance of covariates on exposure.  
-... These types of simulations are also useful to evaluate the performance of new
+"For example, forest plots that illustrate the effect of covariates on the area under the concentration time curve (AUC) or other parameters can be generated based on simulations with uncertainty in fixed-effect parameters, thereby facilitating the interpretation of the relative importance of covariates on exposure. These types of simulations are also useful to evaluate the performance of new
 dosing regimens for testing in future trials. Additionally, simulations with parameter uncertainty
 can be used to graphically illustrate the effect of parameter precision on PK profiles."
 
@@ -75,22 +74,22 @@ their correlations in the target population."
 
 The pharmacometrician will need to decide what factors to include in the simulations of covariate effects depending on the goal of the simulation:
 
-1. Fixed effects (POPCL, dWTdCL and dSexdCL from the model) : Always
-2. Random effects ? (Omega matrix from the model): To illustrate range of possible outcomes in the population coupled with realistic covariate distribution
-3. Uncertainty on fixed and random effects ? (from model varcov or bootstrap): Always
-4. Covariate values or distributions ? (modeled data or a database): Univariate to determine relative importance, multivariate for range of possible outcomes
-5. Residual error and its uncertainty ? (from model): only when there is interest in the predicted concentrations distributions.
+1. Fixed effects ? (POPCL, dWTdCL and dSexdCL from the model) and associated Uncertainty (from model varcov or bootstrap): Always
+2. Covariate values or distributions ? (modeled data or a database):
+    + Univariate &#8594; to determine relative importance
+    + Realistic multivariate and correlated covariate distributions &#8594; to illustrate range of possible outcomes
+3. Random effects ? (Omega matrix from the model) and associated Uncertainty (Inverse Wishart with degrees of freedom from n of subjects ): &#8594; to illustrate range of possible outcomes
+4. Residual error and its Uncertainty ? (from model): &#8594; only when there is interest in the predicted concentrations distributions.
 
 
 For the univariate covariate approach where we vary one covariate at a time keeping all the others at the reference values, a common practice is to report the effects of the 75th percentile to the 25th percentile which will cover 50% of the population. However most of the time we also want to cover 90% of the population (5th to the 95th percentiles) and then we end up showing  effects at the 5th, 25th, 50th, 75th and 95th percentiles. For some clinical covariates some cutoffs at specific values have clinical significance and they are used as is.
 
-Finally, since the BSV cannot be controlled for, showing the distribution of the BSV is important to contrast and compare with the estimated covariate related effects as this will allow us to understand where a random subject given a known set of covariates (e.g. at reference values) could possibly belong.
+In many situations, the assumption of varying one covariate at a time does not hold and  we recommend to also conduct simulations with realistic distribution of correlated covariates. We provide several examples with both approaches in the various vignettes.
 
-In many situations, the assumption of varying one covariate at a time does not hold and  we recommend to also conduct simulations with realistic distribution of correlated covariates.  
+Since the BSV cannot be controlled for, showing the distribution of the BSV is important to contrast and compare with the estimated covariate related effects as this will allow us to understand where a random subject given a known set of covariates (e.g. at reference values) could possibly belong. We previously only showed the BSV effects at the reference values we now recommend to conduct two full simulations one without BSV and one with BSV to compare and contrast the results and understand the marginal univariate covariate effects
+as well as the joint multivariate covariate effects with BSV to describe the range of possible outcomes in a population of subjects.
 
-Both methods are complementary and the first shows us the relative importance of covarites while the second will illustrate the full distribution of possible outcomes in the population,
-
-
+Both methods are complementary and needed in real-world applications.
 
 ## Simulating Data to Mimick Outputs from a Modeling Exercise
 
