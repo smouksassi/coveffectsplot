@@ -27,9 +27,9 @@
 #' \describe{
 #'   \item{Sex}{1=male; 2=female}
 #'   \item{Agemos}{Age in months}
-#'   \item{L}{skewness ditribution parameter}
-#'   \item{M}{location ditribution parameter}
-#'   \item{S}{scale ditribution parameter}
+#'   \item{L}{skewness distribution parameter}
+#'   \item{M}{location distribution parameter}
+#'   \item{S}{scale distribution parameter}
 #'   \item{P3}{Smoothed third percentile}
 #'   \item{P5}{Smoothed fifth percentile}
 #'   \item{P10}{Smoothed tenth percentile}

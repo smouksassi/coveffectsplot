@@ -1,9 +1,11 @@
-# coveffectsplot 1.0.1.9999
+# coveffectsplot 1.0.2
 * dev version start to update vignettes for paper
-* added arguments `paramname_color` `combine_interval_shape_legend` to enable color by paramname
+* Added a function arguments `paramname_color` and `combine_interval_shape_legend` to enable color by paramname
+* Added a function arguments `combine_interval_shape_legend` to enable merging of color and pointinterval legends
+* Added `covdatasim` as a dataset
 
 # coveffectsplot 1.0.1
-* cran fix for url not available wtage is now a dataset that ships with the package
+* cran fix for url not available `wtage` is now a dataset that ships with the package
 
 # coveffectsplot 1.0.0
 * bumped the version to 1.0 to correspond with the PSP tutorial paper (under review)
