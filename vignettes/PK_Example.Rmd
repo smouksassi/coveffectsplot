@@ -329,8 +329,8 @@ pkprofiletypical
 
 ```
 
-### Adding Uncertainty from a Varcov Matrix
-First, we will invent a varcov matrix by assuming 15% relative standard errors and correlations of 0.2 across the board. We then simulate a 100 set of parameters using a multivariate normal (kept at 100 for the vignette, use more replicates for a real project). Also, unless the model was written in a way to allow unconstrained parameter values, care should be taken to make sure the simulated parameters are valid and make sense. When available, use the set of parameters from bootstrap replicates.
+## Adding Uncertainty from a Varcov Matrix
+First, we will invent a varcov matrix by assuming 15% relative standard errors and correlations of 0.2 across the board. We then simulate a 100 set of parameters using a multivariate normal (kept at 100 for the vignette, use more replicates for a real project). Also, unless the model was written in a way to allow unconstrained parameter values, care should be taken to make sure the simulated parameters are valid and make sense. When available, use the set of parameters from bootstrap replicates.   
 
 **Variance Covariance Matrix of fixed effects:**
 ```{r, fig.width=7}
@@ -347,7 +347,7 @@ as.data.frame(varcov)
 ```
 
 ### Generating Sets of Parameters with Uncertainty
-Second, we generate the sim_parameters dataset using `mvrnorm` and then incorporate the uncertainty by simulating using a different set of parameters (row) for each replicate.  
+Second, we generate the sim_parameters dataset using `mvrnorm` and then incorporate the uncertainty by simulating using a different set of parameters (row) for each replicate.
 
 **First Few Rows of a Dataset Containing Simulated Fixed Effects with Uncertainty:**
 ```{r, fig.width=7}
@@ -357,7 +357,7 @@ sim_parameters <- MASS::mvrnorm(nsim, theta, varcov, empirical=T) %>% as.data.ta
 head(sim_parameters)
 ```
 
-### Iterative Simulation to Apply the Uncertainty
+### Iterative Simulations to Apply the Uncertainty
 Third, we illustrate how you can iterate over a set of parameters value using a `for` loop. We then overlay the previous simulation results without uncertainty on the one with uncertainty to visualize the effect of adding it. 
 
 ```{r, fig.width=7,fig.height=4, fig.height=5}
@@ -399,8 +399,6 @@ pkprofileuncertainty <- ggplot(iter_sims, aes(x=time, y=CP, col=factor(WT), line
          linetype=guide_legend(override.aes = list(size=0.5)))+
   coord_cartesian(ylim=c(0,4))
 
-
-
 iter_sims_sum <- iter_sims[, summary_conc(CP), by=.( time, WT, SEX, ALB)]
 iter_sims_sum <- spread(iter_sims_sum,paramname,paramvalue)
 iter_sims_sum <- as.data.frame(iter_sims_sum)
@@ -410,7 +408,8 @@ pkprofileuncertainty_sum <- ggplot(iter_sims_sum, aes(x=time, col=factor(WT),
                       linetype=SEX)) +
   geom_ribbon((aes(ymin= `Clow.5%` ,ymax=`Cup.95%`)), alpha=0.4,linetype=0)+
   geom_line(aes(y=Cmed),alpha=1 , color ="black")+
-  facet_grid(ALB +SEX ~ WT, labeller= labeller(ALB = label_both, SEX = label_value, WT = label_both),switch = "y") +
+  facet_grid(ALB +SEX ~ WT, labeller= labeller(ALB = label_both, SEX = label_value,
+                                               WT = label_both),switch = "y") +
   labs(
     x        = "Time (h)",
     y        = "Plasma Concentrations",
@@ -427,7 +426,6 @@ pkprofileuncertainty_sum <- ggplot(iter_sims_sum, aes(x=time, col=factor(WT),
 
 pkprofileuncertainty_sum
 
-
 ```
 
 ### Compute PK Parameters and Boxplots   
@@ -435,7 +433,6 @@ Similar to an earlier section, we compute the PK parameters by patient and by re
 
 ```{r, fig.width=7, include=TRUE, message=FALSE}
 out.df.univariatecov.nca <- iter_sims[, derive.exposure(time, CP), by=.(rep, ID, WT, SEX, ALB)]
-
 
 refvalues <- out.df.univariatecov.nca[
   ALB==45 & WT==85 & SEX=="Female",
@@ -465,7 +462,6 @@ out.df.univariatecov.nca <- merge(
   refvalues)
 
 out.df.univariatecov.nca[, paramvaluestd := paramvalue/medparam]
-
 
 
 boxplotdat <- out.df.univariatecov.nca[covname!="REF"]
@@ -510,7 +506,7 @@ pkparametersboxplot<- ggplot(boxplotdat, aes(x=covvalue, y=paramvalue))+
 pkparametersboxplot
 ```
 
-### Alternative View of the Data: Distributions and Intervals 
+## Alternative View of the Data: Distributions and Intervals 
 Here we provide an alternative visual summary of the standardized PK parameters. It shows the distribution, quantiles of interest. It isolates each covariate effects in one panel keeping the reference on its own. It is exactly the same data as the boxplots. Which visual presentation do you prefer? Which one enables you to clearly see and compare the covariate effects?  
 
 ```{r, fig.width=7, fig.height=4 ,message=FALSE}
@@ -562,7 +558,7 @@ ggplot(out.df.univariatecov.nca[out.df.univariatecov.nca$covname!="REF",], aes(
   scale_x_continuous(breaks=c(0.25,0.5,0.8,1/0.8,1/0.5,1/0.25),trans ="log" )
 ```
 
-### Adding the BSV Ranges and Putting it all Together Using `forest_plot`
+## Adding the BSV Ranges and Putting it all Together Using `forest_plot`
 To contrast the covariate effects with random unexplained variability we add to the data the BSV intervals computed in an earlier section. We then do some data manipulation and formatting to produce a plot from the package function `forest_plot`. To simplify we will only keep AUC before revisiting more than one parameter plots at the end. The user can also compute an show the BSV for all presented effects not just for the reference. Refer to the approach that incorporate BSV and full covariate distributions presented in another vignette.
 
 ```{r, fig.width=7, fig.height=6}
@@ -624,6 +620,7 @@ coveffectsplot::forest_plot(fpdata[paramname=="AUC" &
                             area_legend_text       = area_legend_text,
                             interval_legend_text   = interval_legend_text,
                             interval_bsv_text      = interval_bsv_text,
+                            plot_title             = "",
                             facet_formula          = "covname ~ paramname",
                             facet_switch           = "y",
                             facet_scales           = "free_y",
@@ -687,9 +684,12 @@ png("./coveffectsplot0.png",width =9 ,height = 6,units = "in",res=72)
 plotlists <- coveffectsplot::forest_plot(fpdata[paramname=="AUC"],
                             ref_area = c(0.8, 1/0.8),
                             xlabel = "Fold Change Relative to Reference",
-                            ref_legend_text = "Reference (vertical line)\nClinically relevant limits\n(gray area)",
-                            area_legend_text = "Reference (vertical line)\nClinically relevant limits\n(gray area)",
+                            ref_legend_text = "Reference (vertical line)\nClinically
+                            relevant limits\n(gray area)",
+                            area_legend_text = "Reference (vertical line)\nClinically
+                            relevant limits\n(gray area)",
                             interval_legend_text = interval_legend_text,
+                            plot_title             = "",
                             interval_bsv_text = interval_bsv_text,
                             facet_formula = "covname~paramname",
                             facet_switch = "y",
@@ -757,13 +757,6 @@ dev.off()
 
 ![Customized Covariate Effects Plot.](./coveffectsplot5.png)
 
-### Launch the Shiny App for Point and Click Editing
-Alternatively, you can launch the shiny app by typing `run_interactiveforestplot(yourdataname)`. The app will allow you to interactively edit how the plot looks like using point and click.
-
-```{r ,echo=FALSE}
-# uncomment in interactive mode
-# run_interactiveforestplot(fpdata[paramname=="AUC"])
-```
 ## Plots with Multiple PK Parameters
 You can also have plots with more than one PK parameter. You may want to facet by parameter, or to use different shape by parameter.
 
@@ -836,6 +829,43 @@ dev.off()
 
 ![Shape By Parameter Covariate Effects Plot.](./coveffectsplot7.png)
 
-We leave it up to the reader to edit the plot above to `parse` the labels of the shape legend to get subscripts.  
+### Color by Parameter
+This is achieved by setting `paramname_color = TRUE` (on top of `paramname_shape = TRUE` or not) and the the user can then pass a vector of colors in the `interval_col` argument
 
-While we covered varying one at a time covariate value (marginal effects), we can use observed or simulated distribution of correlated covariates and simulate joint covariate effects as illustrated in the PK Model in Pediatric Patients vignette.  
+```{r, fig.width=7, fig.height=6,message=FALSE}
+png("./coveffectsplot_color.png",width =9.5 ,height = 6,units = "in",res=72)
+forest_plot(fpdata[paramname!="AUC" &
+                     covname!="BSV"&
+                     covname!="Reference",],
+                            ref_area = c(0.8, 1/0.8),
+                            x_range = c(0.35,1/0.35),
+                            xlabel = "Fold Change Relative to Reference",
+            ref_legend_text = "Reference\nClinically relevant limits\n(0.8-1.25)",
+            area_legend_text = "Reference\nClinically relevant limits\n(0.8-1.25)",
+                            facet_formula = "covname~.",
+                            paramname_shape = TRUE,
+                            paramname_color = TRUE,
+            combine_interval_shape_legend = TRUE,
+            legend_order =c("shape","pointinterval","ref", "area"),
+                            legend_shape_reverse = TRUE,
+                            bsv_col = scales::muted("red"),
+                            facet_switch = "y",
+                            facet_scales = "free_y",
+                            facet_space = "free",
+                            table_position = "none",
+                            base_size = 12,
+                            logxscale = TRUE,
+                            major_x_ticks = c(0.5,0.8,1/0.8,1/0.5),
+                            legend_space_x_mult = 0.01,
+                            legend_position = "right",
+                            return_list = TRUE)[[1]]+
+  scale_color_manual(labels = c(expression(C[last]),expression(C[max])),
+                       values = c(scales::muted("blue"),scales::muted("green")))+
+  scale_shape_discrete(labels = c(expression(C[last]),expression(C[max])))
+
+dev.off()
+```
+
+![Color By Parameter Covariate Effects Plot.](./coveffectsplot_color.png)
+
+While we covered varying one at a time covariate value (marginal effects), we can use observed or simulated distribution of correlated covariates and simulate joint covariate effects as illustrated in the Pediatric Application vignette.It can be misleading to show the BSV around the reference only as it operates at all levels of covariate as such we recommend to fully represent the intervals with BSV and Uncertainty at all levels / covariate splits (full Distribution PK example vignette.)

@@ -1,5 +1,6 @@
 # coveffectsplot 1.0.1.9999
 * dev version start to update vignettes for paper
+* added arguments `paramname_color` `combine_interval_shape_legend` to enable color by paramname
 
 # coveffectsplot 1.0.1
 * cran fix for url not available wtage is now a dataset that ships with the package

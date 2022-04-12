@@ -48,7 +48,7 @@ The above equation shows that we have two covariates on CL one is Weight (kg) a 
 
 $$log(CL) = {log(\color{blue}{POPCL})} + \color{blue}{dWTdCL}\times log\left(\frac { \color{green}{Weight}} {70}\right)+ \ log(\color{blue}{dSexdCL})\times\left(\color{green}{Sex}== 1 \right) +\color{red}\eta\color{red}{CL} $$
 and where the individual level random effect describes the between subject variability (BSV):
-$$\eta{CL}\sim \mathcal{N}(0,\,\omega_{CL}^{2})$$
+$$\color{red}\eta{\color{red}{CL}}\sim \mathcal{N}(0,\,\omega_{CL}^{2})$$
 
 As mentioned in the FDA guidance there is two ways to conduct simulations:
 
