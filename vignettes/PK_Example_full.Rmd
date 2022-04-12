@@ -92,7 +92,8 @@ nbsvsubjects <- 1000
 nsim <- 10 # uncertainty replicates for vignette you might want a higher number
 
 ```
-Here we illustrate the varying one covariate at a time approach, keeping all the others at the reference value or category. A two-compartment pharmacokinetic (PK) model defined with ordinary differential equations (ODEs) is used. Covariates Weight, Albumin and Sex had effects on the Clearance (CL) model parameter while Weight and Sex had effects on the Volume of distribution (V) model parameter. For simplicity, there were no included covariates effects on other PK parameters such as peripheral clearance or volume. The approach is general and can be easily extended to any other ODEs model with multiple covariate effects on multiple model parameters.
+
+Here we illustrate the full distribution of covariates + BSV approach. A two-compartment pharmacokinetic (PK) model defined with ordinary differential equations (ODEs) is used. Covariates Weight, Albumin and Sex had effects on the Clearance (CL) model parameter while Weight and Sex had effects on the Volume of distribution (V) model parameter. For simplicity, there were no included covariates effects on other PK parameters such as peripheral clearance or volume. The approach is general and can be easily extended to any other ODEs model with multiple covariate effects on multiple model parameters.
 
 ## Specifying a PK Model using `mrgsolve`
 
@@ -186,7 +187,7 @@ egg::ggarrange(p1, p2, ncol = 2)
 ```
 
 ### Compute PK Parameters, Plot and Summarize BSV
-In this section we compute the PK parameters of interest, provide a plot of the parameters as well as of the standardized ones. We also summarize and report the BSV as ranges of 50 and 90% of patients for each PK parameter. Later on we might chooose to include these ranges in the coveffectsplot or not.
+In this section we compute the PK parameters of interest, provide a plot of the parameters as well as of the standardized ones. We also summarize and report the BSV as ranges of 50 and 90% of patients for each PK parameter. Later on we might choose to include these ranges in the `coveffectsplot` or not.
 
 ```{r computenca , fig.width=7 , message=FALSE }
 derive.exposure <- function(time, CP) {
@@ -269,10 +270,10 @@ bsvranges <- refbsv[,list(
 bsvranges
 ```
 
-## Generate and Simulate at Combinations of Covariate of Interest
-Based on our observed covariate data, we compute percentiles of interest that we will use to simulate data at. Common practice is to compute the 5,25,75,95 percentiles (the median being the reference). In some cases, we might want to explore the min, max or other extreme case scenarios. Care should be taken as this approach might generate unrealistic combination of covariates that can never appear in a real patient. The utility function expand.modelframe (written by Benjamin Rich) is defined in the setup section of the vignette and can be found in the source code. It facilitates the creation of a set of covariate values varying one at a time. 
+## Importing Realistic Distributions of Covariates
+Here we import from a dataset named `covdatasim` available in the package. Instead of simulating at specific covariate values we will use the full distribution.
 
-### Generate a Dataset Holding Combinations of Covariates:
+### Visualize the dataset of Covariates:
 ```{r covcomb , fig.width=7 }
 reference.values <- data.frame(WT = 85, ALB = 45, SEX = 0)   
 covdatasim$SEX<- ifelse(covdatasim$SEX==0,1,0)
@@ -308,7 +309,7 @@ ggpairsplot +theme_bw(base_size = 12)+
 ```
 
 ### Simulation With Full Distributions of Covariates
-As a first step, we simulate without uncertainty and without BSV using `zero_re()` at unique combination of covariates and provide a plot to visualize the effects.  
+As a first step, we simulate without uncertainty and without BSV using `zero_re()` and provide a plot to visualize the effects.  
 
 ```{r, fig.width=7 ,message=FALSE, fig.height=5}
 idata <- data.table::copy(covdatasim)
@@ -344,7 +345,8 @@ f <- function(x, xcat, which, what, from, to, ...) {
 plotlines<- ggplot(outcovcomb, aes(time,CP,col=SEX ) )+
   geom_line(aes(group=ID),alpha=0.1,size=0.1)+
   facet_grid(table1::eqcut(ALB,2,f) ~ table1::eqcut(WT,2),labeller = label_value)+
-  labs(colour="Sex",caption ="Simulation without Uncertainty\nFull Covariate Distribution\nwithout BSV/Uncertainty",
+  labs(colour="Sex",caption ="Simulation without Uncertainty\nFull
+       Covariate Distribution\nwithout BSV/Uncertainty",
        x = "Time (h)", y="Plasma Concentrations")+
   coord_cartesian(ylim=c(0,3.5))
 
@@ -360,14 +362,16 @@ plotranges<- ggplot(outcovcomb, aes(time,CP,col=SEX,fill=SEX ) )+
                                                    SEX,table1::eqcut(ALB,2,f))))+
   facet_grid(table1::eqcut(ALB,2,f) ~ table1::eqcut(WT,2),
              labeller = label_value)+
-  labs(linetype="Sex",colour="Sex",fill="Sex",caption ="Simulation with Full Covariate Distribution\nwith BSV without Uncertainty\n95% (Covariate Effects + BSV) Percentiles",
+  labs(linetype="Sex",colour="Sex",fill="Sex",
+  caption ="Simulation with Full Covariate Distribution with BSV
+  95% (Covariate Effects + BSV) Percentiles",
        x = "Time (h)", y="Plasma Concentrations")+
   coord_cartesian(ylim=c(0,3.5))
-
+plotranges
 
 ```
 
-### Adding Uncertainty from a Varcov Matrix
+## Adding Uncertainty from a Varcov Matrix
 First, we will invent a varcov matrix by assuming 15% relative standard errors and correlations of 0.2 across the board. We then simulate a 100 set of parameters using a multivariate normal (kept at 100 for the vignette, use more replicates for a real project). Also, unless the model was written in a way to allow unconstrained parameter values, care should be taken to make sure the simulated parameters are valid and make sense. When available, use the set of parameters from bootstrap replicates.
 
 **Variance Covariance Matrix of fixed effects:**
@@ -396,7 +400,7 @@ head(sim_parameters)
 ```
 
 ### Iterative Simulation to Apply the Uncertainty
-Third, we illustrate how you can iterate over a set of parameters value using a `for` loop. We then overlay the previous simulation results without uncertainty on the one with uncertainty to visualize the effect of adding it. 
+Third, we illustrate how you can iterate over a set of parameters value using a `for` loop. We then overlay the previous simulation results without uncertainty on the one with uncertainty to visualize the effect of adding it. The user might want to use a parallel back-end to speed-up the simulations. The code that can simulate the uncertainty of BSV is commented out to keep the vignette fast.
 
 ```{r, fig.width=7,fig.height=4, fig.height=5}
 idata <- copy(covdatasim)
@@ -409,7 +413,8 @@ for(i in 1:nsim) {
   out <- modcovsim %>%
     data_set(data.all) %>%
     #zero_re() %>%
-    #omat(RxODE::cvPost(2000, matrix(c(0.09,0.01,0.01,0.09), 2, 2), type = "invWishart")) %>%  # unc on bsv unocmment and increase nsim for paper
+    #omat(RxODE::cvPost(2000, matrix(c(0.09,0.01,0.01,0.09), 2, 2),
+    #type = "invWishart")) %>%  # unc on bsv unocmment and increase nsim for paper
     mrgsim(start=0, end=24, delta=0.25) %>%
     as.data.frame %>%
     as.data.table
@@ -444,7 +449,8 @@ plotrangesunc<- ggplot(iter_sims_summary_all,
   geom_line(size=1)+
   facet_grid(ALB ~ WT, labeller = label_value)+
   labs(linetype=legendlabel,colour=legendlabel,fill=legendlabel,
-       caption ="Simulation with joint correlated covariate distributions\nwith uncertainty and between subject variability",
+       caption ="Simulation with joint correlated covariate distributions
+       with uncertainty and between subject variability",
        x = "Time (h)", y="Plasma Concentrations")+
   coord_cartesian(ylim=c(0,3.5))
 
@@ -455,7 +461,7 @@ plotrangesunc+
 ```
 
 ### Compute PK Parameters and Boxplots   
-Similar to an earlier section, we compute the PK parameters by patient and by replicate standardize by the computed median for reference subject and provide a plot. We add some data manipulation to construct more informative labels that will help in the plotting.
+Similar to an earlier section, we compute the PK parameters by patient and by replicate standardize by the computed median for reference subject by replicate and provide a plot. We add some data manipulation to construct more informative labels that will help in the plotting.
 
 ```{r, fig.width=7, include=TRUE, message=FALSE}
 out.df.parameters <- iter_sims[, derive.exposure(time, CP),
@@ -530,8 +536,8 @@ boxplotMV<- ggplot(nca.summaries.long
 boxplotMV
 ```
 
-### Alternative View of the Data: Distributions and Intervals 
-Here we provide an alternative visual summary of the standardized PK parameters. It shows the distribution, quantiles of interest. It isolates each covariate effects in one panel keeping the reference on its own. It is exactly the same data as the boxplots. Which visual presentation do you prefer? Which one enables you to clearly see and compare the covariate effects?  
+## Alternative View of the Data: Distributions and Intervals 
+Here we provide an alternative visual summary of the standardized PK parameters. It shows intervals of interest split by covariate quantiles (e.g. below/above median, tertiles, quartiles).It is exactly the same data as the boxplots. We need to keep in mind here that although we split by one covariate quantiles we can split jointly by more than one covariate. Also, the presented effects are joint effects of all covariates viewed from a specific covariate angle.
 
 ```{r, fig.width=7, fig.height=4 ,message=FALSE}
 ggridgesplot<- ggplot(nca.summaries.long,
@@ -565,8 +571,8 @@ ggridgesplot
 
 ```
 
-### Adding the BSV Ranges and Putting it all Together Using `forest_plot`
-To contrast the covariate effects with random unexplained variability we add to the data the BSV intervals computed in an earlier section. We then do some data manipulation and formatting to produce a plot from the package function `forest_plot`. To simplify we will only keep AUC before revisiting more than one parameter plots at the end. The user can also compute an show the BSV for all presented effects not just for the reference. Refer to the approach that incorporate BSV and full covariate distributions presented in another vignette.
+## Putting it all Together Using `forest_plot`
+Here we have the joint effects of correlated covariates, BSV and uncertainty concisely summarized and presented using intervals.
 
 ```{r, fig.width=7, fig.height=6}
 coveffectsdatacovrep <- nca.summaries.long %>% 
@@ -628,14 +634,16 @@ coveffectsdatacovrepbsv$label <- factor(coveffectsdatacovrepbsv$label,
                                                   , "Q4:\n[98.2,222]"
                                         ))
 
-interval_legend_text <- "Median (points)\n90% intervals (horizontal lines) of joint effects:\ncovariate distributions, uncertainty\nand between subject variability"
+interval_legend_text <- "Median (points)\n90% intervals (horizontal lines) of joint effects:
+covariate distributions, uncertainty
+and between subject variability"
 interval_bsv_text    <- "BSV (points)\nPrediction Intervals (horizontal lines)"
 ref_legend_text      <- "Reference (vertical line)\nClinically relevant limits\n(gray area)"
 area_legend_text     <- "Reference (vertical line)\nClinically relevant limits\n(gray area)"
 
 
 #emf("Figure_PKdist_forest.emf",width= 15, height = 7.5)
-png("./coveffectsplot_full.png",width =9.5 ,height = 6,units = "in",res=72)
+png("./coveffectsplot_full.png",width =9.5 ,height = 8,units = "in",res=72)
 
 forest_plot(coveffectsdatacovrepbsv[coveffectsdatacovrepbsv$covname!="REF"&
                                                       coveffectsdatacovrepbsv$covname!="BSV",

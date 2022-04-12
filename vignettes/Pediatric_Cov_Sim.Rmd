@@ -184,7 +184,7 @@ p4
 
 
 ## Simulating Age/Weight Pairs Using NHANES LMS Values
-The NHANES website provides a csv file containing the smoothed growth charts distribution parameters at specific ages for boys and girls. The `gamlss.dist::rBCCG` function is used to show how we can use these parameters to generate a realistic pediatric Age/Weight/Sex distribution. The dataset wtage is now part of the package.
+The NHANES website provides a csv file containing the smoothed growth charts distribution parameters at specific ages for boys and girls. The file is available in the package as the `wtage` dataset. The `gamlss.dist::rBCCG` function is used to show how we can use these parameters to generate a realistic pediatric Age/Weight/Sex distribution. The dataset wtage is now part of the package.
 
 ```{r simcovariate, collapse=TRUE }
 wtage<-  wtage[wtage$Agemos<=6*12,] # keeps only 2 to 6 years
@@ -232,7 +232,6 @@ data.all<-merge(idata,data.dose)
 data.all$ID <- 1: nrow(data.all)
 outcovcomb<- pedmodsim %>%
   data_set(data.all) %>%
-  #zero_re() %>% 
   mrgsim(end=24, delta=1)
 outcovcomb<-as.data.frame(outcovcomb)
 outcovcomb <- outcovcomb %>% 
@@ -258,7 +257,7 @@ labs(y = "Plasma Concentrations", color = "Sex", x = "Time (h)")+
 ```
 
 
-```{r simcovariatemodelpkparam, collapse=TRUE, fig.height= 6 }
+```{r simcovariatemodelpkparam, collapse=TRUE, fig.height= 6, fig.width=8 }
 out.df.multivariatecov <- as.data.frame(outcovcomb) %>% 
   arrange(ID,time) %>% 
   group_by(ID,SEX,AGE,WT)%>% 
@@ -270,26 +269,17 @@ out.df.multivariatecov.long <- out.df.multivariatecov %>%
   group_by (paramname,SEX) %>%
   mutate(medparam = median(paramvalue),
          paramvalue = paramvalue / medparam) 
-out.df.multivariatecov.long$SEXLABEL <- factor(out.df.multivariatecov.long$SEX,labels=c("Girls","Boys"))
+out.df.multivariatecov.long$SEXLABEL <- factor(out.df.multivariatecov.long$SEX,
+                                               labels=c("Girls","Boys"))
 
 nca.summaries <- out.df.multivariatecov.long %>%
   mutate(REF = "All Subjects")
-
-
-
-
-nca.summaries <- out.df.multivariatecov.long %>%
-  mutate(REF = "All Subjects")
-
 
 nca.summaries$WTCAT3 <- table1::eqcut( nca.summaries$WT,3,varlabel = "Weight")
 nca.summaries$WTCAT4 <- table1::eqcut( nca.summaries$WT,4,varlabel = "Weight")
 nca.summaries$AGECAT4 <- table1::eqcut( nca.summaries$AGE,4,varlabel = "Age")
 
 nca.summaries$AGECAT4_label <- nca.summaries$AGECAT4 
-
-
-
 
 
 f <- function(x, xcat, which, what, from, to, ...) {
@@ -300,8 +290,7 @@ f <- function(x, xcat, which, what, from, to, ...) {
  }
 
 
-
-plot1<-    ggplot(nca.summaries %>% 
+plot1 <-    ggplot(nca.summaries %>% 
                     filter(WT<=25) %>%
                     filter(WT>12) %>%
                     gather(key,value,WT,AGE) %>% 
@@ -317,12 +306,15 @@ plot1<-    ggplot(nca.summaries %>%
   geom_hline(data=data.frame (yintercept=1),  aes(yintercept =yintercept  ),size = 1)+
   geom_point(alpha = 0.2, size = 1) +
   stat_quant_band(method = "rqss",formula = y ~ qss(x, lambda = 2),
-                  quantiles = c(0.05, 0.5, 0.95), col = "black",aes(fill=SEX))+
-  facet_nested(paramname+ SEX~key, scales="free_x",switch = "both")+
+                   quantiles = c(0.05, 0.5, 0.95), col = "black",aes(fill=SEX))+
+   facet_nested(SEX~paramname+key,scales="free",switch = "both")+
+  #stat_quantile()+
+  #facet_grid(SEX~key,scales="free",switch = "both")+
   theme_bw(base_size = 18)+
-  labs(x="",y="Standardized", fill ="Smoothed 90%\nquantreg intervals")+
-  theme(strip.placement = "outside",legend.position = "none",axis.title.x = element_blank()) +
-  scale_y_log10(  breaks =c(0.25,0.5,1,2))
+  labs(x="",y="Standardized PK Exposure", fill ="Smoothed 90%\nquantreg intervals")+
+  theme(strip.placement = "outside",legend.position = "none",axis.title.x = element_blank())+
+  scale_y_log10(  breaks =c(0.25,0.5,1,2))+
+  coord_cartesian(ylim=c(0.25,2))
 
 plot1
 
@@ -331,8 +323,6 @@ plot1
 
 ## PK Parameters Summaries and Distribution Plots  
 ```{r computenca, fig.height=5, collapse=TRUE }  
-
-
 nca.summaries.long <- gather(nca.summaries,
                              covname,
                              covvalue,REF,WTCAT3,WTCAT4,AGECAT4,SEX,
@@ -399,12 +389,8 @@ coveffectsdatacovrepbsv2$label <-    "50% of patients"
 coveffectsdatacovrepbsv2$lower <- bsvranges$P25
 coveffectsdatacovrepbsv2$upper <- bsvranges$P75
 
-# coveffectsdatacovrepbsv<- rbind(coveffectsdatacovrep,
-#                                 coveffectsdatacovrepbsv2,
-#                                 coveffectsdatacovrepbsv)
 coveffectsdatacovrepbsv <- coveffectsdatacovrep
-                                
-                                
+
 coveffectsdatacovrepbsv <- coveffectsdatacovrepbsv %>% 
   mutate(
     label = covvalue,
@@ -416,10 +402,8 @@ coveffectsdatacovrepbsv<- as.data.frame(coveffectsdatacovrepbsv)
 coveffectsdatacovrepbsv$label <- gsub(": ", ":\n", coveffectsdatacovrepbsv$label)
 
 coveffectsdatacovrepbsv$covname <-factor(as.factor(coveffectsdatacovrepbsv$covname ),
-                                         levels =  c("WTCAT3","AGECAT4","SEX","REF"),
-                                         labels = c("Weight\nSplits","Age\nSplits","Sex\nSplits","All"))
-
-
+                  levels =  c("WTCAT3","AGECAT4","SEX","REF"),
+                   labels = c("Weight\nSplits","Age\nSplits","Sex\nSplits","All"))
 
 
 coveffectsdatacovrepbsv$label <- factor(coveffectsdatacovrepbsv$label)
@@ -436,12 +420,12 @@ coveffectsdatacovrepbsv$label <- factor(coveffectsdatacovrepbsv$label,
                                         ))
 interval_bsv_text = ""
 ref_legend_text = "Reference (vertical line)\nClinically relevant limits\n(gray area)"
-interval_legend_text <- "Median (points)\n90% intervals (horizontal lines) of joint effects:\ncovariate distributions, uncertainty\nand between subject variability"
-
+interval_legend_text <- "Median (points)\n90% intervals (horizontal lines) of joint effects:
+covariate distributions, uncertainty\nand between subject variability"
 
 png("./Figure_7_4.png",width = 11 ,height = 7,units = "in",res=72)
 coveffectsplot::forest_plot(coveffectsdatacovrepbsv,
-                            ref_area = c(0.8, 1/0.8),
+                            ref_area = c(0.6, 1/0.6),
                             x_range = c(0.4,2.2),
                             strip_placement = "outside",
                             base_size = 18,
@@ -451,21 +435,22 @@ coveffectsplot::forest_plot(coveffectsdatacovrepbsv,
                             area_legend_text =ref_legend_text ,
                             interval_legend_text = interval_legend_text,
                             interval_bsv_text = interval_bsv_text,
-                            facet_formula = "covname~paramname",
+                            plot_title = "",
+                            legend_shape_reverse = TRUE,
+                            facet_formula = "covname~.",
                             facet_switch = "both",
                             table_facet_switch = "both",
                             reserve_table_xaxis_label_space = TRUE,
                             facet_scales = "free_y", facet_space = "free",
-                            paramname_shape = FALSE,
+                            paramname_shape = TRUE,
                             table_position = "right",
-                            table_text_size=3,
-                            plot_table_ratio = 1.5,
+                            table_text_size= 4,
+                            plot_table_ratio = 5,
                             show_table_facet_strip = "x",
                             show_table_yaxis_tick_label = FALSE,
                             logxscale = TRUE,
                             major_x_ticks = c(0.5,0.8,1/0.8,1/0.5),
                             return_list = FALSE)
-
 dev.off()
 ```
 ![Covariate Effects Plot.](./Figure_7_4.png)
