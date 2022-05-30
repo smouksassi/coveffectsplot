@@ -1,5 +1,5 @@
 # coveffectsplot 1.0.2
-* dev version start to update vignettes for paper
+* vignettes updated to reflect latest addition for the tutorial CPT:PSP paper
 * Added a function arguments `paramname_color` and `combine_interval_shape_legend` to enable color by paramname
 * Added a function arguments `combine_interval_shape_legend` to enable merging of color and pointinterval legends
 * Added `covdatasim` as a dataset
