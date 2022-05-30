@@ -1,16 +1,15 @@
 ## Test environments
-* local Windows 10 install, R 4.1.3
-* ubuntu 20.04 LTS (on github actions), R  4.1.3
+* local Windows 10 install, R 4.2.0
+* ubuntu 20.04 LTS (devel and release) (on github actions)
 * win-builder (devel and release)
 
 ## R CMD check results
 
 0 errors | 0 warnings | 0 note
 
-* This is a hotfix to prevent being removed from cran and it fixes a failure to retrieve data from CDC via url by including the data in the package
-* some Notes regarding packages not used are false positives since these are used in the shiny app code and are required for it.
-* all listed package dependencies are required for the shinyapp included in the package to work properly
-
+* This is to update vignettes and add an argument to the main function that enable coloring by parameter
+* some Notes regarding Namespace in Imports field not imported are false positives (e.g. 'colourpicker')
+* all listed package dependencies are required for the included shinyapp to work properly
 ## Reverse dependencies
 
 There is no listed dependencies.
