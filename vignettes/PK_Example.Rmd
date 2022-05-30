@@ -379,25 +379,35 @@ for(i in 1:nsim) {
 }
 iter_sims$SEX <- factor(iter_sims$SEX, labels = c("Female", "Male"))
 
-pkprofileuncertainty <- ggplot(iter_sims, aes(x=time, y=CP, col=factor(WT), linetype=SEX)) +
-  geom_line(aes(group=interaction(ID, rep)), alpha=0.1, size=0.1) +
-  geom_line(data = outcovcomb, aes(group=interaction(ID)),
-            alpha= 1, size=0.7, colour = "black") +
-  facet_grid(ALB +SEX ~ WT, labeller= labeller(ALB = label_both, SEX = label_value, WT = label_both),
-             switch = "y") +
-  labs(
-    x        = "Time (h)",
-    y        = "Plasma Concentrations",
-    linetype = "Sex",
-    colour   = "Uncertainty\nReplicates\nWeight",
-    caption  = "Simulation with Uncertainty, without BSV") +
-  coord_cartesian(ylim=c(0,3.5))+
-  guides(colour = guide_legend(override.aes = list(alpha = 1)))+
-  theme_bw(base_size = 13)+
-  theme(axis.title.y = element_text(size=15))+
-  guides(colour=guide_legend(override.aes = list(alpha=1,size=0.5)),
-         linetype=guide_legend(override.aes = list(size=0.5)))+
-  coord_cartesian(ylim=c(0,4))
+
+summary_conc <- function(CP) {
+  x <- c(
+    Cmed = median(CP),
+    Clow = quantile(CP, probs = 0.05),
+    Cup =  quantile(CP, probs = 0.95)
+  )
+  data.table(paramname=names(x), paramvalue=x)
+}
+
+# pkprofileuncertainty <- ggplot(iter_sims, aes(x=time, y=CP, col=factor(WT), linetype=SEX)) +
+#   geom_line(aes(group=interaction(ID, rep)), alpha=0.1, size=0.1) +
+#   geom_line(data = outcovcomb, aes(group=interaction(ID)),
+#             alpha= 1, size=0.7, colour = "black") +
+#   facet_grid(ALB +SEX ~ WT, labeller= labeller(ALB = label_both, SEX = label_value, WT = label_both),
+#              switch = "y") +
+#   labs(
+#     x        = "Time (h)",
+#     y        = "Plasma Concentrations",
+#     linetype = "Sex",
+#     colour   = "Uncertainty\nReplicates\nWeight",
+#     caption  = "Simulation with Uncertainty, without BSV") +
+#   coord_cartesian(ylim=c(0,3.5))+
+#   guides(colour = guide_legend(override.aes = list(alpha = 1)))+
+#   theme_bw(base_size = 13)+
+#   theme(axis.title.y = element_text(size=15))+
+#   guides(colour=guide_legend(override.aes = list(alpha=1,size=0.5)),
+#          linetype=guide_legend(override.aes = list(size=0.5)))+
+#   coord_cartesian(ylim=c(0,4))
 
 iter_sims_sum <- iter_sims[, summary_conc(CP), by=.( time, WT, SEX, ALB)]
 iter_sims_sum <- spread(iter_sims_sum,paramname,paramvalue)
@@ -414,8 +424,8 @@ pkprofileuncertainty_sum <- ggplot(iter_sims_sum, aes(x=time, col=factor(WT),
     x        = "Time (h)",
     y        = "Plasma Concentrations",
     linetype = "Sex",
-    colour   = "Uncertainty\nReplicates\nWeight",
-    fill   = "Uncertainty\nReplicates\nWeight",
+    colour   = "Uncertainty\n5-95%\nWeight",
+    fill   = "Uncertainty\n5-95%\nWeight",
     caption  = "Simulation with Uncertainty, without BSV") +
   theme_bw(base_size = 13)+
   theme(axis.title.y = element_text(size=15))+
@@ -860,7 +870,7 @@ forest_plot(fpdata[paramname!="AUC" &
                             legend_position = "right",
                             return_list = TRUE)[[1]]+
   scale_color_manual(labels = c(expression(C[last]),expression(C[max])),
-                       values = c(scales::muted("blue"),scales::muted("green")))+
+                       values = c(scales::muted("blue"),scales::muted("red")))+
   scale_shape_discrete(labels = c(expression(C[last]),expression(C[max])))
 
 dev.off()

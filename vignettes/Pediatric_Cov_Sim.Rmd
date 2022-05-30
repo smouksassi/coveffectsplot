@@ -180,11 +180,18 @@ p4 <- ggplot(refbsv[,], aes(
   coord_cartesian(expand=FALSE)
 
 p4
+
+# p1<- p1 +theme_bw(base_size=18)
+# p4 <- p4+ theme_bw(base_size=18)+
+#   theme(axis.text.y=element_blank(),axis.ticks.y = element_blank(),
+#         legend.position = "none")
+# egg::ggarrange(p1 , p4,ncol=2)
+
 ```
 
 
 ## Simulating Age/Weight Pairs Using NHANES LMS Values
-The NHANES website provides a csv file containing the smoothed growth charts distribution parameters at specific ages for boys and girls. The file is available in the package as the `wtage` dataset. The `gamlss.dist::rBCCG` function is used to show how we can use these parameters to generate a realistic pediatric Age/Weight/Sex distribution. The dataset wtage is now part of the package.
+The NHANES website provides a csv file containing the smoothed growth charts distribution parameters at specific ages for boys and girls. The `gamlss.dist::rBCCG` function is used to show how we can use these parameters to generate a realistic pediatric Age/Weight/Sex distribution. The `wtage` dataset is now part of the package.  
 
 ```{r simcovariate, collapse=TRUE }
 wtage<-  wtage[wtage$Agemos<=6*12,] # keeps only 2 to 6 years
