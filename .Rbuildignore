@@ -9,3 +9,7 @@
 ^\.Rhistory
 ^\.github$
 ^CRAN-SUBMISSION$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^_pkgdown\.yml$

@@ -5,8 +5,13 @@ date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
     toc: true
+resource_files:
+  - img/logo_coveffectsplot.png
+  - img/prezista.png
+  - img/snapshotforest.png
+  - img/snapshottable.png
 vignette: >
-  %\VignetteIndexEntry{Introduction to coveffectsplot}
+  %\VignetteIndexEntry{Introduction_to_coveffectsplot}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
