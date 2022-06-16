@@ -1,15 +1,15 @@
 # coveffectsplot <img src='vignettes/img/logo_coveffectsplot.png' align="right" height="200" />
 
 <!-- badges: start -->
-![CRAN](https://www.r-pkg.org/badges/version-last-release/coveffectsplot)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version-last-release/coveffectsplot)](https://cran.r-project.org/package=coveffectsplot)
 [![R-CMD-check](https://github.com/smouksassi/coveffectsplot/workflows/R-CMD-check/badge.svg)](https://github.com/smouksassi/coveffectsplot/actions)
 [![MonthlyDOWNLOADS](https://cranlogs.r-pkg.org/badges/coveffectsplot)](https://CRAN.R-project.org/package=coveffectsplot)
 [![DOWNLOADS](https://cranlogs.r-pkg.org/badges/grand-total/coveffectsplot)](https://CRAN.R-project.org/package=coveffectsplot)
 <!-- badges: end -->
 
-A package that provide the function `forest_plot`and an accompanying Shiny App that facilitates the production of forest plots to visualize covariate effects as commonly used in pharmacometrics population PK/PD reports.
+A package that provides the function `forest_plot`and an accompanying Shiny App that facilitates the production of forest plots to visualize covariate effects as commonly used in pharmacometrics population PK/PD reports.
 
-##### Publication:
+#### Publication:
 
 [Tutorial: Evaluation of Covariate Effects using Forest Plots and Introduction to the `coveffectsplot` R package](https://ascpt.onlinelibrary.wiley.com/doi/abs/10.1002/psp4.12829)
 
