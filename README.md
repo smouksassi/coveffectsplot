@@ -1,10 +1,17 @@
-coveffectsplot
-========
-![CRAN](https://www.r-pkg.org/badges/version-last-release/coveffectsplot)
-[![R-CMD-check](https://github.com/smouksassi/coveffectsplot/workflows/R-CMD-check/badge.svg)](https://github.com/smouksassi/coveffectsplot/actions)
-![DOWNLOADS](https://cranlogs.r-pkg.org/badges/grand-total/coveffectsplot)
+# coveffectsplot <img src='vignettes/img/logo_coveffectsplot.png' align="right" height="200" />
 
-A package that provide the function `forest_plot`and an accompanying Shiny App that facilitates the production of forest plots to visualize covariate effects as commonly used in pharmacometrics population PK/PD reports.
+<!-- badges: start -->
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version-last-release/coveffectsplot)](https://cran.r-project.org/package=coveffectsplot)
+[![R-CMD-check](https://github.com/smouksassi/coveffectsplot/workflows/R-CMD-check/badge.svg)](https://github.com/smouksassi/coveffectsplot/actions)
+[![MonthlyDOWNLOADS](https://cranlogs.r-pkg.org/badges/coveffectsplot)](https://CRAN.R-project.org/package=coveffectsplot)
+[![DOWNLOADS](https://cranlogs.r-pkg.org/badges/grand-total/coveffectsplot)](https://CRAN.R-project.org/package=coveffectsplot)
+<!-- badges: end -->
+
+A package that provides the function `forest_plot`and an accompanying Shiny App that facilitates the production of forest plots to visualize covariate effects as commonly used in pharmacometrics population PK/PD reports.
+
+#### Publication:
+
+[Tutorial: Evaluation of Covariate Effects using Forest Plots and Introduction to the `coveffectsplot` R package](https://ascpt.onlinelibrary.wiley.com/doi/abs/10.1002/psp4.12829)
 
 ### Installation and Running information
 ```
@@ -19,7 +26,7 @@ Launch the app using this command then press the use sample data blue text to lo
 coveffectsplot::run_interactiveforestplot()
 ```
 This will generate this plot:
-![example plot with the included dataset](./inst/shiny/img/snapshotforest.png)
+![example plot with the included dataset](vignettes/img/snapshotforest.png)
 
 ### Expected data
 Several example data are provided to illustrate the various functionality but the goal is that you simulate, compute and bring your own data. The app will help you, using point and click interactions, to design a plot that communicates your model covariate effects. 
@@ -37,7 +44,7 @@ Additionally, you might  want to have a covname with value BSV to illustrate and
 
 The example data show where does 90 and 50% of the patients will be based on the model BSV estimate for the selected paramname(s).
 
-![data example](./inst/shiny/img/snapshottable.png)
+![data example](vignettes/img/snapshottable.png)
 
 The vignette [Introduction to coveffectsplot](https://cran.r-project.org/package=coveffectsplot/vignettes/introduction_to_coveffectsplot.html) will walk you through the background and  how to compute and build the required data that the shiny app or the function `forest_plot`expects. There is some data management steps that the app does automatically. Choosing to call the function will require you to build the table LABEL and to control the ordering of the variables. The `forest_plot` help has several examples.  
 The package also include vignettes with several step-by-step detailed examples:  
@@ -49,7 +56,8 @@ The package also include vignettes with several step-by-step detailed examples:
  
 ### Example using a real drug label data
 The prezista drug label data was extracted from the FDA label and calling the `forest_plot` function gives:
-```
+
+``` r
 library(coveffectsplot)
 plotdata <- dplyr::mutate(prezista,
           LABEL = paste0(format(round(mid,2), nsmall = 2),
@@ -88,7 +96,8 @@ coveffectsplot::forest_plot(plotdata,
             return_list = FALSE)
 #dev.off()
 ```
-![example plot with the prezista dataset](./inst/shiny/img/prezista.png)
+
+![example plot with the prezista dataset](vignettes/img/prezista.png)
 
 
 

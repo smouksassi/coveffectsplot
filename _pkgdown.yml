@@ -1,0 +1,28 @@
+template:
+  params:
+    bootswatch: united
+navbar:
+  structure:
+    left:  [home, reference, articles, app]
+    right: [github]
+    navbar:
+  components:
+    home: ~
+    articles:
+     text: Vignettes
+     menu:
+     - text: Introduction to coveffectsplot
+       href: articles/Introduction_to_coveffectsplot.html
+     - text: Exposure-Response Example
+       href: articles/Exposure_Response_Example.html
+     - text: PK Example
+       href: articles/PK_Example.html
+     - text: PK Example Full
+       href: articles/PK_Example_full.html
+     - text: PK Pediatric Example
+       href: articles/Pediatric_Cov_Sim.html
+     - text: PKPD Example
+       href: articles/PKPD_Example.html
+    app:
+      text: Shiny App
+      href: articles/app.html
