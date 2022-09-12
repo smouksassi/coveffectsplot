@@ -516,7 +516,8 @@ forest_plot <- function(
 
  if(paramname_color) {
    data$pointintervalcolor <- data$paramname
-   colbreakvalues<- unique(data$paramname)
+   if( is.factor( data$pointintervalcolor)) colbreakvalues<- levels(data$pointintervalcolor)
+   if(!is.factor( data$pointintervalcolor)) colbreakvalues<- unique(data$pointintervalcolor)
  }
 
   main_plot <-
@@ -542,7 +543,7 @@ forest_plot <- function(
         fill = ref_area_col
       ) +
     ggplot2::geom_ribbon(
-      data = data.frame(x = ref_value, ymax = ref_value, ymin = ref_value,
+      data = data.frame(x = ref_value, ymax = 1, ymin = 1,
                         fill = area_legend_text),
       ggplot2::aes(
         x = x,
@@ -575,6 +576,11 @@ forest_plot <- function(
     main_plot <- main_plot +
       ggplot2::scale_colour_manual("", breaks = colbreakvalues,
                                    values = c(interval_col))
+    if(paramname_shape) {
+      main_plot <- main_plot +
+        ggplot2::scale_shape_manual("", breaks = colbreakvalues,
+                                    values=c(16, 17, 15, 3, 7, 8))
+    }
   }
   
   

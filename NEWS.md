@@ -1,7 +1,12 @@
+# coveffectsplot 1.0.3
+* fixed a bug when ref_value when not equal 1 affecting y axis limits
+* fixed a bug when the guides for color and shape were not merged
+
+
 # coveffectsplot 1.0.2
 * vignettes updated to reflect latest addition for the tutorial CPT:PSP paper
-* Added a function arguments `paramname_color` and `combine_interval_shape_legend` to enable color by paramname
-* Added a function arguments `combine_interval_shape_legend` to enable merging of color and pointinterval legends
+* Added function arguments `paramname_color` and `combine_interval_shape_legend` to enable color by paramname
+* Added function arguments `combine_interval_shape_legend` to enable merging of color and pointinterval legends
 * Added `covdatasim` as a dataset
 
 # coveffectsplot 1.0.1
