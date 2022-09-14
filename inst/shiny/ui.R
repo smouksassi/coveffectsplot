@@ -240,22 +240,30 @@ fluidPage(
           div( actionButton("stripbackfillreset", "Reset Strip Background Fill"),
                style="text-align: right"),
           checkboxInput('removestrip', "Show Strip Background",value = TRUE),
+          #conditionalPanel(condition = "!input.colourbyparamname",
           colourpicker::colourInput("colourpointrange",
                                     "Point Range Colour:",
                                     value="blue",
                                     showColour = "both",allowTransparent=TRUE, returnName = TRUE),
           div( actionButton("colourpointrangereset", "Reset Point Range Colour"),
-               style="text-align: right"),
+               style="text-align: right")
+          #)
+          ,
           sliderInput("sizepointrange", "Point range size",
                       min = 0, max = 10, step = 0.1, value = 1),
           sliderInput("fattenpointrange", "Point range fatten",
                       min = 0, max = 10, step = 0.1, value = 4),
-          colourpicker::colourInput("colourbsvrange",
-                                    "BSV Range Colour:",
-                                    value="red",
-                                    showColour = "both",allowTransparent=TRUE, returnName = TRUE),
+         #conditionalPanel(condition = "!input.colourbyparamname",
+           colourpicker::colourInput("colourbsvrange",
+                                     "BSV Range Colour:",
+                                     value="red",
+                                     showColour = "both",allowTransparent=TRUE, returnName = TRUE),
           div( actionButton("colourbsvrangereset", "Reset BSV Range Colour"),
-               style="text-align: right"),
+                                style="text-align: right")
+          
+          #)
+         ,
+          #conditionalPanel(condition = "input.colourbyparamname",uiOutput('userdefinedcolorui')),
           sliderInput("base_size", "Base size for the theme",
                       min = 1, max = 30, step = 0.1, value = 22),
           sliderInput("height", "Plot Height", min=1080/4, max=1080,
@@ -339,7 +347,7 @@ fluidPage(
         ),#tabpanel
         tabPanel(
           "Custom Legend Text",
-          textInput("customplottitle", label ="Plot Title",value = " \\n"),
+          textInput("customplottitle", label ="Plot Title",value = ""),
           textInput("customcolourtitle", label ="Pointinterval Legend text",
                     value="Median (points)\\n95% CI (horizontal lines)"),
           textInput("custombsvtitle", label ="BSV Legend text",

@@ -477,7 +477,7 @@ forest_plot <- function(
   guide_linetype <- ggplot2::guide_legend("", order = linetype_pos)
   
   guide_interval <- ggplot2::guide_legend("", order = interval_pos,
-                                          reverse = legend_shape_reverse,
+                                          reverse = FALSE,
                                           ncol = legend_ncol_interval)
   guide_shape    <- ggplot2::guide_legend("", order = shape_pos,
                                        override.aes = list(linetype = 0,

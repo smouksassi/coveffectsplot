@@ -109,8 +109,32 @@ function(input, output, session) {
       animate = FALSE
     )
   })
-  
   outputOptions(output, "refarea", suspendWhenHidden=FALSE)
+  
+  # output$userdefinedcolorui <- renderUI({ 
+  #   df <- maindata()
+  #   shiny::req(df)
+  #   cols <- c("#4682ac", "#ee3124", "#fdbb2f", "#6d405d",
+  #             "#093b6d", "#2f71fd", "#336343", "#803333", "#279594", "#ef761b")
+  #   lev <- 1
+  #   if(length(input$exposurevariables)>1) lev <- 1:length(input$exposurevariables)
+  #   if(input$colourbyparamname){
+  #     lapply(seq_along(lev), function(i) {
+  #       div(
+  #         colourpicker::colourInput(inputId = paste0("col", lev[i]),
+  #                                   label = paste0("Parameter Color", lev[i]),
+  #                                   value = cols[i]
+  #         ), style = "display: inline-block;")        
+  #     })
+  #   }
+  # })
+  # outputOptions(output, "userdefinedcolorui", suspendWhenHidden=FALSE)
+  # paramcols <- eval(parse(text =
+  #                           paste0("c(", paste0("input$col", 1:length(input$exposurevariables),
+  #                                               collapse = ", "), ")")
+  # ))  
+  # print(paramcols)
+  
   
   observeEvent(input$colourpointrangereset, {
     shinyjs::reset("colourpointrange")
@@ -164,7 +188,6 @@ function(input, output, session) {
     
     metaExpr({
       summarydata <- ..(plotdataprepare())
-        
       plot <- forest_plot(
         data = summarydata,
         facet_formula = ..(input$facetformula),
