@@ -1,6 +1,7 @@
 # coveffectsplot 1.0.3
 * fixed a bug when ref_value when not equal 1 affecting y axis limits
 * fixed a bug when the guides for color and shape were not merged
+* updated the UI to be able to specify user-defined color for parameters
 
 
 # coveffectsplot 1.0.2

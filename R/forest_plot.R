@@ -385,13 +385,6 @@ forest_plot <- function(
   strip_placement <- match.arg(strip_placement)
   facet_formula <- stats::as.formula(facet_formula)
   
-  
-  l_u <- length(unique(as.character(data$paramname)))
-  if ( paramname_color & 
-      (length(interval_col) < l_u ) ){
-    interval_col <- rep(c(interval_col,bsv_col), l_u)
-  } 
-  
   y_facet_text_angle<- ifelse(facet_switch %in% c("x","none"),
          y_facet_text_angle-0,
          y_facet_text_angle)
@@ -573,6 +566,9 @@ forest_plot <- function(
     )
   
   if(paramname_color) {
+    l_u <- length(unique(as.character(data$paramname)))
+    if (length(interval_col) < l_u ) interval_col <- rep(c(interval_col,bsv_col), l_u)
+    
     main_plot <- main_plot +
       ggplot2::scale_colour_manual("", breaks = colbreakvalues,
                                    values = c(interval_col))
@@ -582,8 +578,7 @@ forest_plot <- function(
                                     values=c(16, 17, 15, 3, 7, 8))
     }
   }
-  
-  
+ 
   if(!paramname_color) {
     main_plot <- main_plot +
     ggplot2::scale_colour_manual("", breaks = colbreakvalues,
