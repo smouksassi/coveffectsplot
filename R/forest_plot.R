@@ -376,8 +376,7 @@ forest_plot <- function(
   if (missing(major_x_labels) || is.null(major_x_labels)) {
     major_x_labels <- waiver()
   }
-  print(major_x_labels)
-  
+
   plot_margin[ which(is.na(plot_margin) ) ] <- 0
   table_margin[ which(is.na(table_margin) ) ] <- 0
   legend_margin[ which(is.na(legend_margin) ) ] <- 0

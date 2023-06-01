@@ -309,7 +309,7 @@ covcomb
 ### Simulation at Unique Combinations of Covariates
 As a first step, we simulate without uncertainty and without BSV using `zero_re()` at unique combination of covariates and provide a plot to visualize the effects.  
 
-```{r, fig.width=7 ,message=FALSE, fig.height=5}
+```{r, fig.width=8.5, fig.height=7, ,message=FALSE}
 idata <- data.table::copy(covcomb)
 idata$covname <-  NULL
 ev1 <- ev(time=0, amt=100, cmt=1)
@@ -325,9 +325,15 @@ outcovcomb<- modcovsim %>%
 
 outcovcomb$SEX <- factor(outcovcomb$SEX, labels=c("Female", "Male"))
 
+albumin.labs <- c("albumin: 40 ng/mL","albumin: 45 ng/mL","albumin: 50 ng/mL")
+names(albumin.labs) <- c("40","45","50")
+wt.labs <- c("weight: 56 kg","weight: 72 kg","weight: 85 kg","weight: 98 kg","weight: 128 kg")
+names(wt.labs) <- c("56","72","85","98","128")
+
 pkprofiletypical <- ggplot(outcovcomb, aes(x=time, y=CP, col=factor(WT), linetype=SEX)) +
   geom_line(aes(group=ID), alpha=1, size=1.5) +
-  facet_grid(ALB +SEX ~ WT, labeller= labeller(ALB = label_both, SEX = label_value, WT = label_both),
+  facet_grid(ALB + SEX~ WT,
+               labeller= labeller(ALB = albumin.labs, WT = wt.labs, SEX = label_value),
              switch = "y") +
   labs(
     x        = "Time (h)",
@@ -377,7 +383,7 @@ head(sim_parameters)
 ### Iterative Simulations to Apply the Uncertainty
 Third, we illustrate how you can iterate over a set of parameters value using a `for` loop. We then overlay the previous simulation results without uncertainty on the one with uncertainty to visualize the effect of adding it. 
 
-```{r, fig.width=7,fig.height=4, fig.height=5}
+```{r, fig.width=8.5, fig.height=7, ,message=FALSE}
 idata <- data.table::copy(covcomb)
 idata$covname <-  NULL
 ev1       <- ev(time=0, amt=100, cmt=1)
@@ -430,13 +436,20 @@ iter_sims_sum <- iter_sims[, summary_conc(CP), by=.( time, WT, SEX, ALB)]
 iter_sims_sum <- spread(iter_sims_sum,paramname,paramvalue)
 iter_sims_sum <- as.data.frame(iter_sims_sum)
 
+albumin.labs <- c("albumin: 40 ng/mL","albumin: 45 ng/mL","albumin: 50 ng/mL")
+names(albumin.labs) <- c("40","45","50")
+wt.labs <- c("weight: 56 kg","weight: 72 kg","weight: 85 kg","weight: 98 kg","weight: 128 kg")
+names(wt.labs) <- c("56","72","85","98","128")
+
 pkprofileuncertainty_sum <- ggplot(iter_sims_sum, aes(x=time, col=factor(WT),
                       fill=factor(WT),
                       linetype=SEX)) +
   geom_ribbon((aes(ymin= `Clow.5%` ,ymax=`Cup.95%`)), alpha=0.4,linetype=0)+
   geom_line(aes(y=Cmed),alpha=1 , color ="black")+
-  facet_grid(ALB +SEX ~ WT, labeller= labeller(ALB = label_both, SEX = label_value,
-                                               WT = label_both),switch = "y") +
+  facet_grid(ALB +SEX ~ WT,
+             labeller= labeller(ALB = albumin.labs,
+                                WT = wt.labs,
+                                SEX = label_value),switch = "y") +
   labs(
     x        = "Time (h)",
     y        = "Plasma Concentrations",
@@ -583,7 +596,7 @@ ggplot(out.df.univariatecov.nca[out.df.univariatecov.nca$covname!="REF",], aes(
   theme_bw() +
   labs(x="Effects Relative to Parameter Reference Value", y="")+
   scale_x_continuous(breaks=c(0.25,0.5,0.8,1,1/0.8,1/0.5,1/0.25),
-                     labels=c("1/4","1/2","1/1.25","1","1.25","2","4"),
+                     labels=c("1/4","1/2","0.8","1","1.25","2","4"),
                      trans ="log" )
 ```
 
@@ -661,7 +674,7 @@ coveffectsplot::forest_plot(fpdata[paramname=="AUC" &
                             show_table_facet_strip = "none",
                             logxscale              = TRUE,
                             major_x_ticks          = c(0.5, 0.8,1, 1/0.8, 1/0.5),
-                            major_x_labels         = c("1/2", "0.8","1", "1/0.8", "2"),
+                            major_x_labels         = c("1/2", "0.8","1", "1.25", "2"),
                             return_list            = FALSE)
 dev.off()
 ```
@@ -701,7 +714,7 @@ coveffectsplot::forest_plot(fpdata[paramname=="AUC"],
                             show_table_facet_strip = "none",
                             logxscale = TRUE,
                             major_x_ticks =    c(0.25,0.5,0.8,1,1/0.8,1/0.5,1/0.25),
-                            major_x_labels = c("1/4","1/2","0.8","1","1/0.8","2","4"),
+                            major_x_labels = c("1/4","1/2","0.8","1","1.25","2","4"),
                             return_list = FALSE)
 dev.off()
 ```
@@ -711,7 +724,7 @@ dev.off()
 You can get the underlying ggplots as a list for further editing by setting `return_list = TRUE` and saving it into an object. The list will contain two objects the first being the main plot and the second the table. We illustrate how you can modify the look of the plots using regular ggplot code that modify the facet text color to `gray` and italic. Finally we recombine the plots using `egg::ggarrange`.
 
 ```{r,message=FALSE,fig.width=7}
-png("./coveffectsplot0.png",width =9 ,height = 6,units = "in",res=72)
+png("./coveffectsplot0.png",width = 9 ,height = 6,units = "in",res=72)
 plotlists <- coveffectsplot::forest_plot(fpdata[paramname=="AUC"],
                             ref_area = c(0.8, 1/0.8),
                             xlabel = "Fold Change Relative to Reference",
@@ -733,6 +746,7 @@ plotlists <- coveffectsplot::forest_plot(fpdata[paramname=="AUC"],
                             show_table_facet_strip = "none",
                             logxscale = TRUE,
                             major_x_ticks = c(0.25,0.5,0.8,1,1/0.8,1/0.5,1/0.25),
+                            major_x_labels = c("1/4","1/2","0.8","1","1.25","2","4"),
                             return_list = TRUE)
 plotlists
 dev.off()
@@ -815,6 +829,7 @@ forest_plot(fpdata,
                             show_table_facet_strip = "none",
                             logxscale = TRUE,
                             major_x_ticks = c(0.5,0.8,1,1/0.8,1/0.5),
+                            major_x_labels = c("1/2","0.8","1","1.25","2"),
                             x_label_text_size = 10,
                             return_list = FALSE)
 dev.off()
@@ -851,7 +866,8 @@ forest_plot(fpdata[paramname!="AUC"],
                             plot_table_ratio = 4,
                             show_table_facet_strip = "none",
                             logxscale = TRUE,
-                            major_x_ticks = c(0.5,0.8,1/0.8,1/0.5),
+                            major_x_ticks = c(0.5,0.8,1,1/0.8,1/0.5),
+                            major_x_labels = c("1/2","0.8","1","1.25","2"),
                             legend_space_x_mult = 0.01,
                             legend_position = "right",
                             return_list = FALSE)
@@ -886,7 +902,8 @@ forest_plot(fpdata[paramname!="AUC" &
                             table_position = "none",
                             base_size = 12,
                             logxscale = TRUE,
-                            major_x_ticks = c(0.5,0.8,1/0.8,1/0.5),
+                            major_x_ticks = c(0.5,0.8,1,1/0.8,1/0.5),
+                            major_x_labels = c("1/2","0.8","1","1.25","2"),
                             legend_space_x_mult = 0.01,
                             legend_position = "right",
                             return_list = TRUE)[[1]]+
