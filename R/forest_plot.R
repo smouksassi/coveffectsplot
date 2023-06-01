@@ -89,6 +89,7 @@ label_wrap <- function(width) {
 #' @param strip_outline Draw rectangle around the Strip. Logical TRUE FALSE.
 #' @param facet_spacing Control the space between facets in points.
 #' @param major_x_ticks X axis major ticks. Numeric vector.
+#' @param major_x_labels X axis labels. Character vector should be same length as major_x_ticks.
 #' @param minor_x_ticks X axis minor ticks. Numeric vector.
 #' @param x_range Range of X values. Two-element numeric vector.
 #' @param logxscale  X axis log scale. Logical TRUE FALSE.
@@ -345,6 +346,7 @@ forest_plot <- function(
   strip_outline = TRUE,
   facet_spacing = 5.5,
   major_x_ticks = NULL,
+  major_x_labels = NULL,
   minor_x_ticks = NULL,
   x_range = NULL,
   logxscale = FALSE,
@@ -370,6 +372,12 @@ forest_plot <- function(
   return_list = FALSE)
 {
   ymax = ymin = x = fill = label_wrap_gen = NULL
+  
+  if (missing(major_x_labels) || is.null(major_x_labels)) {
+    major_x_labels <- waiver()
+  }
+  print(major_x_labels)
+  
   plot_margin[ which(is.na(plot_margin) ) ] <- 0
   table_margin[ which(is.na(table_margin) ) ] <- 0
   legend_margin[ which(is.na(legend_margin) ) ] <- 0
@@ -761,9 +769,11 @@ forest_plot <- function(
       ggplot2::scale_y_discrete(labels = label_wrap(y_label_text_width))
   }
   if (length(major_x_ticks) || length(minor_x_ticks)) {
+
     main_plot <- main_plot +
       ggplot2::scale_x_continuous(trans = ifelse(logxscale,"log","identity"),
         breaks = major_x_ticks,
+        labels = major_x_labels,
         minor_breaks = minor_x_ticks
       )
   }

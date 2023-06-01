@@ -170,16 +170,33 @@ outputsim$SEX <- factor(outputsim$SEX, labels="Female")
 set.seed(678549)
 plotdata <- outputsim[ID %in% sample(unique(ID), 500)]
 
+labeller
+
+
+# New facet label names for dose variable
+albumin.labs <- c("albumin: 45 ng/mL")
+names(albumin.labs) <- c("45")
+wt.labs <- c("weight: 85 kg")
+names(wt.labs) <- c("85")
+
+
 p1 <- ggplot(plotdata, aes(time, CP, group = ID)) +
   geom_line(alpha = 0.2, size = 0.1) +
-  facet_grid(~ WT + SEX + ALB, labeller = label_both) +
+  facet_grid(~ WT + ALB + SEX,
+             labeller =  labeller(ALB = albumin.labs,
+                                  WT = wt.labs)) +
   labs(y = "Plasma Concentrations", x = "Time (h)")
 
 p2 <- ggplot(plotdata, aes(time, CP, group = ID)) +
   geom_line(alpha = 0.2, size = 0.1) +
-  facet_grid(~ WT + SEX + ALB, labeller = label_both) +
+  facet_grid(~ WT + ALB + SEX,
+             labeller =  labeller(ALB = albumin.labs,
+                                  WT = wt.labs)) +
   scale_y_log10() +
-  labs(y = expression(Log[10]~Plasma~Concentrations), x = "Time (h)")
+  labs(y = "Plasma~Concentrations (logarithmic scale)", x = "Time (h)")
+  #labs(y = expression(Log[10]~Plasma~Concentrations), x = "Time (h)")+
+
+
 
 egg::ggarrange(p1, p2, ncol = 2)
 ```
@@ -565,7 +582,9 @@ ggplot(out.df.univariatecov.nca[out.df.univariatecov.nca$covname!="REF",], aes(
   geom_vline(aes(xintercept=1), size=1) +
   theme_bw() +
   labs(x="Effects Relative to Parameter Reference Value", y="")+
-  scale_x_continuous(breaks=c(0.25,0.5,0.8,1/0.8,1/0.5,1/0.25),trans ="log" )
+  scale_x_continuous(breaks=c(0.25,0.5,0.8,1,1/0.8,1/0.5,1/0.25),
+                     labels=c("1/4","1/2","1/1.25","1","1.25","2","4"),
+                     trans ="log" )
 ```
 
 ## Adding the BSV Ranges and Putting it all Together Using `forest_plot`
@@ -641,7 +660,8 @@ coveffectsplot::forest_plot(fpdata[paramname=="AUC" &
                             plot_table_ratio       = 3,
                             show_table_facet_strip = "none",
                             logxscale              = TRUE,
-                            major_x_ticks          = c(0.5, 0.8, 1/0.8, 1/0.5),
+                            major_x_ticks          = c(0.5, 0.8,1, 1/0.8, 1/0.5),
+                            major_x_labels         = c("1/2", "0.8","1", "1/0.8", "2"),
                             return_list            = FALSE)
 dev.off()
 ```
@@ -680,7 +700,8 @@ coveffectsplot::forest_plot(fpdata[paramname=="AUC"],
                             plot_table_ratio = 3,
                             show_table_facet_strip = "none",
                             logxscale = TRUE,
-                            major_x_ticks =    c(0.25,0.5,0.8,1/0.8,1/0.5,1/0.25),
+                            major_x_ticks =    c(0.25,0.5,0.8,1,1/0.8,1/0.5,1/0.25),
+                            major_x_labels = c("1/4","1/2","0.8","1","1/0.8","2","4"),
                             return_list = FALSE)
 dev.off()
 ```
@@ -711,7 +732,7 @@ plotlists <- coveffectsplot::forest_plot(fpdata[paramname=="AUC"],
                             plot_table_ratio = 4,
                             show_table_facet_strip = "none",
                             logxscale = TRUE,
-                            major_x_ticks = c(0.25,0.5,0.8,1/0.8,1/0.5,1/0.25),
+                            major_x_ticks = c(0.25,0.5,0.8,1,1/0.8,1/0.5,1/0.25),
                             return_list = TRUE)
 plotlists
 dev.off()
@@ -793,7 +814,7 @@ forest_plot(fpdata,
                             plot_table_ratio = 4,
                             show_table_facet_strip = "none",
                             logxscale = TRUE,
-                            major_x_ticks = c(0.5,0.8,1/0.8,1/0.5),
+                            major_x_ticks = c(0.5,0.8,1,1/0.8,1/0.5),
                             x_label_text_size = 10,
                             return_list = FALSE)
 dev.off()

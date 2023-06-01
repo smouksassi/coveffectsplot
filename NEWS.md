@@ -1,3 +1,7 @@
+# coveffectsplot 1.0.3.9999
+* added option for custom x labels for the function
+
+
 # coveffectsplot 1.0.3
 * fixed a bug when ref_value when not equal 1 affecting y axis limits
 * fixed a bug when the guides for color and shape were not merged

@@ -62,6 +62,7 @@ forest_plot(
   strip_outline = TRUE,
   facet_spacing = 5.5,
   major_x_ticks = NULL,
+  major_x_labels = NULL,
   minor_x_ticks = NULL,
   x_range = NULL,
   logxscale = FALSE,
@@ -209,6 +210,8 @@ any other valid `facet_grid` labeller can be specified.}
 \item{facet_spacing}{Control the space between facets in points.}
 
 \item{major_x_ticks}{X axis major ticks. Numeric vector.}
+
+\item{major_x_labels}{X axis labels. Character vector should be same length as major_x_ticks.}
 
 \item{minor_x_ticks}{X axis minor ticks. Numeric vector.}
 
