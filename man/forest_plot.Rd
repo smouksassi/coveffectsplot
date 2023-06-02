@@ -344,8 +344,8 @@ plotdata <- plotdata \%>\%
 plotdata$covname <- reorder(plotdata$covname,plotdata$upper,FUN =max)
 plotdata$label <- reorder(plotdata$label,plotdata$scen)
 
-plotdata$compound <- c(rep("1-OH",18),rep("BZD",18))
-plotdata$paramname <- c(rep("AUC",9),rep("CMAX",9),rep("AUC",9),rep("CMAX",9))
+plotdata$compound <- c(rep("1-OH",30),rep("BZD",30))
+plotdata$paramname <- c(rep("AUC",15),rep("CMAX",15),rep("AUC",15),rep("CMAX",15))
 
 forest_plot(plotdata,
             ref_area = c(0.8, 1.2),
@@ -365,7 +365,36 @@ forest_plot(plotdata,
                                 max = 255, alpha = 0.1*255 ) ,
             interval_col = c("steelblue"),
             strip_col = "lightblue",
-            plot_table_ratio = 1)
+            plot_table_ratio = 1.5)
+            
+# Example 3b
+        
+plotdata$paramname <- c(rep("1-OH",30),rep("BZD",30))
+plotdata$paramname2 <- c(rep("AUC",15),rep("CMAX",15),rep("AUC",15),rep("CMAX",15))
+forest_plot(plotdata,
+           ref_area = c(0.8, 1.2),
+           x_facet_text_size = 13,
+           y_facet_text_size = 13,
+           ref_legend_text = "Reference (vertical line)\n+/- 20\% limits (colored area)",
+           area_legend_text = "Reference (vertical line)\n+/- 20\% limits (colored area)",
+           xlabel = "Fold Change Relative to Parameter",
+           facet_formula = covname~paramname2,
+           facet_switch = "both",
+           facet_scales = "free",
+           facet_space = "free",
+           paramname_shape = TRUE,
+           paramname_color =  TRUE,
+           combine_interval_shape_legend = TRUE,
+           legend_shape_reverse = TRUE,
+           table_position = "right", plot_title = "",
+           ref_area_col = rgb( col2rgb("gray50")[1], col2rgb("gray50")[2],col2rgb("gray50")[3],
+                               max = 255, alpha = 0.1*255 ) ,
+           interval_col = c("steelblue"),
+           strip_col = "lightblue",
+           major_x_ticks          = c(0.5, 0.8,1, 1/0.8, 1/0.5),
+           major_x_labels         = c("1/2", "0.8","1", "1.25", "2"),
+           table_text_size = 5,
+           plot_table_ratio = 1.5)
 
 # Example 3
 
