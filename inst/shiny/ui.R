@@ -129,8 +129,17 @@ fluidPage(
             condition = "input.customxticks" ,
             textInput("xaxisbreaks",label ="X axis major Breaks",
                       value = as.character(paste(
-                        0,0.25,0.5,0.8,1,1.25,1.5,1.75,2
+                        0,0.25,0.5,0.8,1,1.25,1.5,2
                         ,sep=",") )
+            ),
+            checkboxInput('customxlabels', 'Custom X axis Labels ?', value = FALSE),
+            conditionalPanel(
+              condition = "input.customxticks & input.customxlabels" ,
+              textInput("xaxislabels",label ="X axis major Labels",
+                        value = as.character(paste(
+                          "0","1/4","1/2","0.8","1","1.25","1.5","2"
+                          ,sep=",") )
+              )
             ),
             textInput("xaxisminorbreaks",label ="X axis minor Breaks",
                       value = as.character(paste(
@@ -252,6 +261,8 @@ fluidPage(
                       min = 0, max = 10, step = 0.1, value = 1),
           sliderInput("fattenpointrange", "Point range fatten",
                       min = 0, max = 10, step = 0.1, value = 4),
+          sliderInput("linewidthpointrange", "Point range linewidth",
+                      min = 0, max = 10, step = 0.1, value = 1),
           conditionalPanel(condition = "!input.colourbyparamname",
           colourpicker::colourInput("colourbsvrange",
                                      "BSV Range Colour:",

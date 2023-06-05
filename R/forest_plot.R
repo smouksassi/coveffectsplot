@@ -67,6 +67,7 @@ label_wrap <- function(width) {
 #' @param interval_col Point range color. One  or Multiple values.
 #' @param interval_size Point range size. Default to 1
 #' @param interval_fatten Point range fatten. Default to 4
+#' @param interval_linewidth Point range line width. Default to 1
 #' @param bsv_col  BSV pointinterval color. One value.
 #' @param bsv_text_id Text string(s) to identify BSV. Default to c("BSV","bsv","IIV","Bsv")
 #' @param interval_bsv_text BSV legend text.
@@ -358,6 +359,7 @@ forest_plot <- function(
   interval_col = "blue",
   interval_size = 1,
   interval_fatten = 4,
+  interval_linewidth = 1,
   bsv_col = "red",
   bsv_text_id = c("BSV","bsv","IIV","Bsv"),
   interval_bsv_text = "",
@@ -598,7 +600,8 @@ forest_plot <- function(
       position = ggplot2::position_dodge(width = vertical_dodge_height),
       ggplot2::aes_string(color = "pointintervalcolor"),
       size = interval_size, fatten = interval_fatten,
-      key_glyph = "pointrangeh"
+      linewidth  = interval_linewidth,
+      key_glyph = "pointrange"
     )
   
   if(paramname_color) {

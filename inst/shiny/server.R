@@ -175,12 +175,18 @@ function(input, output, session) {
     shiny::req(length(input$exposurevariables)>=1)
     major_x_ticks <- NULL
     minor_x_ticks <- NULL
+    major_x_labels <- NULL
     if (input$customxticks) {
       tryCatch({
          major_x_ticks <- as.numeric(unique(unlist(strsplit(input$xaxisbreaks, ",")[[1]])))
       }, warning = function(w) {}, error = function(e) {})
       tryCatch({
         minor_x_ticks <- as.numeric(unique(unlist(strsplit(input$xaxisminorbreaks, ",")[[1]])))
+      }, warning = function(w) {}, error = function(e) {})
+    }
+    if (input$customxticks && input$customxlabels) {
+      tryCatch({
+        major_x_labels <- as.character(unique(unlist(strsplit(input$xaxislabels, ",")[[1]])))
       }, warning = function(w) {}, error = function(e) {})
     }
     x_range <- if (input$userxzoom) c(input$lowerxin, input$upperxin) else NULL
@@ -241,6 +247,7 @@ function(input, output, session) {
         interval_col = paramcols,
         interval_size = ..(input$sizepointrange),
         interval_fatten = ..(input$fattenpointrange),
+        interval_linewidth = ..(input$linewidthpointrange),
         bsv_col      = ..(input$colourbsvrange),
         strip_col = ..(input$stripbackgroundfill),
         paramname_shape = ..(input$shapebyparamname),
@@ -256,6 +263,7 @@ function(input, output, session) {
         strip_outline = ..(input$removestrip),
         facet_spacing = ..(input$panelspacing),
         major_x_ticks = ..(major_x_ticks),
+        major_x_labels = ..(major_x_labels),
         minor_x_ticks = ..(minor_x_ticks),
         x_range = ..(x_range),
         logxscale = ..(input$logxscale),
