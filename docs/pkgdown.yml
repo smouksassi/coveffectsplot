@@ -3,12 +3,13 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   app: app.html
+  Exposure_Response_Example: Exposure_Response_Example.html
   introduction_to_coveffectsplot: introduction_to_coveffectsplot.html
   Pediatric_Cov_Sim: Pediatric_Cov_Sim.html
   PKPD_Example: PKPD_Example.html
   PK_Example: PK_Example.html
   PK_Example_full: PK_Example_full.html
-last_built: 2023-06-05T11:56Z
+last_built: 2023-06-05T13:37Z
 urls:
   reference: https://smouksassi.github.io/coveffectsplot/reference
   article: https://smouksassi.github.io/coveffectsplot/articles
