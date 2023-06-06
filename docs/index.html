@@ -94,7 +94,7 @@
       </header><div class="row">
   <div class="contents col-md-9">
 <div class="section level1">
-<div class="page-header"><h1 id="coveffectsplot-">coveffectsplot <img src="articles/img/logo_coveffectsplot.png" align="right" height="200"><a class="anchor" aria-label="anchor" href="#coveffectsplot-"></a>
+<div class="page-header"><h1 id="coveffectsplot-">coveffectsplot <img src="articles/img/logo_coveffectsplot.png" align="right" style="float:right; height: 200px;"><a class="anchor" aria-label="anchor" href="#coveffectsplot-"></a>
 </h1></div>
 <!-- badges: start -->
 
@@ -107,13 +107,13 @@
 <div class="section level3">
 <h3 id="installation-and-running-information">Installation and Running information<a class="anchor" aria-label="anchor" href="#installation-and-running-information"></a>
 </h3>
-<pre><code><span><span class="co"># Install from CRAN:</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"coveffectsplot"</span><span class="op">)</span></span>
-<span><span class="co"># Or the development version from GitHub:</span></span>
-<span><span class="co">#install.packages("devtools")</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'smouksassi/coveffectsplot'</span><span class="op">)</span></span></code></pre>
+<pre><code><span class="co"># Install from CRAN:</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"coveffectsplot"</span><span class="op">)</span>
+<span class="co"># Or the development version from GitHub:</span>
+<span class="co">#install.packages("devtools")</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'smouksassi/coveffectsplot'</span><span class="op">)</span></code></pre>
 <p>Launch the app using this command then press the use sample data blue text to load the app with a demo data:</p>
-<pre><code><span><span class="fu">coveffectsplot</span><span class="fu">::</span><span class="fu"><a href="reference/run_interactiveforestplot.html">run_interactiveforestplot</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
+<pre><code><span class="fu">coveffectsplot</span><span class="fu">::</span><span class="fu"><a href="reference/run_interactiveforestplot.html">run_interactiveforestplot</a></span><span class="op">(</span><span class="op">)</span></code></pre>
 <p>This will generate this plot: <img src="articles/img/snapshotforest.png" alt="example plot with the included dataset"></p>
 </div>
 <div class="section level3">
@@ -140,43 +140,43 @@ The package also include vignettes with several step-by-step detailed examples:<
 </h3>
 <p>The prezista drug label data was extracted from the FDA label and calling the <code>forest_plot</code> function gives:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://smouksassi.github.io/coveffectsplot/">coveffectsplot</a></span><span class="op">)</span></span>
-<span><span class="va">plotdata</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">prezista</span>,</span>
-<span>          LABEL <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">mid</span>,<span class="fl">2</span><span class="op">)</span>, nsmall <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
-<span>                         <span class="st">" ["</span>, <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">lower</span>,<span class="fl">2</span><span class="op">)</span>, nsmall <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, <span class="st">"-"</span>,</span>
-<span>                         <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">upper</span>,<span class="fl">2</span><span class="op">)</span>, nsmall <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, <span class="st">"]"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">plotdata</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">plotdata</span><span class="op">)</span></span>
-<span><span class="va">plotdata</span><span class="op">&lt;-</span> <span class="va">plotdata</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"paramname"</span>,<span class="st">"covname"</span>,<span class="st">"label"</span>,<span class="st">"mid"</span>,<span class="st">"lower"</span>,<span class="st">"upper"</span>,<span class="st">"LABEL"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="va">plotdata</span><span class="op">$</span><span class="va">covname</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">plotdata</span><span class="op">$</span><span class="va">covname</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">plotdata</span><span class="op">$</span><span class="va">covname</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span> <span class="op">(</span><span class="st">"Other\nAntiretrovirals"</span>,<span class="st">"Protease\nInihibitors"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#png("prezista.png",width =12 ,height = 8,units = "in",res=72,type="cairo-png")</span></span>
-<span><span class="fu">coveffectsplot</span><span class="fu">::</span><span class="fu"><a href="reference/forest_plot.html">forest_plot</a></span><span class="op">(</span><span class="va">plotdata</span>,</span>
-<span>            ref_area <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.5</span><span class="op">)</span>,</span>
-<span>            base_size <span class="op">=</span> <span class="fl">16</span> ,</span>
-<span>            x_facet_text_size <span class="op">=</span> <span class="fl">13</span>,</span>
-<span>            y_facet_text_size <span class="op">=</span> <span class="fl">16</span>,</span>
-<span>            y_facet_text_angle <span class="op">=</span> <span class="fl">270</span>,</span>
-<span>            interval_legend_text <span class="op">=</span> <span class="st">"Median (points)\n90% CI (horizontal lines)"</span>,</span>
-<span>            ref_legend_text <span class="op">=</span> <span class="st">"Reference (vertical line)\n+/- 50% (gray area)"</span>,</span>
-<span>            area_legend_text <span class="op">=</span> <span class="st">"Reference (vertical line)\n+/- 50% (gray area)"</span>,</span>
-<span>            xlabel <span class="op">=</span> <span class="st">"Median 90%CI Fold Change Relative to Parameter"</span>,</span>
-<span>            facet_formula <span class="op">=</span> <span class="st">"covname~."</span>,</span>
-<span>            facet_switch <span class="op">=</span> <span class="st">"both"</span>,</span>
-<span>            facet_scales <span class="op">=</span> <span class="st">"free"</span>,</span>
-<span>            facet_space <span class="op">=</span> <span class="st">"free"</span>,</span>
-<span>            strip_placement <span class="op">=</span> <span class="st">"outside"</span>, </span>
-<span>            paramname_shape <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>            table_position <span class="op">=</span> <span class="st">"right"</span>,</span>
-<span>            table_text_size <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>            plot_table_ratio <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>            vertical_dodge_height <span class="op">=</span> <span class="fl">0.8</span>,</span>
-<span>            legend_space_x_mult <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>            legend_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"shape"</span>,<span class="st">"pointinterval"</span>,<span class="st">"ref"</span>, <span class="st">"area"</span><span class="op">)</span>,</span>
-<span>            legend_shape_reverse <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>            show_table_facet_strip <span class="op">=</span> <span class="st">"none"</span>,</span>
-<span>            return_list <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#dev.off()</span></span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://smouksassi.github.io/coveffectsplot/">coveffectsplot</a></span><span class="op">)</span>
+<span class="va">plotdata</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">prezista</span>,
+          LABEL <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">mid</span>,<span class="fl">2</span><span class="op">)</span>, nsmall <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,
+                         <span class="st">" ["</span>, <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">lower</span>,<span class="fl">2</span><span class="op">)</span>, nsmall <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, <span class="st">"-"</span>,
+                         <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">upper</span>,<span class="fl">2</span><span class="op">)</span>, nsmall <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, <span class="st">"]"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">plotdata</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">plotdata</span><span class="op">)</span>
+<span class="va">plotdata</span><span class="op">&lt;-</span> <span class="va">plotdata</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"paramname"</span>,<span class="st">"covname"</span>,<span class="st">"label"</span>,<span class="st">"mid"</span>,<span class="st">"lower"</span>,<span class="st">"upper"</span>,<span class="st">"LABEL"</span><span class="op">)</span><span class="op">]</span>
+<span class="va">plotdata</span><span class="op">$</span><span class="va">covname</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">plotdata</span><span class="op">$</span><span class="va">covname</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">plotdata</span><span class="op">$</span><span class="va">covname</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span> <span class="op">(</span><span class="st">"Other\nAntiretrovirals"</span>,<span class="st">"Protease\nInihibitors"</span><span class="op">)</span>
+
+<span class="co">#png("prezista.png",width =12 ,height = 8,units = "in",res=72,type="cairo-png")</span>
+<span class="fu">coveffectsplot</span><span class="fu">::</span><span class="fu"><a href="reference/forest_plot.html">forest_plot</a></span><span class="op">(</span><span class="va">plotdata</span>,
+            ref_area <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.5</span><span class="op">)</span>,
+            base_size <span class="op">=</span> <span class="fl">16</span> ,
+            x_facet_text_size <span class="op">=</span> <span class="fl">13</span>,
+            y_facet_text_size <span class="op">=</span> <span class="fl">16</span>,
+            y_facet_text_angle <span class="op">=</span> <span class="fl">270</span>,
+            interval_legend_text <span class="op">=</span> <span class="st">"Median (points)\n90% CI (horizontal lines)"</span>,
+            ref_legend_text <span class="op">=</span> <span class="st">"Reference (vertical line)\n+/- 50% (gray area)"</span>,
+            area_legend_text <span class="op">=</span> <span class="st">"Reference (vertical line)\n+/- 50% (gray area)"</span>,
+            xlabel <span class="op">=</span> <span class="st">"Median 90%CI Fold Change Relative to Parameter"</span>,
+            facet_formula <span class="op">=</span> <span class="st">"covname~."</span>,
+            facet_switch <span class="op">=</span> <span class="st">"both"</span>,
+            facet_scales <span class="op">=</span> <span class="st">"free"</span>,
+            facet_space <span class="op">=</span> <span class="st">"free"</span>,
+            strip_placement <span class="op">=</span> <span class="st">"outside"</span>, 
+            paramname_shape <span class="op">=</span> <span class="cn">TRUE</span>,
+            table_position <span class="op">=</span> <span class="st">"right"</span>,
+            table_text_size <span class="op">=</span> <span class="fl">4</span>,
+            plot_table_ratio <span class="op">=</span> <span class="fl">4</span>,
+            vertical_dodge_height <span class="op">=</span> <span class="fl">0.8</span>,
+            legend_space_x_mult <span class="op">=</span> <span class="fl">0.1</span>,
+            legend_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"shape"</span>,<span class="st">"pointinterval"</span>,<span class="st">"ref"</span>, <span class="st">"area"</span><span class="op">)</span>,
+            legend_shape_reverse <span class="op">=</span> <span class="cn">TRUE</span>,
+            show_table_facet_strip <span class="op">=</span> <span class="st">"none"</span>,
+            return_list <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="co">#dev.off()</span></code></pre></div>
 <div class="figure">
 <img src="articles/img/prezista.png" alt=""><p class="caption">example plot with the prezista dataset</p>
 </div>
@@ -240,7 +240,7 @@ The package also include vignettes with several step-by-step detailed examples:<
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

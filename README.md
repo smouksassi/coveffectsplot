@@ -1,4 +1,4 @@
-# coveffectsplot <img src='vignettes/img/logo_coveffectsplot.png' align="right" height="200" />
+# coveffectsplot <img src='vignettes/img/logo_coveffectsplot.png' align="right" style = "float:right; height: 200px;" />
 
 <!-- badges: start -->
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version-last-release/coveffectsplot)](https://cran.r-project.org/package=coveffectsplot)
