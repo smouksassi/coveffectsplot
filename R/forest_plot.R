@@ -804,7 +804,7 @@ forest_plot <- function(
     main_plot <- main_plot +
       ggplot2::scale_x_continuous(trans = ifelse(logxscale,"log","identity"),
         breaks = major_x_ticks,
-        labels = major_x_labels,
+        labels = rep_len(major_x_labels , length(major_x_ticks)),
         minor_breaks = minor_x_ticks
       )
   }

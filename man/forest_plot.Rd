@@ -45,6 +45,7 @@ forest_plot(
   interval_col = "blue",
   interval_size = 1,
   interval_fatten = 4,
+  interval_linewidth = 1,
   bsv_col = "red",
   bsv_text_id = c("BSV", "bsv", "IIV", "Bsv"),
   interval_bsv_text = "",
@@ -171,6 +172,8 @@ share the same text?}
 \item{interval_size}{Point range size. Default to 1}
 
 \item{interval_fatten}{Point range fatten. Default to 4}
+
+\item{interval_linewidth}{Point range line width. Default to 1}
 
 \item{bsv_col}{BSV pointinterval color. One value.}
 
