@@ -409,11 +409,15 @@ data.dose <- as.data.frame(ev1)
 
 iter_sims <- NULL
 for(i in 1:nsim) {
+  # you might want to resample your covariate database here
+  # e.g. subsample from a large pool of patient
+  # include uncertainty on your covariate distribution
+  
   data.all  <- data.table(idata, data.dose, sim_parameters[i])
   out <- modcovsim %>%
     data_set(data.all) %>%
     #zero_re() %>%
-    #omat(RxODE::cvPost(2000, matrix(c(0.09,0.01,0.01,0.09), 2, 2),
+    #omat(rxode2::cvPost(2000, matrix(c(0.09,0.01,0.01,0.09), 2, 2),
     #type = "invWishart")) %>%  # unc on bsv uncomment and increase nsim for CPT:PSP paper
     mrgsim(start=0, end=24, delta=0.25) %>%
     as.data.frame %>%

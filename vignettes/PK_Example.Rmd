@@ -353,7 +353,7 @@ pkprofiletypical
 ```
 
 ## Adding Uncertainty from a Varcov Matrix
-First, we will invent a varcov matrix by assuming 15% relative standard errors and correlations of 0.2 across the board. We then simulate a 100 set of parameters using a multivariate normal (kept at 100 for the vignette, use more replicates for a real project). Also, unless the model was written in a way to allow unconstrained parameter values, care should be taken to make sure the simulated parameters are valid and make sense. When available, use the set of parameters from bootstrap replicates.   
+First, we will invent a varcov matrix by assuming 15% relative standard errors and correlations of 0.2 across the board. We then simulate a 100 set of parameters using a multivariate normal (kept at 100 for the vignette, use more replicates for a real project). Also, unless the model was written in a way to allow unconstrained parameter values, care should be taken to make sure the simulated parameters are valid and make sense. In real modeling applications, the software used to fit the model will provide a variance covariance matrix, if possible. Otherwise, the user can rely on set of parameters generated from bootstrap replicates or SIR run.   
 
 **Variance Covariance Matrix of fixed effects:**
 ```{r, fig.width=7}
