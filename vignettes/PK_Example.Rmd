@@ -170,9 +170,6 @@ outputsim$SEX <- factor(outputsim$SEX, labels="Female")
 set.seed(678549)
 plotdata <- outputsim[ID %in% sample(unique(ID), 500)]
 
-labeller
-
-
 # New facet label names for dose variable
 albumin.labs <- c("albumin: 45 ng/mL")
 names(albumin.labs) <- c("45")
@@ -353,7 +350,7 @@ pkprofiletypical
 ```
 
 ## Adding Uncertainty from a Varcov Matrix
-First, we will invent a varcov matrix by assuming 15% relative standard errors and correlations of 0.2 across the board. We then simulate a 100 set of parameters using a multivariate normal (kept at 100 for the vignette, use more replicates for a real project). Also, unless the model was written in a way to allow unconstrained parameter values, care should be taken to make sure the simulated parameters are valid and make sense. In real modeling applications, the software used to fit the model will provide a variance covariance matrix, if possible. Otherwise, the user can rely on set of parameters generated from bootstrap replicates or SIR run.   
+First, we will invent a varcov matrix by assuming 15% relative standard errors and correlations of 0.2 across the board. We then simulate a 100 set of parameters using a multivariate normal (kept at 100 for the vignette, use more replicates for a real project). Also, unless the model was written in a way to allow unconstrained parameter values, care should be taken to make sure the simulated parameters are valid and make sense. In a real modeling applications, the software used to fit the model will provide a variance covariance matrix, if possible. Otherwise, the user can rely on set of parameters generated from bootstrap replicates or SIR run.   
 
 **Variance Covariance Matrix of fixed effects:**
 ```{r, fig.width=7}
@@ -361,6 +358,10 @@ theta <- unclass(as.list(param(modcovsim)))
 theta[c("WT", "SEX", "ALB")] <- NULL
 theta <- unlist(theta)
 as.data.frame(t(theta))
+
+#note that from RsNLME or NONMEM or Monolix the software will give you the varcov just read it it in.
+# example NONMEM  read in your run .cov
+# varcov <- read.csv(paste("runxyz",".cov",sep=""), header=TRUE, skip=1, sep="")
 
 varcov <- cor2cov(
   matrix(0.2, nrow=length(theta), ncol=length(theta)),
@@ -376,6 +377,7 @@ Second, we generate the sim_parameters dataset using `mvrnorm` and then incorpor
 ```{r, fig.width=7}
 set.seed(678549)
 # mvtnorm::rmvnorm is another option that can be explored
+# if you have run a bootstrap just use the parameters data generated using all replicates
 sim_parameters <- MASS::mvrnorm(nsim, theta, varcov, empirical=T) %>% as.data.table
 head(sim_parameters)
 ```
