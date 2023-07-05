@@ -2,6 +2,7 @@
 
 export(draw_key_hpath)
 export(draw_key_pointrangeh)
+export(expand_modelframe)
 export(forest_plot)
 export(get_sample_data)
 export(run_interactiveforestplot)

@@ -404,10 +404,15 @@ forest_plot <- function(
 {
   ymax = ymin = x = fill = label_wrap_gen = NULL
   
-  if (missing(major_x_labels) || is.null(major_x_labels)) {
-    major_x_labels <- waiver()
+  if (!(missing(major_x_labels) || is.null(major_x_labels) ) &&
+      !(missing(major_x_ticks)  || is.null(major_x_ticks) )
+      ) {
+    major_x_labels_vec <- rep_len(major_x_labels , length(major_x_ticks))
   }
-
+  if (missing(major_x_labels) || is.null(major_x_labels)) {
+    major_x_labels_vec <- waiver()
+  }
+  
   plot_margin[ which(is.na(plot_margin) ) ] <- 0
   table_margin[ which(is.na(table_margin) ) ] <- 0
   legend_margin[ which(is.na(legend_margin) ) ] <- 0
@@ -804,7 +809,7 @@ forest_plot <- function(
     main_plot <- main_plot +
       ggplot2::scale_x_continuous(trans = ifelse(logxscale,"log","identity"),
         breaks = major_x_ticks,
-        labels = rep_len(major_x_labels , length(major_x_ticks)),
+        labels = major_x_labels_vec,
         minor_breaks = minor_x_ticks
       )
   }
@@ -1129,4 +1134,22 @@ draw_key_pointrangeh <- function(data, params, size) {
     draw_key_hpath(data, params, size),
     ggplot2::draw_key_point(transform(data, size = (data$size %||% 1.5) * 4), params)
   )
+}
+
+#' Expand covariate values choices and reference values varying one at a time
+#'
+#' @return A data.frame with combination of covariates
+#' @name expand_modelframe
+#' @rdname expand_modelframe
+#' @export
+expand_modelframe <- function(..., rv, covcol="covname") {
+  args <- list(...)
+  df <- lapply(args, function(x) x[[1]])
+  df[names(rv)] <- rv
+  res <- lapply(seq_along(rv), function(i) {
+    df[[covcol]] <- names(rv)[i]
+    df[[names(rv)[i]]] <- args[[names(rv)[i]]]
+    as.data.frame(df)
+  })
+  do.call(rbind, res)
 }
