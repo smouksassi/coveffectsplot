@@ -1,0 +1,11 @@
+bibentry(
+  bibtype  = "Article",
+  title    = "Evaluation of covariate effects using forest plots and introduction to the coveffectsplot R package",
+  author   = "Marier JF, Teuscher N, Mouksassi MS",
+  journal  = "CPT Pharmacometrics Syst Pharmacol",
+  year     = "2022",
+  volume   = "11",
+  number   = "10",
+  pages    = "1283-1293",
+  doi      = "10.1002/psp4.12829"
+)

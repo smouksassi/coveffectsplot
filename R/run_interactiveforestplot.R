@@ -25,5 +25,9 @@ run_interactiveforestplot <- function(data = NULL) {
   shiny::runApp(appDir, display.mode = "normal")
 }
 
-# Make CRAN happy
-if (getRversion() >= "2.15.1") utils::globalVariables(c("coveffectsplot_initdata"))
+.onAttach <- function(libname, pkgname) {
+    packageStartupMessage("Thank you for using coveffectsplot!\nif you find it useful, please cite as:")
+    packageStartupMessage("JF Marier, N Teuscher and MS Mouksassi. Evaluation of covariate effects using forest plots and introduction to the coveffectsplot R package. CPT Pharmacometrics Syst Pharmacol. 2022;11:1283–1293. doi:10.1002/psp4.12829")
+}
+
+
