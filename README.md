@@ -5,6 +5,7 @@
 [![R-CMD-check](https://github.com/smouksassi/coveffectsplot/workflows/R-CMD-check/badge.svg)](https://github.com/smouksassi/coveffectsplot/actions)
 [![MonthlyDOWNLOADS](https://cranlogs.r-pkg.org/badges/coveffectsplot)](https://CRAN.R-project.org/package=coveffectsplot)
 [![DOWNLOADS](https://cranlogs.r-pkg.org/badges/grand-total/coveffectsplot)](https://CRAN.R-project.org/package=coveffectsplot)
+[![R-CMD-check](https://github.com/smouksassi/coveffectsplot/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/smouksassi/coveffectsplot/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 A package that provides the function `forest_plot`and an accompanying Shiny App that facilitates the production of forest plots to visualize covariate effects as commonly used in pharmacometrics population PK/PD reports.
