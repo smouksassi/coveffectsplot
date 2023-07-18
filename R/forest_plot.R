@@ -410,7 +410,7 @@ forest_plot <- function(
     major_x_labels_vec <- rep_len(major_x_labels , length(major_x_ticks))
   }
   if (missing(major_x_labels) || is.null(major_x_labels)) {
-    major_x_labels_vec <- waiver()
+    major_x_labels_vec <- ggplot2::waiver()
   }
   
   plot_margin[ which(is.na(plot_margin) ) ] <- 0
@@ -1136,20 +1136,4 @@ draw_key_pointrangeh <- function(data, params, size) {
   )
 }
 
-#' Expand covariate values choices and reference values varying one at a time
-#'
-#' @return A data.frame with combination of covariates
-#' @name expand_modelframe
-#' @rdname expand_modelframe
-#' @export
-expand_modelframe <- function(..., rv, covcol="covname") {
-  args <- list(...)
-  df <- lapply(args, function(x) x[[1]])
-  df[names(rv)] <- rv
-  res <- lapply(seq_along(rv), function(i) {
-    df[[covcol]] <- names(rv)[i]
-    df[[names(rv)[i]]] <- args[[names(rv)[i]]]
-    as.data.frame(df)
-  })
-  do.call(rbind, res)
-}
+# ' @importFrom colourpicker colourInput

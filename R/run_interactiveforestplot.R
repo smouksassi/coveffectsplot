@@ -19,6 +19,7 @@ run_interactiveforestplot <- function(data = NULL) {
   }
 
   if (!is.null(data)) {
+    coveffectsplot_initdata <- NULL # fix no visible binding for coveffectsplot_initdata
     .GlobalEnv$coveffectsplot_initdata <- data
     on.exit(rm(coveffectsplot_initdata, envir = .GlobalEnv))
   }
@@ -26,8 +27,7 @@ run_interactiveforestplot <- function(data = NULL) {
 }
 
 .onAttach <- function(libname, pkgname) {
-    packageStartupMessage("Thank you for using coveffectsplot!\nif you find it useful, please cite as:")
-    packageStartupMessage("JF Marier, N Teuscher and MS Mouksassi. Evaluation of covariate effects using forest plots and introduction to the coveffectsplot R package. CPT Pharmacometrics Syst Pharmacol. 2022;11:1283–1293. doi:10.1002/psp4.12829")
+  packageStartupMessage("Thank you for using coveffectsplot!\nif you find it useful, please cite as:")
+  packageStartupMessage("JF Marier, N Teuscher and MS Mouksassi. Evaluation of covariate effects using forest plots and introduction to the coveffectsplot R package. CPT Pharmacometrics Syst Pharmacol. 2022;11:1283-1293. doi:10.1002/psp4.12829")
 }
-
 
