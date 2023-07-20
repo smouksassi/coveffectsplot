@@ -1,5 +1,7 @@
-# coveffectsplot 1.0.3.9999
-* added option for custom x labels for the function
+# coveffectsplot 1.0.4
+* added `major_x_labels` argument for custom x labels for the function
+* added `interval_linewidth` argument to control interval linewidth
+* updated vignettes and examples
 
 
 # coveffectsplot 1.0.3
