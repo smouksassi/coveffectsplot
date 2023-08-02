@@ -253,10 +253,20 @@ for(i in 1:nsim) {
 
 
 ```{r, collapse=TRUE }
+
+wt.labs <- c("weight: 50 kg","weight: 60 kg","weight: 70 kg","weight: 80 kg","weight: 90 kg","(all)")
+names(wt.labs) <- c("50","60","70","80","90","(all)")
+
+SEV_names <- c(
+  '0'="Not Severe",
+  '1'="Severe"
+
+)
+
 stdprobplot<- ggplot(iter_sims, aes(DOSE,P1,col=factor(SEV) ) )+
   geom_point(aes(group=interaction(ID,rep)),alpha=0.5,size=3)+
   geom_hline(yintercept=TypicalProb)+
-  facet_grid(SEV~ WT,labeller = label_both)+
+  facet_grid(SEV~ WT,labeller = labeller(WT=wt.labs, SEV = SEV_names))+
   labs(y="Probability of Response", colour="Severity")
 stdprobplot
 ```
@@ -389,9 +399,10 @@ dev.off()
 ```
 ![Covariate Effects Plot.](./Figure_8_4.png)
 
-## Dose/Exposure Response Curves 
+## Dose/Exposure Response Curves
+Here instead of using a limited expand grid we construct a full grid of Dose levels, Weights and Severity,
 
-```{r plot4, collapse=TRUE, fig.height= 6, fig.width= 9}
+```{r plot4, collapse=TRUE, fig.height= 6, fig.width= 12}
 covcombdr <- expand.grid(
   WT  = c(50,60,70,80,90),
   DOSE = c(0,25,50,75,100,125,150),
@@ -421,11 +432,7 @@ for(i in 1:nsim) {
   dfsimunc <- as.data.frame(out%>% mutate(rep = i) )
   iter_sims <- rbind(iter_sims,dfsimunc)
 }
-
-
 iter_sims <- data.table(iter_sims)
-
-
 summary_P1 <- function(P1) {
   x <- c(
     P1med = median(P1),
@@ -442,8 +449,8 @@ wt.labs <- c("weight: 50 kg","weight: 60 kg","weight: 70 kg","weight: 80 kg","we
 names(wt.labs) <- c("50","60","70","80","90","(all)")
 
 SEV_names <- c(
-  '0'="Severity: 0 (Not Severe)",
-  '1'="Severity: 1 (Severe)"
+  '0'="Not Severe",
+  '1'="Severe"
 
 )
 
@@ -467,7 +474,7 @@ plot1 <- ggplot(iter_sims_sum, aes(DOSE,P1med,col=factor(SEV) ) )+
                   position = position_dodge(width=10))+
   geom_hline(yintercept=TypicalProb)+
   facet_grid(SEV~ WT,labeller = labeller(WT=wt.labs, SEV = SEV_names))+
-  theme_bw(base_size = 18)+
+  theme_bw(base_size = 14)+
   labs(color="Severity",y = "Probability of Response", x = "Dose (mg)",
        shape = "Weight (kg)")+
   scale_x_continuous(breaks=unique(iter_sims_sum$DOSE),guide = guide_axis(n.dodge = 2))+
@@ -477,16 +484,19 @@ plot1 <- ggplot(iter_sims_sum, aes(DOSE,P1med,col=factor(SEV) ) )+
 
 
 plot2 <- plot1 +
-  facet_grid(SEV~ .,labeller = labeller(WT=wt.labs, SEV = SEV_names))
+  facet_grid(SEV~ .,labeller = labeller(WT=wt.labs, SEV = SEV_names))+
+  theme(axis.title.y.left = element_blank(),
+        axis.ticks.y.left = element_blank(),
+        axis.text.y.left = element_blank(),legend.position = "right")
 
-plot1 | plot2 
+egg::ggarrange( plot1 ,plot2 ,widths = c(1,0.3))
 
 ```
 
 # Visualize the Response versus exposures (AUC)
 
 
-```{r plot5, collapse=TRUE, fig.height= 6, fig.width= 9}
+```{r plot5, collapse=TRUE, fig.height= 6, fig.width= 12}
 
 vlines <- quantile(iter_sims$AUC[iter_sims$AUC>0],probs = c(0,1/3,2/3,1))
 
@@ -494,33 +504,44 @@ a <- ggplot(data=data.frame(iter_sims),aes(AUC, P1,
                                            linetype = as.factor(SEV),
                                            color = as.factor(WT),
                                            group=interaction(WT,SEV)))+
-      geom_vline(xintercept = vlines)+
+    facet_grid(.~ WT,labeller = labeller(WT=wt.labs, SEV = SEV_names))+
+  geom_vline(xintercept = vlines)+
   geom_smooth(method = "glm", method.args = list(family = "binomial"),
               aes(fill= as.factor(WT))
               ) +
-   theme_bw(base_size = 18)+
+   theme_bw(base_size = 14)+
   theme(axis.title.x.bottom = element_blank(),
         axis.text.x.bottom = element_blank(),
          axis.ticks.x =  element_blank(),
-        legend.position = c(0.25,0.8))+
+        legend.position = "none")+
   labs(y="Probability of response",linetype="Severity",
        color = "Weight (kg)", fill = "Weight (kg)")
  b <-  ggplot(iter_sims,
          aes(y = as.factor(DOSE),x = AUC,fill = as.factor(WT))) +
+       facet_grid(.~ WT,labeller = labeller(WT=wt.labs, SEV = SEV_names))+
     geom_vline(xintercept = vlines)+
-   stat_slab(scale = 2, alpha=0.5)+
-  #   stat_halfeye(aes(fill = after_stat(ifelse(x <1.427375,"-1",
+   stat_slab(scale = 4, alpha=0.5)+
+   stat_pointinterval(.width = c(.5,.90))+
+     theme_bw(base_size = 14)+
+    theme(legend.position="none",
+          strip.background.x = element_blank(),
+          strip.text.x = element_blank())+
+   labs(x = "AUC", y = "DOSE (mg)")
+a/b &
+  plot_layout(heights=c(1,0.6))
+
+```
+
+```{r plot6, collapse=TRUE, include=FALSE}
+
+#   stat_halfeye(aes(fill = after_stat(ifelse(x <1.427375,"-1",
   #                                           ifelse(x>=1.43 & x<6.267145 ,"2",
   #                                                  ifelse(x>=6.267145  & x<11.276872,"3",
   #                                                         ifelse(x>=11.276872,"4","-1"))))))
   #                ,point_interval = median_qi, .width = c(.5,.90)
   #                )+
   # scale_fill_manual(values = c("gray85", "skyblue", "green","red"))+
-   theme_bw(base_size = 18)+
-    theme(legend.position="none",strip.background = element_blank(),strip.text = element_blank())+
-   labs(x = "AUC", y = "DOSE (mg)")
-a/b &
-  plot_layout(heights=c(1,0.4))
+
 
 ```
 
