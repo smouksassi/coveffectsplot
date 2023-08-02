@@ -33,6 +33,7 @@ library(dplyr)
 library(table1)
 library(egg)
 library(data.table)
+library(ggh4x)
 library(patchwork)
 theme_set(theme_bw())
 #utility function to simulate varying one covariate at a time keeping the rest at the reference
@@ -190,7 +191,7 @@ p2 <- ggplot(plotdata, aes(time, CP, group = ID)) +
              labeller =  labeller(ALB = albumin.labs,
                                   WT = wt.labs)) +
   scale_y_log10() +
-  labs(y = "Plasma~Concentrations (logarithmic scale)", x = "Time (h)")
+  labs(y = "Plasma~Concentrations\n(logarithmic scale)", x = "Time (h)")
   #labs(y = expression(Log[10]~Plasma~Concentrations), x = "Time (h)")+
 
 
@@ -289,7 +290,7 @@ Based on our observed covariate data, we compute percentiles of interest that we
 ```{r covcomb , fig.width=7 }
 reference.values <- data.frame(WT = 85, ALB = 45, SEX = 0)   
 
-covcomb <- expand.modelframe(
+covcomb <- expand.modelframe( #defined at the top and now expand_modelframe was added
   WT  = c(56, 72, 98, 128), # P05, P25, P50, P75, P95
   ALB = c(40, 50),          # P05, P50, P95
   SEX = c(1),               # Reference is for SEX=0 (female)
@@ -328,8 +329,8 @@ wt.labs <- c("weight: 56 kg","weight: 72 kg","weight: 85 kg","weight: 98 kg","we
 names(wt.labs) <- c("56","72","85","98","128")
 
 pkprofiletypical <- ggplot(outcovcomb, aes(x=time, y=CP, col=factor(WT), linetype=SEX)) +
-  geom_line(aes(group=ID), alpha=1, size=1.5) +
-  facet_grid(ALB + SEX~ WT,
+  geom_line(aes(group=ID), alpha = 1, linewidth = 1) +
+  facet_nested(ALB + SEX ~ WT,
                labeller= labeller(ALB = albumin.labs, WT = wt.labs, SEX = label_value),
              switch = "y") +
   labs(
@@ -342,15 +343,15 @@ pkprofiletypical <- ggplot(outcovcomb, aes(x=time, y=CP, col=factor(WT), linetyp
 
 pkprofiletypical <- pkprofiletypical +theme_bw(base_size = 13)+
   theme(axis.title.y = element_text(size=15))+
-  guides(colour=guide_legend(override.aes = list(alpha=1,size=0.5)),
-         linetype=guide_legend(override.aes = list(size=0.5)))+
+  guides(colour   = guide_legend(override.aes = list(alpha = 1, linewidth = 1)),
+         linetype = guide_legend(override.aes = list(linewidth = 1), order = 1))+
   coord_cartesian(ylim=c(0,4))
 pkprofiletypical
 
 ```
 
 ## Adding Uncertainty from a Varcov Matrix
-First, we will invent a varcov matrix by assuming 15% relative standard errors and correlations of 0.2 across the board. We then simulate a 100 set of parameters using a multivariate normal (kept at 100 for the vignette, use more replicates for a real project). Also, unless the model was written in a way to allow unconstrained parameter values, care should be taken to make sure the simulated parameters are valid and make sense. In a real modeling applications, the software used to fit the model will provide a variance covariance matrix, if possible. Otherwise, the user can rely on set of parameters generated from bootstrap replicates or SIR run.   
+First, we will invent a varcov matrix by assuming 25% relative standard errors and correlations of 0.2 across the board. We then simulate a 100 set of parameters using a multivariate normal (kept at 100 for the vignette, use more replicates for a real project). Also, unless the model was written in a way to allow unconstrained parameter values, care should be taken to make sure the simulated parameters are valid and make sense. In a real modeling applications, the software used to fit the model will provide a variance covariance matrix, if possible. Otherwise, the user can rely on set of parameters generated from bootstrap replicates or SIR run.   
 
 **Variance Covariance Matrix of fixed effects:**
 ```{r, fig.width=7}
@@ -365,7 +366,7 @@ as.data.frame(t(theta))
 
 varcov <- cor2cov(
   matrix(0.2, nrow=length(theta), ncol=length(theta)),
-  sd=theta*0.15)
+  sd=theta*0.25)
 rownames(varcov) <- colnames(varcov) <- names(theta)
 as.data.frame(varcov)
 ```
@@ -414,26 +415,6 @@ summary_conc <- function(CP) {
   data.table(paramname=names(x), paramvalue=x)
 }
 
-# pkprofileuncertainty <- ggplot(iter_sims, aes(x=time, y=CP, col=factor(WT), linetype=SEX)) +
-#   geom_line(aes(group=interaction(ID, rep)), alpha=0.1, size=0.1) +
-#   geom_line(data = outcovcomb, aes(group=interaction(ID)),
-#             alpha= 1, size=0.7, colour = "black") +
-#   facet_grid(ALB +SEX ~ WT, labeller= labeller(ALB = label_both, SEX = label_value, WT = label_both),
-#              switch = "y") +
-#   labs(
-#     x        = "Time (h)",
-#     y        = "Plasma Concentrations",
-#     linetype = "Sex",
-#     colour   = "Uncertainty\nReplicates\nWeight",
-#     caption  = "Simulation with Uncertainty, without BSV") +
-#   coord_cartesian(ylim=c(0,3.5))+
-#   guides(colour = guide_legend(override.aes = list(alpha = 1)))+
-#   theme_bw(base_size = 13)+
-#   theme(axis.title.y = element_text(size=15))+
-#   guides(colour=guide_legend(override.aes = list(alpha=1,size=0.5)),
-#          linetype=guide_legend(override.aes = list(size=0.5)))+
-#   coord_cartesian(ylim=c(0,4))
-
 iter_sims_sum <- iter_sims[, summary_conc(CP), by=.( time, WT, SEX, ALB)]
 iter_sims_sum <- spread(iter_sims_sum,paramname,paramvalue)
 iter_sims_sum <- as.data.frame(iter_sims_sum)
@@ -446,9 +427,9 @@ names(wt.labs) <- c("56","72","85","98","128")
 pkprofileuncertainty_sum <- ggplot(iter_sims_sum, aes(x=time, col=factor(WT),
                       fill=factor(WT),
                       linetype=SEX)) +
-  geom_ribbon((aes(ymin= `Clow.5%` ,ymax=`Cup.95%`)), alpha=0.4,linetype=0)+
-  geom_line(aes(y=Cmed),alpha=1 , color ="black")+
-  facet_grid(ALB +SEX ~ WT,
+  geom_ribbon((aes(ymin= `Clow.5%` ,ymax=`Cup.95%`)), alpha = 0.4, linetype = 0)+
+  geom_line(aes(y=Cmed),alpha=1 , color ="black" , linewidth = 1)+
+  facet_nested(ALB +SEX ~ WT,
              labeller= labeller(ALB = albumin.labs,
                                 WT = wt.labs,
                                 SEX = label_value),switch = "y") +
@@ -461,9 +442,8 @@ pkprofileuncertainty_sum <- ggplot(iter_sims_sum, aes(x=time, col=factor(WT),
     caption  = "Simulation with Uncertainty, without BSV") +
   theme_bw(base_size = 13)+
   theme(axis.title.y = element_text(size=15))+
-  guides(colour=guide_legend(override.aes = list(alpha=0.4,size=0.4)),
-         fill=guide_legend(override.aes = list(alpha=0.4,size=0.4)),
-         linetype=guide_legend(override.aes = list(size=0.5)))+
+  guides(fill     = guide_legend(override.aes = list(alpha = 0.4, size = 0.4)),
+         linetype = guide_legend(override.aes = list(linewidth = 1), order = 1))+
   coord_cartesian(ylim=c(0,4))
 
 pkprofileuncertainty_sum

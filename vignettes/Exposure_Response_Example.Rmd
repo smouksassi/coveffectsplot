@@ -31,6 +31,8 @@ library(tidyr)
 library(mrgsolve)
 library(ggridges)
 library(ggstance)
+library(patchwork)
+library(ggdist)
 library(Rcpp)
 theme_set(theme_bw())
 nsim <- 100 # for vignette to make it run faster otherwise increase to 1000
@@ -191,19 +193,6 @@ simoutbsvranges <- simoutbsvlong %>%
 simoutbsvranges
 ```
 
-```{r, fig.width=7 ,message=FALSE, include=FALSE}
-# probplot <-  probplot +theme_bw(base_size=18)+
-#    theme(legend.position = "top")
-# pbsvranges <- pbsvranges+theme_bw(base_size=22)+
-#   theme(
-#     legend.position = "none",
-#     axis.text.y     = element_blank(),
-#     axis.ticks.y    = element_blank(),
-#     axis.title.y    = element_blank())
-#  ggsave(plot = egg::ggarrange(probplot , pbsvranges,ncol=2),
-#         "Figure_8_1.png", device="png",type="cairo-png",width = 10, height = 5)
-```
-
 ## Computing the Odds and Probabilities
 Here we show how the odds and probabilities can be computed. We already know that the distribution of AUC depends on the Dose and on the clearance distributions. The model had five parameters shown in <span style="color: red;">red</span>, the dose, disease severity and weight were covariates and are shown in <span style="color: green;">green</span>. A Change in body weight will trigger a change in Clearance which in turn will control the AUC. To define an odds ratio we need to define a reference odds with reference covariate values Severity = 0 and changes in covariate values for example Severity = 1 (everything else being equal). For nonlinear relationships, in addition to the covariate unit change e.g. 25 mg change of dose it is important to define what reference value we are using e.g. A change from Placebo = 0 mg to 25 mg is not the same as a change from the typical dose of 75 mg increasing it to 100 mg.
 
@@ -218,7 +207,7 @@ thmeans <- c(10,0.75, #TVCL WTCL
              5,3, # TVEMAX  SEVEMAX
              7.5, # AUC50
               0.1) #BASEP
-thvariances<- (thmeans*0.15)^2
+thvariances<- (thmeans*0.25)^2
 thecorrelations <- matrix(ncol=length(thmeans),nrow=length(thmeans))
 diag(thecorrelations)<- 1
 thecorrelations[lower.tri(thecorrelations, diag = FALSE)]<- 0.2
@@ -270,17 +259,6 @@ stdprobplot<- ggplot(iter_sims, aes(DOSE,P1,col=factor(SEV) ) )+
   facet_grid(SEV~ WT,labeller = label_both)+
   labs(y="Probability of Response", colour="Severity")
 stdprobplot
-```
-
-```{r, fig.width=7 ,message=FALSE, include=FALSE}
-#  stdprobplot<-  stdprobplot+
-#   theme(axis.title.y = element_text(size=15),
-#         legend.position = c(0.8,0.2))+
-#   scale_y_continuous( sec.axis = sec_axis(~ . /TypicalProb,
-#                                           name = "Standardized Probability"))
-# stdprobplot
-#   ggsave("Figure_8_2.png", device="png",type="cairo-png",
-#          width = 7, height = 4)
 ```
 
 
@@ -339,13 +317,6 @@ ggplot(iter_sims,aes(x=paramvalue,y=covvalue))+
   )+
   theme_bw()+
   theme(axis.title = element_blank(),strip.placement = "outside")
-```
-```{r, fig.width=7 ,message=FALSE, include=FALSE}
-  #   last_plot()+theme_bw(base_size = 16)+
-  # theme(legend.position = "none",
-  #       axis.title = element_blank(),strip.placement = "outside")
-  #  ggsave("Figure_8_3.png", device="png",type="cairo-png",
-  #         width= 7, height = 6,dpi=72)
 ```
 
 ```{r plot3, collapse=TRUE }
@@ -418,4 +389,138 @@ dev.off()
 ```
 ![Covariate Effects Plot.](./Figure_8_4.png)
 
+## Dose/Exposure Response Curves 
+
+```{r plot4, collapse=TRUE, fig.height= 6, fig.width= 9}
+covcombdr <- expand.grid(
+  WT  = c(50,60,70,80,90),
+  DOSE = c(0,25,50,75,100,125,150),
+  SEV = c(0,1)
+)
+
+covcombdr <- covcombdr[!duplicated(
+  paste(covcombdr$WT,covcombdr$WT,covcombdr$DOSE,covcombdr$SEV)),]
+covcombdr$ID <- 1:nrow(covcombdr)
+
+iter_sims <- NULL
+for(i in 1:nsim) {
+  idata <- as.data.frame(covcombdr)
+  idata$covname<- NULL
+  data.all <- idata
+  data.all$TVCL     <- as.numeric(sim_parameters[i,1])
+  data.all$WTCL     <- as.numeric(sim_parameters[i,2])
+  data.all$TVEMAX   <- as.numeric(sim_parameters[i,3])
+  data.all$SEVEMAX  <- as.numeric(sim_parameters[i,4])
+  data.all$AUC50    <- as.numeric(sim_parameters[i,5])
+  data.all$BASEP    <- as.numeric(sim_parameters[i,6])
+  out <- modexprespsim %>%
+    data_set(data.all) %>%
+    carry.out(CL,WT, DOSE, SEV, AUC) %>%
+    zero_re() %>% 
+    mrgsim()
+  dfsimunc <- as.data.frame(out%>% mutate(rep = i) )
+  iter_sims <- rbind(iter_sims,dfsimunc)
+}
+
+
+iter_sims <- data.table(iter_sims)
+
+
+summary_P1 <- function(P1) {
+  x <- c(
+    P1med = median(P1),
+    P1low = quantile(P1, probs = 0.05),
+    P1up =  quantile(P1, probs = 0.95)
+  )
+  data.table(paramname=names(x), paramvalue=x)
+}
+
+iter_sims_sum <- iter_sims[, summary_P1(P1), by=.( DOSE, WT, SEV)]
+iter_sims_sum <- spread(iter_sims_sum,paramname,paramvalue)
+iter_sims_sum <- as.data.frame(iter_sims_sum)
+wt.labs <- c("weight: 50 kg","weight: 60 kg","weight: 70 kg","weight: 80 kg","weight: 90 kg","(all)")
+names(wt.labs) <- c("50","60","70","80","90","(all)")
+
+SEV_names <- c(
+  '0'="Severity: 0 (Not Severe)",
+  '1'="Severity: 1 (Severe)"
+
+)
+
+iter_sims_sum_ref <- iter_sims_sum %>% 
+  filter(WT==70,SEV==0)
+iter_sims_sum_ref$WT <- NULL
+iter_sims_sum_ref$SEV <- NULL
+
+plot1 <- ggplot(iter_sims_sum, aes(DOSE,P1med,col=factor(SEV) ) )+
+  geom_ribbon(data=iter_sims_sum_ref,aes(x=DOSE,
+                         ymin =`P1low.5%`,
+                         ymax =`P1up.95%`),inherit.aes = FALSE,
+              fill = "gray", alpha=0.2, color="transparent")+
+    geom_line(data=iter_sims_sum_ref,aes(x=DOSE,
+                         y =P1med),inherit.aes = FALSE,
+              color = "black", alpha=1)+
+  geom_pointrange(aes(group=interaction(WT,SEV,DOSE),
+                         ymin =`P1low.5%`,
+                         ymax =`P1up.95%`,
+                      shape = as.factor(WT)),alpha=0.5,
+                  position = position_dodge(width=10))+
+  geom_hline(yintercept=TypicalProb)+
+  facet_grid(SEV~ WT,labeller = labeller(WT=wt.labs, SEV = SEV_names))+
+  theme_bw(base_size = 18)+
+  labs(color="Severity",y = "Probability of Response", x = "Dose (mg)",
+       shape = "Weight (kg)")+
+  scale_x_continuous(breaks=unique(iter_sims_sum$DOSE),guide = guide_axis(n.dodge = 2))+
+  theme(legend.position = "none")
+
+
+
+
+plot2 <- plot1 +
+  facet_grid(SEV~ .,labeller = labeller(WT=wt.labs, SEV = SEV_names))
+
+plot1 | plot2 
+
+```
+
+# Visualize the Response versus exposures (AUC)
+
+
+```{r plot5, collapse=TRUE, fig.height= 6, fig.width= 9}
+
+vlines <- quantile(iter_sims$AUC[iter_sims$AUC>0],probs = c(0,1/3,2/3,1))
+
+a <- ggplot(data=data.frame(iter_sims),aes(AUC, P1,
+                                           linetype = as.factor(SEV),
+                                           color = as.factor(WT),
+                                           group=interaction(WT,SEV)))+
+      geom_vline(xintercept = vlines)+
+  geom_smooth(method = "glm", method.args = list(family = "binomial"),
+              aes(fill= as.factor(WT))
+              ) +
+   theme_bw(base_size = 18)+
+  theme(axis.title.x.bottom = element_blank(),
+        axis.text.x.bottom = element_blank(),
+         axis.ticks.x =  element_blank(),
+        legend.position = c(0.25,0.8))+
+  labs(y="Probability of response",linetype="Severity",
+       color = "Weight (kg)", fill = "Weight (kg)")
+ b <-  ggplot(iter_sims,
+         aes(y = as.factor(DOSE),x = AUC,fill = as.factor(WT))) +
+    geom_vline(xintercept = vlines)+
+   stat_slab(scale = 2, alpha=0.5)+
+  #   stat_halfeye(aes(fill = after_stat(ifelse(x <1.427375,"-1",
+  #                                           ifelse(x>=1.43 & x<6.267145 ,"2",
+  #                                                  ifelse(x>=6.267145  & x<11.276872,"3",
+  #                                                         ifelse(x>=11.276872,"4","-1"))))))
+  #                ,point_interval = median_qi, .width = c(.5,.90)
+  #                )+
+  # scale_fill_manual(values = c("gray85", "skyblue", "green","red"))+
+   theme_bw(base_size = 18)+
+    theme(legend.position="none",strip.background = element_blank(),strip.text = element_blank())+
+   labs(x = "AUC", y = "DOSE (mg)")
+a/b &
+  plot_layout(heights=c(1,0.4))
+
+```
 

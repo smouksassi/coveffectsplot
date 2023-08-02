@@ -31,6 +31,7 @@ library(tidyr)
 library(dplyr)
 library(table1)
 library(patchwork)
+library(ggh4x)
 library(data.table)
 theme_set(theme_bw())
 #utility function to simulate varying one covariate at a time keeping the rest at the reference
@@ -205,64 +206,6 @@ bsvranges <- refbsv[,list(
 bsvranges
 ```
 
-```{r pd1, fig.width=7,fig.height=4, include=FALSE }
-# set.seed(678549)
-# outputpkpdsimlong <- outputpkpdsim %>%
-#   gather(key,value,CP,RESP)
-# outputpkpdsimlong$SEX <- as.factor(outputpkpdsimlong$SEX )
-# outputpkpdsimlong$SEX <- factor(outputpkpdsimlong$SEX, labels=c("Female"))
-# pd1<- ggplot(data =outputpkpdsimlong ,
-#        aes(time/24, value, group = ID)) +
-#   geom_line(alpha = 0.1, size = 0.3) +
-#   facet_grid(key ~WT+ALB+SEX,scales="free_y",switch="y",
-#              labeller = labeller(key=yvar_names, WT= label_both,
-#                                  ALB= label_both,SEX= label_both,.multi_line = FALSE)) +
-#   labs(y = "", color = "Sex", x = "Time (days)")+
-#   theme_bw(base_size=18)+
-#   theme(strip.placement = "outside",
-#         axis.title.y=element_blank())
-# pd1
-# ggsave("pd1.png", device="png",type="cairo-png", width = 7, height = 5.5,dpi=72)
-# p4 <- ggplot(refbsv,
-#        aes(x=stdparamvalue,y=paramname,fill=factor(..quantile..),height=..ndensity..))+
-#       facet_wrap(~paramname,scales="free_y",ncol=1)+
-#   stat_density_ridges(
-#     geom = "density_ridges_gradient", calc_ecdf = TRUE,
-#     quantile_lines = TRUE, rel_min_height = 0.001,scale=0.9,
-#     quantiles = c(0.05,0.25,0.5,0.75, 0.95)) +
-#   scale_fill_manual(
-#     name = "Probability", values = c("white","#FF000050","#FF0000A0", "#FF0000A0","#FF000050","white"),
-#     labels = c("(0, 0.05]", "(0.05, 0.25]",
-#                "(0.25, 0.5]","(0.5, 0.75]",
-#                "(0.75, 0.95]","(0.95, 1]")
-#   )+
-#   theme_bw(base_size=22)+
-#   theme(legend.position = "none",
-#         axis.text.y=element_blank(),axis.ticks.y = element_blank())+
-#   labs(x="Standardized PD Parameters",y="")+
-#   scale_x_log10()+
-#   coord_cartesian(expand = FALSE)
-# p4
-# ggsave("pd2.png", device="png",type="cairo-png")
-# 
-#  p4 <- p4+theme_bw(base_size=18) +
-#    theme(
-#      axis.title.x =element_text(size=12),
-#      legend.position = "none",
-#      strip.background = element_blank(),
-#      strip.text = element_blank(),
-#      panel.spacing = unit(10,"mm"),
-#      plot.margin = margin(0,10,0,0))
-#  pd1 <- pd1+theme_bw(base_size=18) +
-#      theme(plot.margin = margin(0,0,0,10),
-#            strip.placement = "outside",
-#         axis.title.y=element_blank())
-# png("Figure_S_PD_1.png", type="cairo-png",width= 2*7*72, height =5*72)
-# egg::ggarrange(pd1 ,p4,widths = c(2,1.5),ncol=2)
-#  dev.off()
-
-```
-
 
 ## Construct ans Simulate at Combinations of Covariate of Interest
 Similarly to the PK Example vignette we generate covariate combinations of interest and we simulate with uncertainty using an invented varcov matrix.
@@ -309,7 +252,7 @@ as.data.frame(t(theta))
 
 varcov <- cor2cov(
   matrix(0.2, nrow=length(theta), ncol=length(theta)),
-  sd=theta*0.15)
+  sd=theta*0.25)
 rownames(varcov) <- colnames(varcov) <- names(theta)
 as.data.frame(varcov)
 
@@ -341,15 +284,27 @@ iter_sims$SEX <- factor(iter_sims$SEX, labels=c("Female", "Male"))
 ```
 
 ```{r, fig.width=7, fig.height=6, message=FALSE, warning=FALSE}
+albumin.labs <- c("albumin: 40 ng/mL","albumin: 45 ng/mL","albumin: 50 ng/mL")
+names(albumin.labs) <- c("40","45","50")
+wt.labs <- c("weight: 85 kg","weight: 56 kg","weight: 128 kg")
+names(wt.labs) <- c("85","56","128")
+
+age.labs <- c("age: 20 years","age: 40 years","age: 60 years")
+names(age.labs) <- c("20","40","60")
+
 pdprofiles <- ggplot(iter_sims[iter_sims$rep<=10,], aes(time/24,PDRESP,col=factor(WT),linetype=factor(HEALTHY) ) )+
   geom_line(aes(group=interaction(ID,rep)),alpha=0.3,size=0.3)+
   geom_line(data=outcovcomb,aes(group=interaction(ID)),color="black")+
-  facet_grid(SEX+ALB~ AGE+WT,labeller = label_both)+
+  facet_nested(ALB+SEX~ AGE+WT,  labeller = 
+                 labeller( WT = wt.labs,
+                           ALB = albumin.labs,
+                           AGE = age.labs))+
   labs(linetype="Black Lines\nNo Uncertainty\nHealthy Status",
        colour="Colored Lines\nUncertainty\nReplicates\n(1 to 10)\nWeight (kg)",
        caption ="Simulation\nwith Uncertainty without BSV" ,
        x="Days", y = "PD Values")+
   guides(colour = guide_legend(override.aes = list(alpha = 1)))
+
 pdprofiles
 ```
 
@@ -553,7 +508,8 @@ coveffectsplot::forest_plot(coveffectsdatacovrepbsv,
                             show_table_facet_strip = "both",
                             show_table_yaxis_tick_label = TRUE,
                             logxscale = TRUE,
-                            major_x_ticks = c(0.5,1,1/0.5),
+                            major_x_ticks          = c(0.5, 1,  1/0.5),
+                            major_x_labels         = c("1/2", "1", "2"),
                             table_margin = c(0,5.5,0,0),
                             plot_margin =c(0,5.5,0,0),
                             reserve_table_xaxis_label_space = FALSE,

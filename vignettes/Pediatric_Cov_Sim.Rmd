@@ -108,14 +108,21 @@ outputsim <- pedmodsim %>%
 outputsim$SEX <- as.factor(outputsim$SEX)
 outputsim$SEX <- factor(outputsim$SEX, labels=c("Girls","Boys"))
 
+
+age.labs <- c("age: 4 years")
+names(age.labs) <- c("4")
+wt.labs <- c("weight: 15.8 kg","weight: 16.2 kg")
+names(wt.labs) <- c("15.8","16.2")
+
 p1 <- ggplot(data = outputsim[,],
              aes(time, CP, group = ID)) +
   geom_line(alpha = 0.2, size = 0.1) +
   facet_grid(AGE ~ WT+SEX,
-             labeller = label_both , switch ="y") +
+             labeller = labeller(AGE = age.labs,
+                                  WT = wt.labs) , switch ="y") +
   scale_y_log10(breaks =c(0.001,0.01,0.01,0.1,1,10),
                 labels = c("0.001","0.01","0.01","0.1","1","10")) +
-  labs(y = expression(Log[10]~~Plasma~~Concentrations), color = "Sex", x = "Time (h)")
+  labs(y = "Plasma~Concentrations\n(logarithmic scale)", x = "Time (h)")
 p1
 
 
@@ -323,7 +330,34 @@ plot1 <-    ggplot(nca.summaries %>%
   scale_y_log10(  breaks =c(0.25,0.5,1,2))+
   coord_cartesian(ylim=c(0.25,2))
 
-plot1
+
+
+plot2 <- ggplot(nca.summaries %>% 
+         filter(WT<=25) %>%
+         filter(WT>12) %>%
+         gather(key,value,WT,AGE) %>% 
+         mutate(key = ifelse(key=="WT","Weight (kg)", "Age (years)")) ,
+       aes(x=value,y=paramvalue,fill= SEX))+
+  annotate("rect",
+           ymin  = 0.6,
+           ymax  = 1.4,
+           xmin  = -Inf,
+           xmax  = Inf,
+           fill  = "gray",
+           alpha = 0.4) +
+  geom_hline(data=data.frame (yintercept=1),  aes(yintercept =yintercept  ),size = 1)+
+  geom_point(alpha = 0.2, size = 1) +
+  stat_quant_band(method = "rqss",formula = y ~ qss(x, lambda = 2),
+                  quantiles = c(0.05, 0.5, 0.95), col = "black",aes(fill=SEX))+
+  facet_nested(paramname ~SEX+key,scales="free",switch = "both",
+               strip = strip_split(c("left", "top","bottom")))+
+  theme_bw(base_size = 18)+
+  labs(x="",y="Standardized PK Exposure", fill ="Smoothed 90%\nquantreg intervals")+
+  theme(strip.placement = "outside",legend.position = "none",axis.title.x = element_blank())+
+  scale_y_log10(  breaks =c(0.25,0.5,1,2))+
+  coord_cartesian(ylim=c(0.25,2))
+
+plot2
 
 ```
 
@@ -456,7 +490,8 @@ coveffectsplot::forest_plot(coveffectsdatacovrepbsv,
                             show_table_facet_strip = "x",
                             show_table_yaxis_tick_label = FALSE,
                             logxscale = TRUE,
-                            major_x_ticks = c(0.5,0.8,1/0.8,1/0.5),
+                            major_x_ticks = c(0.5,0.6,1,1/0.6,1/0.5),
+                            major_x_labels = c("1/2","0.6","1","1.66","2"),
                             return_list = FALSE)
 dev.off()
 ```

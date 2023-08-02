@@ -2,6 +2,8 @@
 * added `major_x_labels` argument for custom x labels for the function
 * added `interval_linewidth` argument to control interval linewidth
 * updated vignettes and examples
+* added citation
+* added `expand_modelframe` as a package function
 
 
 # coveffectsplot 1.0.3
