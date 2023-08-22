@@ -257,6 +257,18 @@ fluidPage(
           div( actionButton("colourpointrangereset", "Reset Point Range Colour"),
                style="text-align: right")
           ),
+          conditionalPanel(condition = "!input.shapebyparamname", 
+                           selectInput(inputId = "shapepointrange",
+                                       label = "Point Range Shape:",
+                                       choices = c("circle small", "triangle" ,"square","plus","square cross","asterisk",
+                                                   "square open","cross","diamond open","triangle down open","square cross",
+                                                   "diamond plus","circle plus","star","star","square plus","circle cross",
+                                                   "square triangle","diamond","circle","bullet",
+                                                   "circle filled","square filled","diamond filled","triangle filled",
+                                                   "triangle down filled"),
+                                       selected = "circle small"
+                           ) 
+          ),
           sliderInput("sizepointrange", "Point range size",
                       min = 0, max = 10, step = 0.1, value = 1),
           sliderInput("fattenpointrange", "Point range fatten",
@@ -271,8 +283,22 @@ fluidPage(
           div( actionButton("colourbsvrangereset", "Reset BSV Range Colour"),
                                 style="text-align: right")
           ),
+          conditionalPanel(condition = "!input.shapebyparamname", 
+                           selectInput(inputId = "shapebsvrange",
+                                       label = "BSV Range Shape:",
+                                       choices = c("circle small", "triangle" ,"square","plus","square cross","asterisk",
+                                                   "square open","cross","diamond open","triangle down open","square cross",
+                                                   "diamond plus","circle plus","star","star","square plus","circle cross",
+                                                   "square triangle","diamond","circle","bullet",
+                                                   "circle filled","square filled","diamond filled","triangle filled",
+                                                   "triangle down filled"),
+                                       selected = "circle small"
+                           ) 
+          ),
           conditionalPanel(condition = "input.colourbyparamname",uiOutput('userdefinedcolorui')
                            ),
+          conditionalPanel(condition = "input.shapebyparamname",uiOutput('userdefinedshapeui')
+          ),
           sliderInput("base_size", "Base size for the theme",
                       min = 1, max = 30, step = 0.1, value = 22),
           sliderInput("height", "Plot Height", min=1080/4, max=1080,
@@ -311,6 +337,8 @@ fluidPage(
             )),
           checkboxInput('legendshapereverse',
                         'Reverse the order of shape legend items ?',value = TRUE),
+          checkboxInput('legendcoloreverse',
+                        'Reverse the order of colour legend items ?',value = FALSE),
           sliderInput("legendspacex", "Multiplier for Space between Legends",
                       min = 0, max = 1.5, step = 0.1, value = 1),
           numericInput("panelspacing",label = "Strip Panel Spacing",

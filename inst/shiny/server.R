@@ -135,6 +135,31 @@ function(input, output, session) {
   })
 
   outputOptions(output, "userdefinedcolorui", suspendWhenHidden=FALSE)
+  
+  output$userdefinedshapeui <- renderUI({
+    df <- maindata()
+    shiny::req(df)
+    #shapes <- c(16, 17, 15, 3, 7, 8,0,1,2,4,5,6,9,10,11,12,13,14,18,19,20,21,22,23,24,25)
+    shapes = c("circle small", "triangle" ,"square","plus","square cross","asterisk",
+                "square open","cross","diamond open","triangle down open","square cross",
+                "diamond plus","circle plus","star","star","square plus","circle cross",
+                "square triangle","diamond","circle","bullet",
+                "circle filled","square filled","diamond filled","triangle filled",
+                "triangle down filled")
+    if(input$shapebyparamname && length(input$exposurevariables) >0){
+      lev <- 1:length(input$exposurevariables)
+      lapply(seq_along(lev), function(i) {
+        div(
+          selectInput(inputId = paste0("shape", lev[i]),
+                                    label = paste0("Parameter Shape", lev[i]),
+                                    choices = shapes,
+                                    selected = shapes[i]),
+          style = "display: inline-block;")
+      })
+    }
+  })
+  outputOptions(output, "userdefinedshapeui", suspendWhenHidden=FALSE)
+  
 
   observeEvent(input$colourpointrangereset, {
     shinyjs::reset("colourpointrange")
@@ -202,9 +227,18 @@ function(input, output, session) {
       paramcols <- eval(parse(text = paramcols))
     }
     
+    if(!input$shapebyparamname){
+      paramshapes <- input$shapepointrange
+    }
+    if(input$shapebyparamname){
+      paramshapes <- paste0("c(", paste0("input$shape", 1:ncols, collapse = ", "), ")")
+      paramshapes <- eval(parse(text = paramshapes))
+    }
+    
     metaExpr({
       summarydata <- ..(plotdataprepare())
-      paramcols <- ..(paramcols)
+      paramcols   <- ..(paramcols)
+      paramshapes <- ..(paramshapes)
     plot <- forest_plot(
         data = summarydata,
         facet_formula = ..(input$facetformula),
@@ -248,11 +282,14 @@ function(input, output, session) {
         interval_size = ..(input$sizepointrange),
         interval_fatten = ..(input$fattenpointrange),
         interval_linewidth = ..(input$linewidthpointrange),
+        interval_shape = paramshapes,
         bsv_col      = ..(input$colourbsvrange),
+        bsv_shape = ..(input$shapebsvrange),
         strip_col = ..(input$stripbackgroundfill),
         paramname_shape = ..(input$shapebyparamname),
         paramname_color = ..(input$colourbyparamname),
         legend_shape_reverse = ..(input$legendshapereverse),
+        legend_color_reverse = ..(input$legendcoloreverse),
         facet_switch = ..(input$facetswitch),
         facet_scales = ..(input$facetscales),
         facet_space = ..(input$facetspace),

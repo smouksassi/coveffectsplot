@@ -46,13 +46,16 @@ forest_plot(
   interval_size = 1,
   interval_fatten = 4,
   interval_linewidth = 1,
+  interval_shape = "circle small",
   bsv_col = "red",
+  bsv_shape = "circle small",
   bsv_text_id = c("BSV", "bsv", "IIV", "Bsv"),
   interval_bsv_text = "",
   strip_col = "#E5E5E5",
   paramname_shape = FALSE,
   paramname_color = FALSE,
   legend_shape_reverse = FALSE,
+  legend_color_reverse = FALSE,
   facet_switch = c("both", "y", "x", "none"),
   facet_scales = c("fixed", "free_y", "free_x", "free"),
   facet_space = c("fixed", "free_x", "free_y", "free"),
@@ -147,7 +150,7 @@ if an item is absent the legend will be omitted.}
 \item{combine_area_ref_legend}{Combine reference and area legends if they
 share the same text?}
 
-\item{combine_interval_shape_legend}{Combine interval and shape legends when paramname_color=TRUE ?}
+\item{combine_interval_shape_legend}{Combine interval and shape legends?}
 
 \item{legend_position}{where to put the legend: "top", "bottom","right","none"}
 
@@ -167,7 +170,7 @@ share the same text?}
 
 \item{ref_value_linetype}{Reference line linetype.}
 
-\item{interval_col}{Point range color. One  or Multiple values.}
+\item{interval_col}{Point range color. One or Multiple values.}
 
 \item{interval_size}{Point range size. Default to 1}
 
@@ -175,7 +178,11 @@ share the same text?}
 
 \item{interval_linewidth}{Point range line width. Default to 1}
 
+\item{interval_shape}{Shape used for the Point Range. Default to "circle small".}
+
 \item{bsv_col}{BSV pointinterval color. One value.}
+
+\item{bsv_shape}{Shape used for the BSV Point Range. Default to "circle small".}
 
 \item{bsv_text_id}{Text string(s) to identify BSV. Default to c("BSV","bsv","IIV","Bsv")}
 
@@ -183,11 +190,13 @@ share the same text?}
 
 \item{strip_col}{Strip background color.}
 
-\item{paramname_shape}{Map symbol to parameter(s)?}
+\item{paramname_shape}{Map symbol to parameter(s) name? TRUE or FALSE.}
 
-\item{paramname_color}{Map symbol to parameter(s)?}
+\item{paramname_color}{Map color to parameter(s) name? TRUE or FALSE.}
 
 \item{legend_shape_reverse}{TRUE or FALSE.}
+
+\item{legend_color_reverse}{TRUE or FALSE.}
 
 \item{facet_switch}{Facet switch to near axis. Possible values: "both", "y",
 "x", "none".}
@@ -361,7 +370,10 @@ forest_plot(plotdata,
             facet_switch = "both",
             facet_scales = "free",
             facet_space = "fixed",
-            paramname_shape = TRUE,            paramname_color =  FALSE,
+            paramname_shape = TRUE,
+            legend_shape_reverse = TRUE,
+            interval_shape = c("square","triangle"),
+            paramname_color =  FALSE,
             combine_interval_shape_legend = FALSE,
             table_position = "right", plot_title = "",
             ref_area_col = rgb( col2rgb("gray50")[1], col2rgb("gray50")[2],col2rgb("gray50")[3],
@@ -386,13 +398,15 @@ forest_plot(plotdata,
            facet_scales = "free",
            facet_space = "free",
            paramname_shape = TRUE,
+           interval_shape = c("square","triangle"),
            paramname_color =  TRUE,
            combine_interval_shape_legend = TRUE,
            legend_shape_reverse = TRUE,
+           legend_color_reverse = TRUE,
            table_position = "right", plot_title = "",
            ref_area_col = rgb( col2rgb("gray50")[1], col2rgb("gray50")[2],col2rgb("gray50")[3],
                                max = 255, alpha = 0.1*255 ) ,
-           interval_col = c("steelblue"),
+           interval_col = c("steelblue","red"),
            strip_col = "lightblue",
            major_x_ticks          = c(0.5, 0.8,1, 1/0.8, 1/0.5),
            major_x_labels         = c("1/2", "0.8","1", "1.25", "2"),
