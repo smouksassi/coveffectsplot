@@ -198,6 +198,9 @@ function(input, output, session) {
   output$plot <- metaRender2(renderPlot, {
     shiny::req(plotdataprepare())
     shiny::req(length(input$exposurevariables)>=1)
+    if(input$colourbyparamname)   shiny::req(input$col1)
+    if(input$shapebyparamname)   shiny::req(input$shape1)
+    
     major_x_ticks <- NULL
     minor_x_ticks <- NULL
     major_x_labels <- NULL

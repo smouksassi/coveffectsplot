@@ -882,7 +882,7 @@ forest_plot <- function(
           position = ggplot2::position_dodge(width = vertical_dodge_height)
         ) +
           ggplot2::scale_colour_manual("", breaks = colbreakvalues,
-                                       values = c(interval_col))
+                                       values = interval_col_values)
       
     }
 
@@ -1156,3 +1156,4 @@ draw_key_pointrangeh <- function(data, params, size) {
 }
 
 # ' @importFrom colourpicker colourInput
+# ' @importFrom ggplot2 translate_shape_string

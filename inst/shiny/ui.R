@@ -112,7 +112,8 @@ fluidPage(
                                selected = c("free_y"),
                                multiple = FALSE),
                  selectInput('facetspace' ,'Facet Spaces:',
-                             c("fixed","free_x","free_y","free") )
+                             c("fixed","free_x","free_y","free") ,
+                             selected = c("free_y"))
         ),
         tabPanel(
           "X/Y Axes",
@@ -257,6 +258,14 @@ fluidPage(
           div( actionButton("colourpointrangereset", "Reset Point Range Colour"),
                style="text-align: right")
           ),
+          conditionalPanel(condition = "!input.colourbyparamname",
+                           colourpicker::colourInput("colourbsvrange",
+                                                     "BSV Range Colour:",
+                                                     value="red",
+                                                     showColour = "both",allowTransparent=TRUE, returnName = TRUE),
+                           div( actionButton("colourbsvrangereset", "Reset BSV Range Colour"),
+                                style="text-align: right")
+          ),
           conditionalPanel(condition = "!input.shapebyparamname", 
                            selectInput(inputId = "shapepointrange",
                                        label = "Point Range Shape:",
@@ -268,20 +277,6 @@ fluidPage(
                                                    "triangle down filled"),
                                        selected = "circle small"
                            ) 
-          ),
-          sliderInput("sizepointrange", "Point range size",
-                      min = 0, max = 10, step = 0.1, value = 1),
-          sliderInput("fattenpointrange", "Point range fatten",
-                      min = 0, max = 10, step = 0.1, value = 4),
-          sliderInput("linewidthpointrange", "Point range linewidth",
-                      min = 0, max = 10, step = 0.1, value = 1),
-          conditionalPanel(condition = "!input.colourbyparamname",
-          colourpicker::colourInput("colourbsvrange",
-                                     "BSV Range Colour:",
-                                     value="red",
-                                     showColour = "both",allowTransparent=TRUE, returnName = TRUE),
-          div( actionButton("colourbsvrangereset", "Reset BSV Range Colour"),
-                                style="text-align: right")
           ),
           conditionalPanel(condition = "!input.shapebyparamname", 
                            selectInput(inputId = "shapebsvrange",
@@ -296,9 +291,15 @@ fluidPage(
                            ) 
           ),
           conditionalPanel(condition = "input.colourbyparamname",uiOutput('userdefinedcolorui')
-                           ),
+          ),
           conditionalPanel(condition = "input.shapebyparamname",uiOutput('userdefinedshapeui')
           ),
+          sliderInput("sizepointrange", "Point range size",
+                      min = 0, max = 10, step = 0.1, value = 1),
+          sliderInput("fattenpointrange", "Point range fatten",
+                      min = 0, max = 10, step = 0.1, value = 4),
+          sliderInput("linewidthpointrange", "Point range linewidth",
+                      min = 0, max = 10, step = 0.1, value = 1),
           sliderInput("base_size", "Base size for the theme",
                       min = 1, max = 30, step = 0.1, value = 22),
           sliderInput("height", "Plot Height", min=1080/4, max=1080,
