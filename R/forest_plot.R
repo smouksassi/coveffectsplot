@@ -58,12 +58,14 @@ label_wrap <- function(width) {
 #' @param legend_position where to put the legend: "top", "bottom","right","none"
 #' @param show_ref_area Show reference window?
 #' @param ref_area Reference area. Two-element numeric vector multiplying the ref_value.
+#' @param ref_area_col Reference area background color.
 #' @param show_ref_value Show reference line?
 #' @param ref_value X intercept of reference line.
-#' @param ref_area_col Reference area background color.
 #' @param ref_value_col Reference line color.
 #' @param ref_value_size Reference line size.
 #' @param ref_value_linetype Reference line linetype.
+#' @param ref_value_by_panel The ref_value vary by panel TRUE or FALSE. 
+#' @param ref_value_by_panel_data if ref_value_by_panel is TRUE, data.frame to use for Reference (lines).
 #' @param interval_col Point range color. One or Multiple values.
 #' @param interval_size Point range size. Default to 1
 #' @param interval_fatten Point range fatten. Default to 4
@@ -358,12 +360,14 @@ forest_plot <- function(
   legend_position = "top",
   show_ref_area = TRUE,
   ref_area = c(0.8, 1.25),
+  ref_area_col = "#BEBEBE50",
   show_ref_value = TRUE,
   ref_value = 1,
-  ref_area_col = "#BEBEBE50",
   ref_value_col = "black",
   ref_value_size = 1,
   ref_value_linetype = "dashed",
+  ref_value_by_panel = FALSE,
+  ref_value_by_panel_data = NULL,
   interval_col = "blue",
   interval_size = 1,
   interval_fatten = 4,
@@ -593,7 +597,7 @@ forest_plot <- function(
       ggplot2::aes_string(color = "pointintervalcolor"),
     )# dummy to prevent a scales bug that I reported to ggplot2 maintainers
 
-  if (show_ref_area) {
+  if (show_ref_area && !ref_value_by_panel) {
     main_plot <- main_plot +
       ggplot2::annotate(
         "rect",
@@ -604,7 +608,9 @@ forest_plot <- function(
         fill = ref_area_col
       ) +
     ggplot2::geom_ribbon(
-      data = data.frame(x = ref_value, ymax = 1, ymin = 1,
+      data = data.frame(x = ref_value,
+                        ymax = ref_value,
+                        ymin = ref_value,
                         fill = area_legend_text),
       ggplot2::aes(
         x = x,
@@ -618,13 +624,27 @@ forest_plot <- function(
 }
 # fake ribbon for fill legend
   
-  if (show_ref_value) {
+  if (show_ref_value && !ref_value_by_panel) {
     main_plot <- main_plot +
       ggplot2::geom_vline(
-        ggplot2::aes(xintercept = ref_value, linetype = ref_legend_text),
-        size = ref_value_size, color = ref_value_col 
+        ggplot2::aes(xintercept = ref_value,
+                     linetype = ref_legend_text),
+        size = ref_value_size,
+        color = ref_value_col 
       )
   }
+  if (show_ref_value &&
+      ref_value_by_panel &&
+      !is.null(ref_value_by_panel_data)) {
+    main_plot <- main_plot +
+      ggplot2::geom_vline(data=ref_value_by_panel_data,
+        ggplot2::aes(xintercept = xintercept,
+                     linetype = ref_legend_text),
+        size = ref_value_size,
+        color = ref_value_col 
+      )
+  }
+  
   main_plot <- main_plot+
     ggplot2::geom_pointrange(
       position = ggplot2::position_dodge(width = vertical_dodge_height),
