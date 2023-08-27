@@ -268,6 +268,7 @@ function(input, output, session) {
         ref_legend_text = escape_newline(..(input$customlinetypetitle)),
         area_legend_text = escape_newline(..(input$customfilltitle)),
         interval_legend_text = escape_newline(..(input$customcolourtitle)),
+        interval_legend_title = escape_newline(..(input$customcolourtitletext)),
         interval_bsv_text = escape_newline(..(input$custombsvtitle)),
         legend_order = ..(input$legendordering),
         combine_area_ref_legend = ..(input$combineareareflegend),

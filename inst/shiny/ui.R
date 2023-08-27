@@ -388,6 +388,8 @@ fluidPage(
           textInput("customplottitle", label ="Plot Title",value = ""),
           textInput("customcolourtitle", label ="Pointinterval Legend text",
                     value="Median (points)\\n95% CI (horizontal lines)"),
+          textInput("customcolourtitletext", label ="Pointinterval Legend title",
+                    value=""),
           textInput("custombsvtitle", label ="BSV Legend text",
                     value="BSV (points)\\nPrediction Intervals (horizontal lines)"),
           textInput("customlinetypetitle", label ="Ref Legend text",

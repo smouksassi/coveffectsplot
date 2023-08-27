@@ -1,28 +1,21 @@
 # coveffectsplot 1.0.4
-
-
-
-added interval_shape and bsv_shape user can now select all supported ggplot2 shapes (with custom per parameter shape possible)
-default changed to circle small and translate pch strings added
-option to reverse legend color separately
-
-
-* added `major_x_labels` argument for custom x labels for the function
-* added `interval_linewidth` argument to control interval linewidth
 * updated vignettes and examples
-* added citation
-* added `expand_modelframe` as a package function
-* in progress added capability for user to specify the shapes they want
-* in progress added capability for user to reverse color legend separately
-* in progress added capability for user to specify legend titles not just legend item texts
-* in progress allow different ref line by panel
+* added citation and start up message
+* added `major_x_labels` argument for custom x labels
+* added `interval_linewidth` argument to control interval linewidth
+* added possibility to add different ref line(s) by parameter via
+ `ref_value_by_panel` and `ref_value_by_panel_data` function arguments (not in the shiny, app)
+* added and exported `expand_modelframe` function
+* added the possibility to select the shapes manually via `interval_shape` and `bsv_shape` (when shape is mapped to paramname or not)
+* added capability for user to reverse color legend separately via `legend_color_reverse`
 
+* in progress work on legends merging shape etc. and legend titles
+* in progress added capability for user to specify legend titles 
 
 # coveffectsplot 1.0.3
 * fixed a bug when ref_value when not equal 1 affecting y axis limits
 * fixed a bug when the guides for color and shape were not merged
 * updated the UI to be able to specify user-defined color for parameters
-
 
 # coveffectsplot 1.0.2
 * vignettes updated to reflect latest addition for the tutorial CPT:PSP paper
