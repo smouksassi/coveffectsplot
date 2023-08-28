@@ -440,7 +440,7 @@ forest_plot <- function(
   plot_title = "\n",
   return_list = FALSE)
 {
-  ymax = ymin = x = fill = label_wrap_gen = NULL
+  ymax = ymin = x = fill = label_wrap_gen = xintercept = NULL
   
   if (!(missing(major_x_labels) || is.null(major_x_labels) ) &&
       !(missing(major_x_ticks)  || is.null(major_x_ticks) )
