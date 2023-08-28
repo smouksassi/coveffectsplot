@@ -258,6 +258,7 @@ function(input, output, session) {
         xy_facet_text_bold = ..(input$boldfacettext),
         x_label_text_size = ..(input$xlablesize),
         y_label_text_size = ..(input$ylablesize),
+        legend_title_size = ..(input$legendtitlesize),
         break_ylabel = ..(input$breakylabel),
         y_label_text_width= ..(input$ylabeltextwidth),
         table_text_size = ..(input$tabletextsize),

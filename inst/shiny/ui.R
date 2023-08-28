@@ -401,7 +401,10 @@ fluidPage(
           checkboxInput('combineareareflegend',
                         'Combine Ref and Area Legends if they share the same text ?',value = TRUE),
           checkboxInput('combineintervalshapelegend',
-                        'Combine Interval and Shape Legends?',value = TRUE)
+                        'Combine Interval and Shape Legends?',value = TRUE),
+          sliderInput("legendtitlesize", "Text size of legend(s) title(s) ",
+                      min=1, max=32, value= 16, step=0.5)
+          
         )#tabpanel
       )  # tabsetpanel
     ) # closes the column 3

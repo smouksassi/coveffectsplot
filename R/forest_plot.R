@@ -56,6 +56,7 @@ label_wrap <- function(width) {
 #' @param xy_facet_text_bold Bold Facet text. Logical TRUE FALSE.
 #' @param x_label_text_size X axis labels size.
 #' @param y_label_text_size Y axis labels size.
+#' @param legend_title_size Legend title size if present.
 #' @param break_ylabel Split Y axis labels into multiple lines. Logical FALSE TRUE.
 #' @param y_label_text_width Number of characters to break Y axis labels.
 #' @param table_text_size Table text size.
@@ -363,6 +364,7 @@ forest_plot <- function(
   xy_facet_text_bold = TRUE,
   x_label_text_size  = 16,
   y_label_text_size  = 16,
+  legend_title_size = 12,
   break_ylabel = FALSE,
   y_label_text_width = 25,
   table_text_size = 7,
@@ -800,6 +802,7 @@ forest_plot <- function(
       legend.position = legend_position,
       legend.justification = c(0.5, 0.5),
       legend.direction = "horizontal",
+      legend.title = ggplot2::element_text(size = legend_title_size),
       legend.key.width = ggplot2::unit(3, "line"),
       strip.text.x = x.strip.text,
       strip.text.y = y.strip.text,
