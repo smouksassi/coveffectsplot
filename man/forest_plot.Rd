@@ -20,6 +20,7 @@ forest_plot(
   xy_facet_text_bold = TRUE,
   x_label_text_size = 16,
   y_label_text_size = 16,
+  legend_title_size = 12,
   break_ylabel = FALSE,
   y_label_text_width = 25,
   table_text_size = 7,
@@ -30,18 +31,22 @@ forest_plot(
   ref_legend_text = "",
   area_legend_text = "",
   interval_legend_text = "",
+  interval_legend_title = "",
+  shape_legend_title = "",
   legend_order = c("pointinterval", "ref", "area", "shape"),
   combine_area_ref_legend = TRUE,
   combine_interval_shape_legend = FALSE,
   legend_position = "top",
   show_ref_area = TRUE,
   ref_area = c(0.8, 1.25),
+  ref_area_col = "#BEBEBE50",
   show_ref_value = TRUE,
   ref_value = 1,
-  ref_area_col = "#BEBEBE50",
   ref_value_col = "black",
   ref_value_size = 1,
   ref_value_linetype = "dashed",
+  ref_value_by_panel = FALSE,
+  ref_value_by_panel_data = NULL,
   interval_col = "blue",
   interval_size = 1,
   interval_fatten = 4,
@@ -123,6 +128,8 @@ forest_plot(
 
 \item{y_label_text_size}{Y axis labels size.}
 
+\item{legend_title_size}{Legend title size if present.}
+
 \item{break_ylabel}{Split Y axis labels into multiple lines. Logical FALSE TRUE.}
 
 \item{y_label_text_width}{Number of characters to break Y axis labels.}
@@ -141,7 +148,11 @@ forest_plot(
 
 \item{area_legend_text}{Area legend text.}
 
-\item{interval_legend_text}{Pointinterval Legend text.}
+\item{interval_legend_text}{Pointinterval legend text.}
+
+\item{interval_legend_title}{Pointinterval legend title defaults to empty.}
+
+\item{shape_legend_title}{Shape legend title defaults to empty.}
 
 \item{legend_order}{Legend order. A four-element vector with the following
 items ordered in your desired order: "pointinterval", "ref", "area", "shape".
@@ -158,17 +169,21 @@ share the same text?}
 
 \item{ref_area}{Reference area. Two-element numeric vector multiplying the ref_value.}
 
+\item{ref_area_col}{Reference area background color.}
+
 \item{show_ref_value}{Show reference line?}
 
 \item{ref_value}{X intercept of reference line.}
-
-\item{ref_area_col}{Reference area background color.}
 
 \item{ref_value_col}{Reference line color.}
 
 \item{ref_value_size}{Reference line size.}
 
 \item{ref_value_linetype}{Reference line linetype.}
+
+\item{ref_value_by_panel}{The ref_value vary by panel TRUE or FALSE.}
+
+\item{ref_value_by_panel_data}{if ref_value_by_panel is TRUE, data.frame to use for Reference (lines).}
 
 \item{interval_col}{Point range color. One or Multiple values.}
 
