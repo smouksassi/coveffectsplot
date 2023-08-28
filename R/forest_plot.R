@@ -22,17 +22,6 @@ translate_shape_string <- function (shape_string)
                  bullet = 20, `circle filled` = 21, `square filled` = 22, 
                  `diamond filled` = 23, `triangle filled` = 24, `triangle down filled` = 25)
   shape_match <- charmatch(shape_string, names(pch_table))
-  invalid_strings <- is.na(shape_match)
-  nonunique_strings <- shape_match == 0
-  if (any(invalid_strings)) {
-    bad_string <- unique0(shape_string[invalid_strings])
-    cli::cli_abort("Shape aesthetic contains invalid value{?s}: {.val {bad_string}}")
-  }
-  if (any(nonunique_strings)) {
-    bad_string <- unique0(shape_string[nonunique_strings])
-    cli::cli_abort(c("shape names must be given unambiguously", 
-                     i = "Fix {.val {bad_string}}"))
-  }
   unname(pch_table[shape_match])
 }
 
@@ -76,8 +65,9 @@ label_wrap <- function(width) {
 #' @param table_title_size table title size.
 #' @param ref_legend_text Reference legend text.
 #' @param area_legend_text Area legend text.
-#' @param interval_legend_text Pointinterval Legend text.
-#' @param interval_legend_title Pointinterval Legend title.
+#' @param interval_legend_text Pointinterval legend text.
+#' @param interval_legend_title Pointinterval legend title defaults to empty.
+#' @param shape_legend_title Shape legend title defaults to empty.
 #' @param legend_order Legend order. A four-element vector with the following
 #' items ordered in your desired order: "pointinterval", "ref", "area", "shape".
 #' if an item is absent the legend will be omitted.
@@ -384,6 +374,7 @@ forest_plot <- function(
   area_legend_text = "",
   interval_legend_text = "",
   interval_legend_title = "",
+  shape_legend_title = "",
   legend_order = c("pointinterval", "ref", "area", "shape"),
   combine_area_ref_legend = TRUE,
   combine_interval_shape_legend = FALSE,
@@ -560,7 +551,7 @@ forest_plot <- function(
   guide_interval <- ggplot2::guide_legend(interval_legend_title, order = interval_pos,
                                           reverse = legend_color_reverse,
                                           ncol = legend_ncol_interval)
-  guide_shape    <- ggplot2::guide_legend("", order = shape_pos,
+  guide_shape    <- ggplot2::guide_legend(shape_legend_title, order = shape_pos,
                                       override.aes = list(linetype = 0,
                                       colour = "gray"),
                                       reverse = legend_shape_reverse,
