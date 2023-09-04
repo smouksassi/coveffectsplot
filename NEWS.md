@@ -6,9 +6,9 @@
 * added possibility to add different ref line(s) by parameter via
  `ref_value_by_panel` and `ref_value_by_panel_data` function arguments (not in the shiny, app)
 * added and exported `expand_modelframe` function
-* added the possibility to select the shapes manually via `interval_shape` and `bsv_shape` (when shape is mapped to paramname or not)
+* added the possibility to select the shapes manually via `interval_shape` and `bsv_shape`
 * added capability for user to reverse color legend separately via `legend_color_reverse`
-* added capability for user to specify text for legend titles via `interval_legend_title` and `shape_legend_title` as well as text size via `legend_title_size`
+* added capability for user to specify text for legend titles via `interval_legend_title` and `shape_legend_title` as well as to control text size via `legend_title_size`
 
 # coveffectsplot 1.0.3
 * fixed a bug when ref_value when not equal 1 affecting y axis limits
