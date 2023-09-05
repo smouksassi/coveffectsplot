@@ -202,7 +202,7 @@ egg::ggarrange(p1, p2, ncol = 2)
 ### Compute PK Parameters, Plot and Summarize BSV
 In this section we compute the PK parameters of interest, provide a plot of the parameters as well as of the standardized ones. We also summarize and report the BSV as ranges of 50 and 90% of patients for each PK parameter. Later on we might choose to include these ranges in the `coveffectsplot` or not.
 
-```{r computenca , fig.width=7 , message=FALSE }
+```{r computenca, fig.width=7 , message=FALSE }
 derive.exposure <- function(time, CP) {
   n <- length(time)
   x <- c(

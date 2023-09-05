@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">coveffectsplot</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.3.9999</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4</span>
       </span>
     </div>
 
@@ -94,6 +94,7 @@
 <span>  xy_facet_text_bold <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  x_label_text_size <span class="op">=</span> <span class="fl">16</span>,</span>
 <span>  y_label_text_size <span class="op">=</span> <span class="fl">16</span>,</span>
+<span>  legend_title_size <span class="op">=</span> <span class="fl">12</span>,</span>
 <span>  break_ylabel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  y_label_text_width <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  table_text_size <span class="op">=</span> <span class="fl">7</span>,</span>
@@ -104,29 +105,36 @@
 <span>  ref_legend_text <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  area_legend_text <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  interval_legend_text <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  interval_legend_title <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  shape_legend_title <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  legend_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pointinterval"</span>, <span class="st">"ref"</span>, <span class="st">"area"</span>, <span class="st">"shape"</span><span class="op">)</span>,</span>
 <span>  combine_area_ref_legend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  combine_interval_shape_legend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  legend_position <span class="op">=</span> <span class="st">"top"</span>,</span>
 <span>  show_ref_area <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ref_area <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">1.25</span><span class="op">)</span>,</span>
+<span>  ref_area_col <span class="op">=</span> <span class="st">"#BEBEBE50"</span>,</span>
 <span>  show_ref_value <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ref_value <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  ref_area_col <span class="op">=</span> <span class="st">"#BEBEBE50"</span>,</span>
 <span>  ref_value_col <span class="op">=</span> <span class="st">"black"</span>,</span>
 <span>  ref_value_size <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  ref_value_linetype <span class="op">=</span> <span class="st">"dashed"</span>,</span>
+<span>  ref_value_by_panel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  ref_value_by_panel_data <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  interval_col <span class="op">=</span> <span class="st">"blue"</span>,</span>
 <span>  interval_size <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  interval_fatten <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  interval_linewidth <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  interval_shape <span class="op">=</span> <span class="st">"circle small"</span>,</span>
 <span>  bsv_col <span class="op">=</span> <span class="st">"red"</span>,</span>
+<span>  bsv_shape <span class="op">=</span> <span class="st">"circle small"</span>,</span>
 <span>  bsv_text_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BSV"</span>, <span class="st">"bsv"</span>, <span class="st">"IIV"</span>, <span class="st">"Bsv"</span><span class="op">)</span>,</span>
 <span>  interval_bsv_text <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  strip_col <span class="op">=</span> <span class="st">"#E5E5E5"</span>,</span>
 <span>  paramname_shape <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  paramname_color <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  legend_shape_reverse <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  legend_color_reverse <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  facet_switch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"both"</span>, <span class="st">"y"</span>, <span class="st">"x"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
 <span>  facet_scales <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fixed"</span>, <span class="st">"free_y"</span>, <span class="st">"free_x"</span>, <span class="st">"free"</span><span class="op">)</span>,</span>
 <span>  facet_space <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fixed"</span>, <span class="st">"free_x"</span>, <span class="st">"free_y"</span>, <span class="st">"free"</span><span class="op">)</span>,</span>
@@ -226,6 +234,10 @@
 <dd><p>Y axis labels size.</p></dd>
 
 
+<dt>legend_title_size</dt>
+<dd><p>Legend title size if present.</p></dd>
+
+
 <dt>break_ylabel</dt>
 <dd><p>Split Y axis labels into multiple lines. Logical FALSE TRUE.</p></dd>
 
@@ -263,7 +275,15 @@
 
 
 <dt>interval_legend_text</dt>
-<dd><p>Pointinterval Legend text.</p></dd>
+<dd><p>Pointinterval legend text.</p></dd>
+
+
+<dt>interval_legend_title</dt>
+<dd><p>Pointinterval legend title defaults to empty.</p></dd>
+
+
+<dt>shape_legend_title</dt>
+<dd><p>Shape legend title defaults to empty.</p></dd>
 
 
 <dt>legend_order</dt>
@@ -278,7 +298,7 @@ share the same text?</p></dd>
 
 
 <dt>combine_interval_shape_legend</dt>
-<dd><p>Combine interval and shape legends when paramname_color=TRUE ?</p></dd>
+<dd><p>Combine interval and shape legends?</p></dd>
 
 
 <dt>legend_position</dt>
@@ -293,16 +313,16 @@ share the same text?</p></dd>
 <dd><p>Reference area. Two-element numeric vector multiplying the ref_value.</p></dd>
 
 
+<dt>ref_area_col</dt>
+<dd><p>Reference area background color.</p></dd>
+
+
 <dt>show_ref_value</dt>
 <dd><p>Show reference line?</p></dd>
 
 
 <dt>ref_value</dt>
 <dd><p>X intercept of reference line.</p></dd>
-
-
-<dt>ref_area_col</dt>
-<dd><p>Reference area background color.</p></dd>
 
 
 <dt>ref_value_col</dt>
@@ -317,8 +337,16 @@ share the same text?</p></dd>
 <dd><p>Reference line linetype.</p></dd>
 
 
+<dt>ref_value_by_panel</dt>
+<dd><p>The ref_value vary by panel TRUE or FALSE.</p></dd>
+
+
+<dt>ref_value_by_panel_data</dt>
+<dd><p>if ref_value_by_panel is TRUE, data.frame to use for Reference (lines).</p></dd>
+
+
 <dt>interval_col</dt>
-<dd><p>Point range color. One  or Multiple values.</p></dd>
+<dd><p>Point range color. One or Multiple values.</p></dd>
 
 
 <dt>interval_size</dt>
@@ -333,8 +361,16 @@ share the same text?</p></dd>
 <dd><p>Point range line width. Default to 1</p></dd>
 
 
+<dt>interval_shape</dt>
+<dd><p>Shape used for the Point Range. Default to "circle small".</p></dd>
+
+
 <dt>bsv_col</dt>
 <dd><p>BSV pointinterval color. One value.</p></dd>
+
+
+<dt>bsv_shape</dt>
+<dd><p>Shape used for the BSV Point Range. Default to "circle small".</p></dd>
 
 
 <dt>bsv_text_id</dt>
@@ -350,14 +386,18 @@ share the same text?</p></dd>
 
 
 <dt>paramname_shape</dt>
-<dd><p>Map symbol to parameter(s)?</p></dd>
+<dd><p>Map symbol to parameter(s) name? TRUE or FALSE.</p></dd>
 
 
 <dt>paramname_color</dt>
-<dd><p>Map symbol to parameter(s)?</p></dd>
+<dd><p>Map color to parameter(s) name? TRUE or FALSE.</p></dd>
 
 
 <dt>legend_shape_reverse</dt>
+<dd><p>TRUE or FALSE.</p></dd>
+
+
+<dt>legend_color_reverse</dt>
 <dd><p>TRUE or FALSE.</p></dd>
 
 
@@ -511,6 +551,7 @@ instead of the gtable/plot.</p></dd>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package 'dplyr' was built under R version 4.2.3</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: 'dplyr'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from 'package:data.table':</span>
@@ -523,6 +564,7 @@ instead of the gtable/plot.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>     intersect, setdiff, setequal, union</span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package 'ggplot2' was built under R version 4.2.3</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 1</span></span></span>
 <span class="r-in"><span></span></span>
@@ -617,7 +659,10 @@ instead of the gtable/plot.</p></dd>
 <span class="r-in"><span>            facet_switch <span class="op">=</span> <span class="st">"both"</span>,</span></span>
 <span class="r-in"><span>            facet_scales <span class="op">=</span> <span class="st">"free"</span>,</span></span>
 <span class="r-in"><span>            facet_space <span class="op">=</span> <span class="st">"fixed"</span>,</span></span>
-<span class="r-in"><span>            paramname_shape <span class="op">=</span> <span class="cn">TRUE</span>,            paramname_color <span class="op">=</span>  <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>            paramname_shape <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>            legend_shape_reverse <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>            interval_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"square"</span>,<span class="st">"triangle"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>            paramname_color <span class="op">=</span>  <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>            combine_interval_shape_legend <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>            table_position <span class="op">=</span> <span class="st">"right"</span>, plot_title <span class="op">=</span> <span class="st">""</span>,</span></span>
 <span class="r-in"><span>            ref_area_col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html" class="external-link">rgb</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/col2rgb.html" class="external-link">col2rgb</a></span><span class="op">(</span><span class="st">"gray50"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/grDevices/col2rgb.html" class="external-link">col2rgb</a></span><span class="op">(</span><span class="st">"gray50"</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,<span class="fu"><a href="https://rdrr.io/r/grDevices/col2rgb.html" class="external-link">col2rgb</a></span><span class="op">(</span><span class="st">"gray50"</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>,</span></span>
@@ -642,13 +687,15 @@ instead of the gtable/plot.</p></dd>
 <span class="r-in"><span>           facet_scales <span class="op">=</span> <span class="st">"free"</span>,</span></span>
 <span class="r-in"><span>           facet_space <span class="op">=</span> <span class="st">"free"</span>,</span></span>
 <span class="r-in"><span>           paramname_shape <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>           interval_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"square"</span>,<span class="st">"triangle"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>           paramname_color <span class="op">=</span>  <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>           combine_interval_shape_legend <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>           legend_shape_reverse <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>           legend_color_reverse <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>           table_position <span class="op">=</span> <span class="st">"right"</span>, plot_title <span class="op">=</span> <span class="st">""</span>,</span></span>
 <span class="r-in"><span>           ref_area_col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html" class="external-link">rgb</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/col2rgb.html" class="external-link">col2rgb</a></span><span class="op">(</span><span class="st">"gray50"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/grDevices/col2rgb.html" class="external-link">col2rgb</a></span><span class="op">(</span><span class="st">"gray50"</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,<span class="fu"><a href="https://rdrr.io/r/grDevices/col2rgb.html" class="external-link">col2rgb</a></span><span class="op">(</span><span class="st">"gray50"</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span>                               max <span class="op">=</span> <span class="fl">255</span>, alpha <span class="op">=</span> <span class="fl">0.1</span><span class="op">*</span><span class="fl">255</span> <span class="op">)</span> ,</span></span>
-<span class="r-in"><span>           interval_col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"steelblue"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>           interval_col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"steelblue"</span>,<span class="st">"red"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>           strip_col <span class="op">=</span> <span class="st">"lightblue"</span>,</span></span>
 <span class="r-in"><span>           major_x_ticks          <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.8</span>,<span class="fl">1</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">0.8</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">0.5</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>           major_x_labels         <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1/2"</span>, <span class="st">"0.8"</span>,<span class="st">"1"</span>, <span class="st">"1.25"</span>, <span class="st">"2"</span><span class="op">)</span>,</span></span>
@@ -732,7 +779,7 @@ instead of the gtable/plot.</p></dd>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Samer Mouksassi.</p>
+  <p></p><p>Developed by Samer Mouksassi, Benjamin Rich.</p>
 </div>
 
 <div class="pkgdown">
