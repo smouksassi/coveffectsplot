@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">coveffectsplot</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.3.9999</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4</span>
       </span>
     </div>
 
@@ -281,59 +281,6 @@ concentration-time profiles on linear and log linear scales.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">678549</span><span class="op">)</span></span>
 <span><span class="va">plotdata</span> <span class="op">&lt;-</span> <span class="va">outputsim</span><span class="op">[</span><span class="va">ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">ID</span><span class="op">)</span>, <span class="fl">500</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
-<span><span class="va">labeller</span></span>
-<span><span class="co">#&gt; function (..., .rows = NULL, .cols = NULL, keep.as.numeric = deprecated(), </span></span>
-<span><span class="co">#&gt;     .multi_line = TRUE, .default = label_value) </span></span>
-<span><span class="co">#&gt; {</span></span>
-<span><span class="co">#&gt;     if (lifecycle::is_present(keep.as.numeric)) {</span></span>
-<span><span class="co">#&gt;         deprecate_warn0("2.0.0", "labeller(keep.as.numeric)")</span></span>
-<span><span class="co">#&gt;     }</span></span>
-<span><span class="co">#&gt;     dots &lt;- list2(...)</span></span>
-<span><span class="co">#&gt;     .default &lt;- as_labeller(.default)</span></span>
-<span><span class="co">#&gt;     function(labels) {</span></span>
-<span><span class="co">#&gt;         if (!is.null(.rows) || !is.null(.cols)) {</span></span>
-<span><span class="co">#&gt;             margin_labeller &lt;- resolve_labeller(.rows, .cols, </span></span>
-<span><span class="co">#&gt;                 labels)</span></span>
-<span><span class="co">#&gt;         }</span></span>
-<span><span class="co">#&gt;         else {</span></span>
-<span><span class="co">#&gt;             margin_labeller &lt;- NULL</span></span>
-<span><span class="co">#&gt;         }</span></span>
-<span><span class="co">#&gt;         if (is.null(margin_labeller)) {</span></span>
-<span><span class="co">#&gt;             labellers &lt;- lapply(dots, as_labeller, default = .default)</span></span>
-<span><span class="co">#&gt;         }</span></span>
-<span><span class="co">#&gt;         else {</span></span>
-<span><span class="co">#&gt;             margin_labeller &lt;- as_labeller(margin_labeller, default = .default, </span></span>
-<span><span class="co">#&gt;                 multi_line = .multi_line)</span></span>
-<span><span class="co">#&gt;             if (any(names(dots) %in% names(labels))) {</span></span>
-<span><span class="co">#&gt;                 cli::cli_abort("Conflict between {.var {paste0('.', attr(labels, 'type'))}} and {.var {names(dots)}}")</span></span>
-<span><span class="co">#&gt;             }</span></span>
-<span><span class="co">#&gt;         }</span></span>
-<span><span class="co">#&gt;         if (is.null(margin_labeller)) {</span></span>
-<span><span class="co">#&gt;             out &lt;- lapply(names(labels), function(label) {</span></span>
-<span><span class="co">#&gt;                 if (label %in% names(labellers)) {</span></span>
-<span><span class="co">#&gt;                   labellers[[label]](labels[label])[[1]]</span></span>
-<span><span class="co">#&gt;                 }</span></span>
-<span><span class="co">#&gt;                 else {</span></span>
-<span><span class="co">#&gt;                   .default(labels[label])[[1]]</span></span>
-<span><span class="co">#&gt;                 }</span></span>
-<span><span class="co">#&gt;             })</span></span>
-<span><span class="co">#&gt;             names(out) &lt;- names(labels)</span></span>
-<span><span class="co">#&gt;             if (.multi_line) {</span></span>
-<span><span class="co">#&gt;                 out</span></span>
-<span><span class="co">#&gt;             }</span></span>
-<span><span class="co">#&gt;             else {</span></span>
-<span><span class="co">#&gt;                 collapse_labels_lines(out)</span></span>
-<span><span class="co">#&gt;             }</span></span>
-<span><span class="co">#&gt;         }</span></span>
-<span><span class="co">#&gt;         else {</span></span>
-<span><span class="co">#&gt;             margin_labeller(labels)</span></span>
-<span><span class="co">#&gt;         }</span></span>
-<span><span class="co">#&gt;     }</span></span>
-<span><span class="co">#&gt; }</span></span>
-<span><span class="co">#&gt; &lt;bytecode: 0x0000015f020b6f48&gt;</span></span>
-<span><span class="co">#&gt; &lt;environment: namespace:ggplot2&gt;</span></span>
-<span></span>
-<span></span>
 <span><span class="co"># New facet label names for dose variable</span></span>
 <span><span class="va">albumin.labs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"albumin: 45 ng/mL"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">albumin.labs</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"45"</span><span class="op">)</span></span>
@@ -354,7 +301,7 @@ concentration-time profiles on linear and log linear scales.</p>
 <span>             labeller <span class="op">=</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labeller.html" class="external-link">labeller</a></span><span class="op">(</span>ALB <span class="op">=</span> <span class="va">albumin.labs</span>,</span>
 <span>                                  WT <span class="op">=</span> <span class="va">wt.labs</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_log10</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Plasma~Concentrations (logarithmic scale)"</span>, x <span class="op">=</span> <span class="st">"Time (h)"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Plasma~Concentrations\n(logarithmic scale)"</span>, x <span class="op">=</span> <span class="st">"Time (h)"</span><span class="op">)</span></span>
 <span>  <span class="co">#labs(y = expression(Log[10]~Plasma~Concentrations), x = "Time (h)")+</span></span>
 <span></span>
 <span></span>
@@ -438,7 +385,7 @@ the <code>coveffectsplot</code> or not.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html" class="external-link">coord_cartesian</a></span><span class="op">(</span>expand<span class="op">=</span><span class="cn">FALSE</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p3</span><span class="op">+</span><span class="va">p4</span></span></code></pre></div>
-<p><img src="PK_Example_files/figure-html/computenca%20-1.png" width="672"></p>
+<p><img src="PK_Example_files/figure-html/computenca-1.png" width="672"></p>
 <p><strong>Ranges of BSV for each PK Parameter:</strong></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bsvranges</span> <span class="op">&lt;-</span> <span class="va">refbsv</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -449,9 +396,9 @@ the <code>coveffectsplot</code> or not.</p>
 <span>    P95 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">stdparamvalue</span>, <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">paramname</span><span class="op">]</span></span>
 <span><span class="va">bsvranges</span></span>
 <span><span class="co">#&gt;    paramname       P05       P25 P50      P75      P95</span></span>
-<span><span class="co">#&gt; 1:      Cmax 0.8055162 0.9148599   1 1.078286 1.195661</span></span>
-<span><span class="co">#&gt; 2:     Clast 0.4514538 0.7536810   1 1.265716 1.718010</span></span>
-<span><span class="co">#&gt; 3:       AUC 0.6853832 0.8646884   1 1.114333 1.303544</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:      Cmax 0.7888732 0.9241690   1 1.086957 1.190033</span></span>
+<span><span class="co">#&gt; 2:     Clast 0.4536776 0.7697529   1 1.254508 1.730640</span></span>
+<span><span class="co">#&gt; 3:       AUC 0.7031688 0.8873055   1 1.128587 1.325699</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -473,7 +420,7 @@ values varying one at a time.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reference.values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>WT <span class="op">=</span> <span class="fl">85</span>, ALB <span class="op">=</span> <span class="fl">45</span>, SEX <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>   </span>
 <span></span>
-<span><span class="va">covcomb</span> <span class="op">&lt;-</span> <span class="fu">expand.modelframe</span><span class="op">(</span></span>
+<span><span class="va">covcomb</span> <span class="op">&lt;-</span> <span class="fu">expand.modelframe</span><span class="op">(</span> <span class="co">#defined at the top and now expand_modelframe was added</span></span>
 <span>  WT  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">56</span>, <span class="fl">72</span>, <span class="fl">98</span>, <span class="fl">128</span><span class="op">)</span>, <span class="co"># P05, P25, P50, P75, P95</span></span>
 <span>  ALB <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">50</span><span class="op">)</span>,          <span class="co"># P05, P50, P95</span></span>
 <span>  SEX <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>,               <span class="co"># Reference is for SEX=0 (female)</span></span>
@@ -523,8 +470,8 @@ provide a plot to visualize the effects.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">wt.labs</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"56"</span>,<span class="st">"72"</span>,<span class="st">"85"</span>,<span class="st">"98"</span>,<span class="st">"128"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pkprofiletypical</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">outcovcomb</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">time</span>, y<span class="op">=</span><span class="va">CP</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">WT</span><span class="op">)</span>, linetype<span class="op">=</span><span class="va">SEX</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>group<span class="op">=</span><span class="va">ID</span><span class="op">)</span>, alpha<span class="op">=</span><span class="fl">1</span>, size<span class="op">=</span><span class="fl">1.5</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="va">ALB</span> <span class="op">+</span> <span class="va">SEX</span><span class="op">~</span> <span class="va">WT</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>group<span class="op">=</span><span class="va">ID</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">1</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">facet_nested</span><span class="op">(</span><span class="va">ALB</span> <span class="op">+</span> <span class="va">SEX</span> <span class="op">~</span> <span class="va">WT</span>,</span>
 <span>               labeller<span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labeller.html" class="external-link">labeller</a></span><span class="op">(</span>ALB <span class="op">=</span> <span class="va">albumin.labs</span>, WT <span class="op">=</span> <span class="va">wt.labs</span>, SEX <span class="op">=</span> <span class="va">label_value</span><span class="op">)</span>,</span>
 <span>             switch <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
@@ -537,8 +484,8 @@ provide a plot to visualize the effects.</p>
 <span></span>
 <span><span class="va">pkprofiletypical</span> <span class="op">&lt;-</span> <span class="va">pkprofiletypical</span> <span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">13</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.title.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">15</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>colour<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>override.aes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>alpha<span class="op">=</span><span class="fl">1</span>,size<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>         linetype<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>override.aes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>colour   <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>override.aes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">1</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         linetype <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>override.aes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, order <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html" class="external-link">coord_cartesian</a></span><span class="op">(</span>ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">pkprofiletypical</span></span></code></pre></div>
 <p><img src="PK_Example_files/figure-html/unnamed-chunk-2-1.png" width="816"></p>
@@ -547,13 +494,13 @@ provide a plot to visualize the effects.</p>
 <div class="section level2">
 <h2 id="adding-uncertainty-from-a-varcov-matrix">Adding Uncertainty from a Varcov Matrix<a class="anchor" aria-label="anchor" href="#adding-uncertainty-from-a-varcov-matrix"></a>
 </h2>
-<p>First, we will invent a varcov matrix by assuming 15% relative
+<p>First, we will invent a varcov matrix by assuming 25% relative
 standard errors and correlations of 0.2 across the board. We then
 simulate a 100 set of parameters using a multivariate normal (kept at
 100 for the vignette, use more replicates for a real project). Also,
 unless the model was written in a way to allow unconstrained parameter
 values, care should be taken to make sure the simulated parameters are
-valid and make sense. In real modeling applications, the software used
+valid and make sense. In a real modeling applications, the software used
 to fit the model will provide a variance covariance matrix, if possible.
 Otherwise, the user can rely on set of parameters generated from
 bootstrap replicates or SIR run.</p>
@@ -566,33 +513,37 @@ bootstrap replicates or SIR run.</p>
 <span><span class="co">#&gt;    KA CL  V Vp Qp CLALB CLSEX CLWT VSEX VWT</span></span>
 <span><span class="co">#&gt; 1 0.5  4 10 50 10  -0.8   0.2    1 0.07   1</span></span>
 <span></span>
+<span><span class="co">#note that from RsNLME or NONMEM or Monolix the software will give you the varcov just read it it in.</span></span>
+<span><span class="co"># example NONMEM  read in your run .cov</span></span>
+<span><span class="co"># varcov &lt;- read.csv(paste("runxyz",".cov",sep=""), header=TRUE, skip=1, sep="")</span></span>
+<span></span>
 <span><span class="va">varcov</span> <span class="op">&lt;-</span> <span class="fu">cor2cov</span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0.2</span>, nrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">theta</span><span class="op">)</span>, ncol<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">theta</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  sd<span class="op">=</span><span class="va">theta</span><span class="op">*</span><span class="fl">0.15</span><span class="op">)</span></span>
+<span>  sd<span class="op">=</span><span class="va">theta</span><span class="op">*</span><span class="fl">0.25</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">varcov</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">varcov</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">theta</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">varcov</span><span class="op">)</span></span>
-<span><span class="co">#&gt;               KA       CL        V       Vp       Qp     CLALB    CLSEX</span></span>
-<span><span class="co">#&gt; KA     0.0056250  0.00900  0.02250  0.11250  0.02250 -0.001800  4.5e-04</span></span>
-<span><span class="co">#&gt; CL     0.0090000  0.36000  0.18000  0.90000  0.18000 -0.014400  3.6e-03</span></span>
-<span><span class="co">#&gt; V      0.0225000  0.18000  2.25000  2.25000  0.45000 -0.036000  9.0e-03</span></span>
-<span><span class="co">#&gt; Vp     0.1125000  0.90000  2.25000 56.25000  2.25000 -0.180000  4.5e-02</span></span>
-<span><span class="co">#&gt; Qp     0.0225000  0.18000  0.45000  2.25000  2.25000 -0.036000  9.0e-03</span></span>
-<span><span class="co">#&gt; CLALB -0.0018000 -0.01440 -0.03600 -0.18000 -0.03600  0.014400 -7.2e-04</span></span>
-<span><span class="co">#&gt; CLSEX  0.0004500  0.00360  0.00900  0.04500  0.00900 -0.000720  9.0e-04</span></span>
-<span><span class="co">#&gt; CLWT   0.0022500  0.01800  0.04500  0.22500  0.04500 -0.003600  9.0e-04</span></span>
-<span><span class="co">#&gt; VSEX   0.0001575  0.00126  0.00315  0.01575  0.00315 -0.000252  6.3e-05</span></span>
-<span><span class="co">#&gt; VWT    0.0022500  0.01800  0.04500  0.22500  0.04500 -0.003600  9.0e-04</span></span>
-<span><span class="co">#&gt;            CLWT        VSEX       VWT</span></span>
-<span><span class="co">#&gt; KA     0.002250  0.00015750  0.002250</span></span>
-<span><span class="co">#&gt; CL     0.018000  0.00126000  0.018000</span></span>
-<span><span class="co">#&gt; V      0.045000  0.00315000  0.045000</span></span>
-<span><span class="co">#&gt; Vp     0.225000  0.01575000  0.225000</span></span>
-<span><span class="co">#&gt; Qp     0.045000  0.00315000  0.045000</span></span>
-<span><span class="co">#&gt; CLALB -0.003600 -0.00025200 -0.003600</span></span>
-<span><span class="co">#&gt; CLSEX  0.000900  0.00006300  0.000900</span></span>
-<span><span class="co">#&gt; CLWT   0.022500  0.00031500  0.004500</span></span>
-<span><span class="co">#&gt; VSEX   0.000315  0.00011025  0.000315</span></span>
-<span><span class="co">#&gt; VWT    0.004500  0.00031500  0.022500</span></span></code></pre></div>
+<span><span class="co">#&gt;               KA      CL        V        Vp       Qp  CLALB     CLSEX      CLWT</span></span>
+<span><span class="co">#&gt; KA     0.0156250  0.0250  0.06250   0.31250  0.06250 -5e-03  0.001250  0.006250</span></span>
+<span><span class="co">#&gt; CL     0.0250000  1.0000  0.50000   2.50000  0.50000 -4e-02  0.010000  0.050000</span></span>
+<span><span class="co">#&gt; V      0.0625000  0.5000  6.25000   6.25000  1.25000 -1e-01  0.025000  0.125000</span></span>
+<span><span class="co">#&gt; Vp     0.3125000  2.5000  6.25000 156.25000  6.25000 -5e-01  0.125000  0.625000</span></span>
+<span><span class="co">#&gt; Qp     0.0625000  0.5000  1.25000   6.25000  6.25000 -1e-01  0.025000  0.125000</span></span>
+<span><span class="co">#&gt; CLALB -0.0050000 -0.0400 -0.10000  -0.50000 -0.10000  4e-02 -0.002000 -0.010000</span></span>
+<span><span class="co">#&gt; CLSEX  0.0012500  0.0100  0.02500   0.12500  0.02500 -2e-03  0.002500  0.002500</span></span>
+<span><span class="co">#&gt; CLWT   0.0062500  0.0500  0.12500   0.62500  0.12500 -1e-02  0.002500  0.062500</span></span>
+<span><span class="co">#&gt; VSEX   0.0004375  0.0035  0.00875   0.04375  0.00875 -7e-04  0.000175  0.000875</span></span>
+<span><span class="co">#&gt; VWT    0.0062500  0.0500  0.12500   0.62500  0.12500 -1e-02  0.002500  0.012500</span></span>
+<span><span class="co">#&gt;              VSEX       VWT</span></span>
+<span><span class="co">#&gt; KA     0.00043750  0.006250</span></span>
+<span><span class="co">#&gt; CL     0.00350000  0.050000</span></span>
+<span><span class="co">#&gt; V      0.00875000  0.125000</span></span>
+<span><span class="co">#&gt; Vp     0.04375000  0.625000</span></span>
+<span><span class="co">#&gt; Qp     0.00875000  0.125000</span></span>
+<span><span class="co">#&gt; CLALB -0.00070000 -0.010000</span></span>
+<span><span class="co">#&gt; CLSEX  0.00017500  0.002500</span></span>
+<span><span class="co">#&gt; CLWT   0.00087500  0.012500</span></span>
+<span><span class="co">#&gt; VSEX   0.00030625  0.000875</span></span>
+<span><span class="co">#&gt; VWT    0.00087500  0.062500</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="generating-sets-of-parameters-with-uncertainty">Generating Sets of Parameters with Uncertainty<a class="anchor" aria-label="anchor" href="#generating-sets-of-parameters-with-uncertainty"></a>
 </h3>
@@ -604,22 +555,23 @@ Effects with Uncertainty:</strong></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">678549</span><span class="op">)</span></span>
 <span><span class="co"># mvtnorm::rmvnorm is another option that can be explored</span></span>
+<span><span class="co"># if you have run a bootstrap just use the parameters data generated using all replicates</span></span>
 <span><span class="va">sim_parameters</span> <span class="op">&lt;-</span> <span class="fu">MASS</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/mvrnorm.html" class="external-link">mvrnorm</a></span><span class="op">(</span><span class="va">nsim</span>, <span class="va">theta</span>, <span class="va">varcov</span>, empirical<span class="op">=</span><span class="cn">T</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="va">as.data.table</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim_parameters</span><span class="op">)</span></span>
-<span><span class="co">#&gt;           KA       CL         V       Vp        Qp      CLALB     CLSEX</span></span>
-<span><span class="co">#&gt; 1: 0.4115294 3.520240  8.752288 41.48036  9.492767 -0.7980967 0.1681685</span></span>
-<span><span class="co">#&gt; 2: 0.5149454 3.806524  8.146900 47.22676  8.270697 -0.5378222 0.1343462</span></span>
-<span><span class="co">#&gt; 3: 0.4899686 4.040032  9.502142 51.13724  9.368725 -0.9607161 0.1924392</span></span>
-<span><span class="co">#&gt; 4: 0.5166890 3.008133  7.619999 46.55800  8.784603 -0.7091522 0.1697973</span></span>
-<span><span class="co">#&gt; 5: 0.4826436 4.039409 10.364260 42.97650  9.655133 -0.5996356 0.2626087</span></span>
-<span><span class="co">#&gt; 6: 0.6777957 4.624924 11.915758 46.39789 10.561851 -0.7341991 0.1664232</span></span>
+<span><span class="co">#&gt;           KA       CL         V       Vp        Qp      CLALB      CLSEX</span></span>
+<span><span class="co">#&gt; 1: 0.3645427 4.115196  7.858965 35.79046  9.093097 -0.8186213 0.20658994</span></span>
+<span><span class="co">#&gt; 2: 0.5163474 3.494293  6.923526 45.37991  7.129854 -0.3552765 0.23866313</span></span>
+<span><span class="co">#&gt; 3: 0.4758590 3.696080  9.195035 51.89949  8.972673 -1.0576088 0.22575523</span></span>
+<span><span class="co">#&gt; 4: 0.5626205 4.738272  5.872689 44.23686  7.813695 -0.7074335 0.20351858</span></span>
+<span><span class="co">#&gt; 5: 0.4751656 3.719212 10.630815 38.29808  9.448937 -0.4625731 0.06095075</span></span>
+<span><span class="co">#&gt; 6: 0.7643618 3.382369 13.304003 44.01477 11.047492 -0.6451500 0.28935347</span></span>
 <span><span class="co">#&gt;         CLWT       VSEX       VWT</span></span>
-<span><span class="co">#&gt; 1: 0.6875289 0.06739386 1.0447005</span></span>
-<span><span class="co">#&gt; 2: 0.9308551 0.06447936 0.5828728</span></span>
-<span><span class="co">#&gt; 3: 1.0888616 0.06746667 1.0803460</span></span>
-<span><span class="co">#&gt; 4: 0.7730086 0.05732814 0.8662575</span></span>
-<span><span class="co">#&gt; 5: 0.9032044 0.06579972 0.9270958</span></span>
-<span><span class="co">#&gt; 6: 1.0308640 0.06165794 1.1026553</span></span></code></pre></div>
+<span><span class="co">#&gt; 1: 1.1028630 0.05840954 0.5075771</span></span>
+<span><span class="co">#&gt; 2: 0.2964691 0.05445165 0.8764398</span></span>
+<span><span class="co">#&gt; 3: 1.1213127 0.07868662 1.1355054</span></span>
+<span><span class="co">#&gt; 4: 0.8526902 0.07446622 0.6972755</span></span>
+<span><span class="co">#&gt; 5: 0.8714565 0.06506512 0.8316376</span></span>
+<span><span class="co">#&gt; 6: 1.1152537 0.09480170 0.9956016</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="iterative-simulations-to-apply-the-uncertainty">Iterative Simulations to Apply the Uncertainty<a class="anchor" aria-label="anchor" href="#iterative-simulations-to-apply-the-uncertainty"></a>
@@ -657,26 +609,6 @@ visualize the effect of adding it.</p>
 <span>  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>paramname<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, paramvalue<span class="op">=</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="co"># pkprofileuncertainty &lt;- ggplot(iter_sims, aes(x=time, y=CP, col=factor(WT), linetype=SEX)) +</span></span>
-<span><span class="co">#   geom_line(aes(group=interaction(ID, rep)), alpha=0.1, size=0.1) +</span></span>
-<span><span class="co">#   geom_line(data = outcovcomb, aes(group=interaction(ID)),</span></span>
-<span><span class="co">#             alpha= 1, size=0.7, colour = "black") +</span></span>
-<span><span class="co">#   facet_grid(ALB +SEX ~ WT, labeller= labeller(ALB = label_both, SEX = label_value, WT = label_both),</span></span>
-<span><span class="co">#              switch = "y") +</span></span>
-<span><span class="co">#   labs(</span></span>
-<span><span class="co">#     x        = "Time (h)",</span></span>
-<span><span class="co">#     y        = "Plasma Concentrations",</span></span>
-<span><span class="co">#     linetype = "Sex",</span></span>
-<span><span class="co">#     colour   = "Uncertainty\nReplicates\nWeight",</span></span>
-<span><span class="co">#     caption  = "Simulation with Uncertainty, without BSV") +</span></span>
-<span><span class="co">#   coord_cartesian(ylim=c(0,3.5))+</span></span>
-<span><span class="co">#   guides(colour = guide_legend(override.aes = list(alpha = 1)))+</span></span>
-<span><span class="co">#   theme_bw(base_size = 13)+</span></span>
-<span><span class="co">#   theme(axis.title.y = element_text(size=15))+</span></span>
-<span><span class="co">#   guides(colour=guide_legend(override.aes = list(alpha=1,size=0.5)),</span></span>
-<span><span class="co">#          linetype=guide_legend(override.aes = list(size=0.5)))+</span></span>
-<span><span class="co">#   coord_cartesian(ylim=c(0,4))</span></span>
-<span></span>
 <span><span class="va">iter_sims_sum</span> <span class="op">&lt;-</span> <span class="va">iter_sims</span><span class="op">[</span>, <span class="fu">summary_conc</span><span class="op">(</span><span class="va">CP</span><span class="op">)</span>, by<span class="op">=</span><span class="fu">.</span><span class="op">(</span> <span class="va">time</span>, <span class="va">WT</span>, <span class="va">SEX</span>, <span class="va">ALB</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">iter_sims_sum</span> <span class="op">&lt;-</span> <span class="fu">spread</span><span class="op">(</span><span class="va">iter_sims_sum</span>,<span class="va">paramname</span>,<span class="va">paramvalue</span><span class="op">)</span></span>
 <span><span class="va">iter_sims_sum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">iter_sims_sum</span><span class="op">)</span></span>
@@ -689,9 +621,9 @@ visualize the effect of adding it.</p>
 <span><span class="va">pkprofileuncertainty_sum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">iter_sims_sum</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">time</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">WT</span><span class="op">)</span>,</span>
 <span>                      fill<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">WT</span><span class="op">)</span>,</span>
 <span>                      linetype<span class="op">=</span><span class="va">SEX</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin<span class="op">=</span> <span class="va">`Clow.5%`</span> ,ymax<span class="op">=</span><span class="va">`Cup.95%`</span><span class="op">)</span><span class="op">)</span>, alpha<span class="op">=</span><span class="fl">0.4</span>,linetype<span class="op">=</span><span class="fl">0</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">Cmed</span><span class="op">)</span>,alpha<span class="op">=</span><span class="fl">1</span> , color <span class="op">=</span><span class="st">"black"</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="va">ALB</span> <span class="op">+</span><span class="va">SEX</span> <span class="op">~</span> <span class="va">WT</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin<span class="op">=</span> <span class="va">`Clow.5%`</span> ,ymax<span class="op">=</span><span class="va">`Cup.95%`</span><span class="op">)</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.4</span>, linetype <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">Cmed</span><span class="op">)</span>,alpha<span class="op">=</span><span class="fl">1</span> , color <span class="op">=</span><span class="st">"black"</span> , linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu">facet_nested</span><span class="op">(</span><span class="va">ALB</span> <span class="op">+</span><span class="va">SEX</span> <span class="op">~</span> <span class="va">WT</span>,</span>
 <span>             labeller<span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labeller.html" class="external-link">labeller</a></span><span class="op">(</span>ALB <span class="op">=</span> <span class="va">albumin.labs</span>,</span>
 <span>                                WT <span class="op">=</span> <span class="va">wt.labs</span>,</span>
 <span>                                SEX <span class="op">=</span> <span class="va">label_value</span><span class="op">)</span>,switch <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -704,9 +636,8 @@ visualize the effect of adding it.</p>
 <span>    caption  <span class="op">=</span> <span class="st">"Simulation with Uncertainty, without BSV"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">13</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.title.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">15</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>colour<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>override.aes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>alpha<span class="op">=</span><span class="fl">0.4</span>,size<span class="op">=</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>         fill<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>override.aes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>alpha<span class="op">=</span><span class="fl">0.4</span>,size<span class="op">=</span><span class="fl">0.4</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>         linetype<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>override.aes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill     <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>override.aes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.4</span>, size <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         linetype <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>override.aes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, order <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html" class="external-link">coord_cartesian</a></span><span class="op">(</span>ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pkprofileuncertainty_sum</span></span></code></pre></div>
@@ -727,12 +658,12 @@ construct more informative labels that will help in the plotting.</p>
 <span>  <span class="fu">.</span><span class="op">(</span>medparam <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">paramvalue</span><span class="op">)</span><span class="op">)</span>, by<span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">rep</span>,<span class="va">paramname</span><span class="op">)</span> <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">refvalues</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   rep paramname   medparam</span></span>
-<span><span class="co">#&gt; 1   1      Cmax  2.0766186</span></span>
-<span><span class="co">#&gt; 2   1     Clast  0.3772417</span></span>
-<span><span class="co">#&gt; 3   1       AUC 21.5798690</span></span>
-<span><span class="co">#&gt; 4   2      Cmax  2.5329442</span></span>
-<span><span class="co">#&gt; 5   2     Clast  0.3203315</span></span>
-<span><span class="co">#&gt; 6   2       AUC 19.9484911</span></span></code></pre></div>
+<span><span class="co">#&gt; 1   1      Cmax  1.9544180</span></span>
+<span><span class="co">#&gt; 2   1     Clast  0.2908982</span></span>
+<span><span class="co">#&gt; 3   1       AUC 20.2037062</span></span>
+<span><span class="co">#&gt; 4   2      Cmax  2.8965735</span></span>
+<span><span class="co">#&gt; 5   2     Clast  0.3415556</span></span>
+<span><span class="co">#&gt; 6   2       AUC 21.5011326</span></span></code></pre></div>
 <p><strong>Median Parameter Values for the Reference:</strong></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">covcomb</span><span class="op">$</span><span class="va">covvalue</span><span class="op">[</span><span class="va">covcomb</span><span class="op">$</span><span class="va">covname</span><span class="op">==</span><span class="st">"WT"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">covcomb</span><span class="op">$</span><span class="va">WT</span><span class="op">[</span><span class="va">covcomb</span><span class="op">$</span><span class="va">covname</span><span class="op">==</span><span class="st">"WT"</span><span class="op">]</span>,<span class="st">"kg"</span><span class="op">)</span></span>
@@ -948,7 +879,7 @@ covariate distributions presented in another vignette.</p>
 <span><span class="co">#&gt; png </span></span>
 <span><span class="co">#&gt;   2</span></span></code></pre></div>
 <div class="figure">
-<img src="../../../../../../../OneDrive%20-%20Certara/Desktop/Shiny/projects/packages/coveffectsplot/articles/Figure4_6.png" alt=""><p class="caption">Covariate Effects Plot With BSV.</p>
+<img src="Figure4_6.png" alt=""><p class="caption">Covariate Effects Plot With BSV.</p>
 </div>
 </div>
 <div class="section level2">
@@ -998,7 +929,7 @@ text and <code>table_title_size</code> arguments.</p>
 <span><span class="co">#&gt; png </span></span>
 <span><span class="co">#&gt;   2</span></span></code></pre></div>
 <div class="figure">
-<img src="../../../../../../../OneDrive%20-%20Certara/Desktop/Shiny/projects/packages/coveffectsplot/articles/coveffectsplot4.png" alt=""><p class="caption">Covariate Effects Plot Theme Ben Rich.</p>
+<img src="coveffectsplot4.png" alt=""><p class="caption">Covariate Effects Plot Theme Ben Rich.</p>
 </div>
 </div>
 <div class="section level3">
@@ -1091,7 +1022,7 @@ using regular ggplot code that modify the facet text color to
 <span><span class="co">#&gt; png </span></span>
 <span><span class="co">#&gt;   2</span></span></code></pre></div>
 <div class="figure">
-<img src="../../../../../../../OneDrive%20-%20Certara/Desktop/Shiny/projects/packages/coveffectsplot/articles/coveffectsplot5.png" alt=""><p class="caption">Customized Covariate Effects Plot.</p>
+<img src="coveffectsplot5.png" alt=""><p class="caption">Customized Covariate Effects Plot.</p>
 </div>
 </div>
 </div>
@@ -1135,7 +1066,7 @@ text sizes using <code>base_size = 11</code>.</p>
 <span><span class="co">#&gt; png </span></span>
 <span><span class="co">#&gt;   2</span></span></code></pre></div>
 <div class="figure">
-<img src="../../../../../../../OneDrive%20-%20Certara/Desktop/Shiny/projects/packages/coveffectsplot/articles/coveffectsplot6.png" alt=""><p class="caption">Facet By Parameter Covariate Effects Plot.</p>
+<img src="coveffectsplot6.png" alt=""><p class="caption">Facet By Parameter Covariate Effects Plot.</p>
 </div>
 </div>
 <div class="section level3">
@@ -1178,7 +1109,7 @@ legend ordering and few other options.</p>
 <span><span class="co">#&gt; png </span></span>
 <span><span class="co">#&gt;   2</span></span></code></pre></div>
 <div class="figure">
-<img src="../../../../../../../OneDrive%20-%20Certara/Desktop/Shiny/projects/packages/coveffectsplot/articles/coveffectsplot7.png" alt=""><p class="caption">Shape By Parameter Covariate Effects Plot.</p>
+<img src="coveffectsplot7.png" alt=""><p class="caption">Shape By Parameter Covariate Effects Plot.</p>
 </div>
 </div>
 <div class="section level3">
@@ -1224,7 +1155,7 @@ argument</p>
 <span><span class="co">#&gt; png </span></span>
 <span><span class="co">#&gt;   2</span></span></code></pre></div>
 <div class="figure">
-<img src="../../../../../../../OneDrive%20-%20Certara/Desktop/Shiny/projects/packages/coveffectsplot/articles/coveffectsplot_color.png" alt=""><p class="caption">Color By Parameter Covariate Effects Plot.</p>
+<img src="coveffectsplot_color.png" alt=""><p class="caption">Color By Parameter Covariate Effects Plot.</p>
 </div>
 <p>While we covered varying one at a time covariate value (marginal
 effects), we can use observed or simulated distribution of correlated
@@ -1250,7 +1181,7 @@ example vignette.)</p>
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Samer Mouksassi.</p>
+<p>Developed by Samer Mouksassi, Benjamin Rich.</p>
 </div>
 
 <div class="pkgdown">
