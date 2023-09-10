@@ -179,6 +179,7 @@ label_wrap <- function(width) {
 #'             facet_space = "free_y",
 #'             show_table_facet_strip = "none",
 #'             table_position = "right",
+#'             plot_title = "",
 #'             plot_table_ratio = 4)
 #'
 #' # Example 2
@@ -211,6 +212,7 @@ label_wrap <- function(width) {
 #'             show_table_facet_strip = "both",
 #'             show_table_yaxis_tick_label = TRUE,
 #'             table_position = "below",
+#'             plot_title = "",
 #'             plot_table_ratio = 1)
 #'\dontrun{
 #'
@@ -256,31 +258,39 @@ label_wrap <- function(width) {
 #' plotdata$paramname <- c(rep("1-OH",30),rep("BZD",30))
 #' plotdata$paramname2 <- c(rep("AUC",15),rep("CMAX",15),rep("AUC",15),rep("CMAX",15))
 #'forest_plot(plotdata,
-#'            ref_area = c(0.8, 1.2),
+#'            show_ref_area = FALSE,
 #'            x_facet_text_size = 13,
 #'            y_facet_text_size = 13,
-#'            ref_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
-#'            area_legend_text = "Reference (vertical line)\n+/- 20% limits (colored area)",
+#'            ref_legend_text = "Reference (vertical line))",
+#'            area_legend_text = "Reference (vertical line)",
 #'            xlabel = "Fold Change Relative to Parameter",
 #'            facet_formula = covname~paramname2,
 #'            facet_switch = "both",
 #'            facet_scales = "free",
 #'            facet_space = "free",
+#'            legend_order = c("shape","pointinterval","ref"),
 #'            paramname_shape = TRUE,
-#'            interval_shape = c("square","triangle"),
+#'            interval_shape = c("diamond","diamond filled",
+#'                               "diamond","diamond filled"),
 #'            paramname_color =  TRUE,
 #'            combine_interval_shape_legend = TRUE,
 #'            legend_shape_reverse = TRUE,
 #'            legend_color_reverse = TRUE,
+#'            interval_legend_title="Median (points)\n95% CI (horizontal lines)",
 #'            table_position = "right", plot_title = "",
 #'            ref_area_col = rgb( col2rgb("gray50")[1], col2rgb("gray50")[2],col2rgb("gray50")[3],
 #'                                max = 255, alpha = 0.1*255 ) ,
-#'            interval_col = c("steelblue","red"),
+#'            interval_col = c("steelblue","red","steelblue","red"),
 #'            strip_col = "lightblue",
-#'            major_x_ticks          = c(0.5, 0.8,1, 1/0.8, 1/0.5),
 #'            major_x_labels         = c("1/2", "0.8","1", "1.25", "2"),
+#'            logxscale = TRUE, major_x_ticks =c(0.5,0.8,1,1.25,2),
 #'            table_text_size = 5,
-#'            plot_table_ratio = 1.5)
+#'            plot_table_ratio = 1.5,
+#'            ref_value_by_panel = TRUE,
+#'            ref_value_by_panel_data = as.data.frame(
+#'            plotdata %>% 
+#'            distinct(paramname2) %>% 
+#'            mutate(xintercept=ifelse(paramname2=="CMAX",1,1.2))))
 #'
 #' # Example 3
 #' 
