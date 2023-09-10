@@ -17,6 +17,8 @@ forest_plot(
   y_facet_text_vjust = 0.5,
   x_facet_text_hjust = 0.5,
   y_facet_text_hjust = 0.5,
+  x_facet_text_col = "black",
+  y_facet_text_col = "black",
   xy_facet_text_bold = TRUE,
   x_label_text_size = 16,
   y_label_text_size = 16,
@@ -121,6 +123,10 @@ forest_plot(
 \item{x_facet_text_hjust}{Facet text horizontal justification.}
 
 \item{y_facet_text_hjust}{Facet text horizontal justification.}
+
+\item{x_facet_text_col}{Facet text color default to black.}
+
+\item{y_facet_text_col}{Facet text color default to black.}
 
 \item{xy_facet_text_bold}{Bold Facet text. Logical TRUE FALSE.}
 

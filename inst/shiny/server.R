@@ -255,6 +255,8 @@ function(input, output, session) {
         y_facet_text_vjust = ..(input$y_facet_text_vjust),
         x_facet_text_hjust = ..(input$x_facet_text_hjust),
         y_facet_text_hjust = ..(input$y_facet_text_hjust),
+        x_facet_text_col   = ..(input$x_facet_text_col),
+        y_facet_text_col   = ..(input$y_facet_text_col),
         xy_facet_text_bold = ..(input$boldfacettext),
         x_label_text_size = ..(input$xlablesize),
         y_label_text_size = ..(input$ylablesize),

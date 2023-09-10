@@ -53,6 +53,8 @@ label_wrap <- function(width) {
 #' @param y_facet_text_vjust Facet text vertical justification.
 #' @param x_facet_text_hjust Facet text horizontal justification.
 #' @param y_facet_text_hjust Facet text horizontal justification.
+#' @param x_facet_text_col Facet text color default to black.
+#' @param y_facet_text_col Facet text color default to black.
 #' @param xy_facet_text_bold Bold Facet text. Logical TRUE FALSE.
 #' @param x_label_text_size X axis labels size.
 #' @param y_label_text_size Y axis labels size.
@@ -361,6 +363,8 @@ forest_plot <- function(
   y_facet_text_vjust = 0.5,
   x_facet_text_hjust = 0.5,
   y_facet_text_hjust = 0.5,
+  x_facet_text_col = "black",
+  y_facet_text_col = "black",
   xy_facet_text_bold = TRUE,
   x_label_text_size  = 16,
   y_label_text_size  = 16,
@@ -478,7 +482,8 @@ forest_plot <- function(
                                           angle= x_facet_text_angle,
                                           face = ifelse(xy_facet_text_bold,"bold","plain"),
                                           hjust = x_facet_text_hjust,
-                                          vjust = x_facet_text_vjust
+                                          vjust = x_facet_text_vjust,
+                                          color =  x_facet_text_col
                                           )
     table.x.strip.text <- x.strip.text
 
@@ -491,7 +496,8 @@ forest_plot <- function(
                                           angle= y_facet_text_angle,
                                           face = ifelse(xy_facet_text_bold,"bold","plain"),
                                           hjust = y_facet_text_hjust,
-                                          vjust = y_facet_text_vjust
+                                          vjust = y_facet_text_vjust,
+                                          color =  y_facet_text_col
                                           )
    table.y.strip.text <- y.strip.text
   }
