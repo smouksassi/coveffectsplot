@@ -672,18 +672,43 @@ forest_plot <- function(
         color = ref_value_col 
       )
   }
-  if (show_ref_value &&
-      ref_value_by_panel &&
-      !is.null(ref_value_by_panel_data)) {
+  if (ref_value_by_panel &&  !is.null(ref_value_by_panel_data) ) {
+    if(show_ref_area){
     main_plot <- main_plot +
-      ggplot2::geom_vline(data=ref_value_by_panel_data,
-        ggplot2::aes(xintercept = xintercept,
-                     linetype = ref_legend_text),
-        size = ref_value_size,
-        color = ref_value_col 
-      )
+      ggplot2::geom_rect(data=ref_value_by_panel_data,
+                          ggplot2::aes(xmin = xintercept*min(ref_area),
+                                       xmax = xintercept*max(ref_area),
+                                       ymin = -Inf,
+                                       ymax = Inf),
+                         fill = ref_area_col,
+                         inherit.aes = FALSE,
+      )+
+      ggplot2::geom_ribbon(
+        data = ref_value_by_panel_data %>%
+               mutate(x= xintercept,
+                          ymax = Inf,
+                          ymin = -Inf,
+                          fill = area_legend_text),
+        ggplot2::aes(
+          x = x,
+          ymax = ymax,
+          ymin = ymin,
+          fill = fill
+        ),
+        size = 1,
+        inherit.aes = FALSE
+      )      
+    }
+    if(show_ref_value){
+      main_plot <- main_plot +
+        ggplot2::geom_vline(data=ref_value_by_panel_data,
+                            ggplot2::aes(xintercept = xintercept,
+                                         linetype = ref_legend_text),
+                            size = ref_value_size,
+                            color = ref_value_col 
+        )
+    }
   }
-  
   main_plot <- main_plot+
     ggplot2::geom_pointrange(
       position = ggplot2::position_dodge(width = vertical_dodge_height),
