@@ -648,8 +648,8 @@ forest_plot <- function(
       ) +
     ggplot2::geom_ribbon(
       data = data.frame(x = ref_value,
-                        ymax = ref_value,
-                        ymin = ref_value,
+                        ymax = Inf,
+                        ymin = -Inf,
                         fill = area_legend_text),
       ggplot2::aes(
         x = x,
