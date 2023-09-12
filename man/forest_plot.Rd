@@ -410,10 +410,10 @@ forest_plot(plotdata,
 plotdata$paramname <- c(rep("1-OH",30),rep("BZD",30))
 plotdata$paramname2 <- c(rep("AUC",15),rep("CMAX",15),rep("AUC",15),rep("CMAX",15))
 forest_plot(plotdata,
-           show_ref_area = FALSE,
+           show_ref_area = TRUE,
            x_facet_text_size = 13,
            y_facet_text_size = 13,
-           ref_legend_text = "Reference (vertical line))",
+           ref_legend_text = "Reference (vertical line)",
            area_legend_text = "Reference (vertical line)",
            xlabel = "Fold Change Relative to Parameter",
            facet_formula = covname~paramname2,
@@ -430,10 +430,10 @@ forest_plot(plotdata,
            legend_color_reverse = TRUE,
            interval_legend_title="Median (points)\n95\% CI (horizontal lines)",
            table_position = "right", plot_title = "",
-           ref_area_col = rgb( col2rgb("gray50")[1], col2rgb("gray50")[2],col2rgb("gray50")[3],
-                               max = 255, alpha = 0.1*255 ) ,
-           interval_col = c("steelblue","red","steelblue","red"),
-           strip_col = "lightblue",
+           ref_area_col = "gray85" ,
+           interval_col = c("#ee3124", "#fdbb2f"),
+           strip_col = "#475c6b",
+           y_facet_text_col = "white",x_facet_text_col = "white",
            major_x_labels         = c("1/2", "0.8","1", "1.25", "2"),
            logxscale = TRUE, major_x_ticks =c(0.5,0.8,1,1.25,2),
            table_text_size = 5,
@@ -441,7 +441,7 @@ forest_plot(plotdata,
            ref_value_by_panel = TRUE,
            ref_value_by_panel_data = as.data.frame(
            plotdata \%>\% 
-           distinct(paramname2) \%>\% 
+           distinct(paramname2,covname) \%>\% 
            mutate(xintercept=ifelse(paramname2=="CMAX",1,1.2))))
 
 # Example 3
