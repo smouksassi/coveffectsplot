@@ -442,7 +442,7 @@ forest_plot(plotdata,
            ref_value_by_panel_data = as.data.frame(
            plotdata \%>\% 
            distinct(paramname2,covname) \%>\% 
-           mutate(xintercept=ifelse(paramname2=="CMAX",1,1.2))))
+           dplyr::mutate(xintercept=ifelse(paramname2=="CMAX",1,1.2))))
 
 # Example 3
 
@@ -466,7 +466,7 @@ forest_plot(plotdata,
 # Example 4
 plotdata <- get_sample_data("dataforest.csv")
 plotdata <- plotdata \%>\%
-  mutate(midlabel = format(round(mid,2), nsmall = 2),
+  dplyr::mutate(midlabel = format(round(mid,2), nsmall = 2),
          lowerlabel = format(round(lower,2), nsmall = 2),
          upperlabel = format(round(upper,2), nsmall = 2),
          LABEL = paste0(midlabel, " [", lowerlabel, "-", upperlabel, "]"))

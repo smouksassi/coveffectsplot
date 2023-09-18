@@ -1,3 +1,6 @@
+#' @importFrom colourpicker colourInput
+# ' @importFrom ggplot2 translate_shape_string not yet
+
 # Same as base R `which()` function, but return 0 instead of an empty vector
 # if there are no TRUE values in the array
 which0 <- function(x) {
@@ -290,7 +293,7 @@ label_wrap <- function(width) {
 #'            ref_value_by_panel_data = as.data.frame(
 #'            plotdata %>% 
 #'            distinct(paramname2,covname) %>% 
-#'            mutate(xintercept=ifelse(paramname2=="CMAX",1,1.2))))
+#'            dplyr::mutate(xintercept=ifelse(paramname2=="CMAX",1,1.2))))
 #'
 #' # Example 3
 #' 
@@ -314,7 +317,7 @@ label_wrap <- function(width) {
 #' # Example 4
 #' plotdata <- get_sample_data("dataforest.csv")
 #' plotdata <- plotdata %>%
-#'   mutate(midlabel = format(round(mid,2), nsmall = 2),
+#'   dplyr::mutate(midlabel = format(round(mid,2), nsmall = 2),
 #'          lowerlabel = format(round(lower,2), nsmall = 2),
 #'          upperlabel = format(round(upper,2), nsmall = 2),
 #'          LABEL = paste0(midlabel, " [", lowerlabel, "-", upperlabel, "]"))
@@ -684,8 +687,8 @@ forest_plot <- function(
                          inherit.aes = FALSE,
       )+
       ggplot2::geom_ribbon(
-        data = ref_value_by_panel_data %>%
-               mutate(x= xintercept,
+        data =  cbind(as.data.frame(ref_value_by_panel_data),
+                          x = ref_value_by_panel_data$xintercept,
                           ymax = Inf,
                           ymin = -Inf,
                           fill = area_legend_text),
@@ -1240,5 +1243,3 @@ draw_key_pointrangeh <- function(data, params, size) {
   )
 }
 
-# ' @importFrom colourpicker colourInput
-# ' @importFrom ggplot2 translate_shape_string
