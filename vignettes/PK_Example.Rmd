@@ -569,7 +569,7 @@ ggplot(out.df.univariatecov.nca[out.df.univariatecov.nca$covname!="REF",], aes(
     quantiles      = c(0.05,0.5, 0.95)) +
   scale_x_continuous(
     breaks = c(0.25, 0.5, 0.8, 1/0.8, 1/0.5, 1/0.25),
-    tran   = "log") +
+    trans  = "log") +
   scale_fill_manual(
     name   = "Probability",
     values = c("white", "#0000FFA0", "#0000FFA0", "white"),
