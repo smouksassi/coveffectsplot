@@ -1,3 +1,7 @@
+# coveffectsplot 1.0.5
+* hotfix for upcoming ggplot2
+* added option to not color table text
+
 # coveffectsplot 1.0.4
 * updated vignettes and examples
 * added citation and start up message

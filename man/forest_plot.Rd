@@ -26,6 +26,8 @@ forest_plot(
   break_ylabel = FALSE,
   y_label_text_width = 25,
   table_text_size = 7,
+  table_text_colour_overwrite = FALSE,
+  table_text_colour = "none",
   base_size = 22,
   theme_benrich = FALSE,
   table_title = "",
@@ -141,6 +143,8 @@ forest_plot(
 \item{y_label_text_width}{Number of characters to break Y axis labels.}
 
 \item{table_text_size}{Table text size.}
+
+\item{table_text_colour}{Table text color to be used and overwrites mapped color}
 
 \item{base_size}{theme_bw base_size for the plot and table.}
 
@@ -296,6 +300,8 @@ for the top, right, bottom and left sides.}
 
 \item{return_list}{What to return if True a list of the main and table plots is returned
 instead of the gtable/plot.}
+
+\item{table_text_colour_overwrite.}{Logical TRUE FALSE.}
 }
 \description{
 Produce forest plots to visualize covariate effects

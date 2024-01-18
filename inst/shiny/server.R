@@ -229,7 +229,7 @@ function(input, output, session) {
       paramcols <- paste0("c(", paste0("input$col", 1:ncols, collapse = ", "), ")")
       paramcols <- eval(parse(text = paramcols))
     }
-    
+
     if(!input$shapebyparamname){
       paramshapes <- input$shapepointrange
     }
@@ -264,6 +264,8 @@ function(input, output, session) {
         break_ylabel = ..(input$breakylabel),
         y_label_text_width= ..(input$ylabeltextwidth),
         table_text_size = ..(input$tabletextsize),
+        table_text_colour_overwrite = ..(input$tabletextcoloroverwrite),
+        table_text_colour = ..(input$tabletextcolour),
         base_size = ..(input$base_size),
         theme_benrich = ..(input$theme_benrich),
         table_title = escape_newline(..(input$custom_table_title)),

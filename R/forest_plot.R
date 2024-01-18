@@ -65,6 +65,8 @@ label_wrap <- function(width) {
 #' @param break_ylabel Split Y axis labels into multiple lines. Logical FALSE TRUE.
 #' @param y_label_text_width Number of characters to break Y axis labels.
 #' @param table_text_size Table text size.
+#' @param table_text_colour_overwrite. Logical TRUE FALSE. 
+#' @param table_text_colour Table text color to be used and overwrites mapped color
 #' @param base_size theme_bw base_size for the plot and table.
 #' @param theme_benrich apply Benjamin Rich's theming.
 #' @param table_title What text to use for table title (theme_benrich has a default).
@@ -385,6 +387,8 @@ forest_plot <- function(
   break_ylabel = FALSE,
   y_label_text_width = 25,
   table_text_size = 7,
+  table_text_colour_overwrite = FALSE,
+  table_text_colour = "none",
   base_size = 22,
   theme_benrich = FALSE,
   table_title = "",
@@ -943,7 +947,7 @@ forest_plot <- function(
   if (table_position != "none") {
     table_plot <- ggplot2::ggplot(data = data,
                                   ggplot2::aes_string(y = "label"))
-    if ( !paramname_color) {
+    if ( !paramname_color && !table_text_colour_overwrite) {
       table_plot <- table_plot +
       ggplot2::aes_string(group = "paramname") +
       ggplot2::geom_text(
@@ -957,7 +961,7 @@ forest_plot <- function(
       )
     }
     
-    if ( paramname_color) {
+    if ( paramname_color && !table_text_colour_overwrite) {
       table_plot <- table_plot +
         ggplot2::aes_string(group = "paramname", colour = "paramname") +
         ggplot2::geom_text(
@@ -973,7 +977,20 @@ forest_plot <- function(
                                        values = interval_col_values)
       
     }
-
+    if ( table_text_colour_overwrite) {
+      table_plot <- table_plot +
+        ggplot2::aes_string(group = "paramname") +
+        ggplot2::geom_text(
+          ggplot2::aes_string(
+            x = 1,
+            label = "LABEL",
+            hjust = 0.5
+          ),
+          size = table_text_size, colour = table_text_colour,
+          position = ggplot2::position_dodge(width = vertical_dodge_height)
+        ) 
+    }
+    
     if ( !is.function(facet_labeller))  {
     if (facet_labeller != "label_wrap_gen") {
     if (table_facet_switch != "none") {
