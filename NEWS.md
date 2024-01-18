@@ -1,6 +1,6 @@
 # coveffectsplot 1.0.5
-* hotfix for upcoming ggplot2
-* added option to not color table text
+* hotfix for upcoming ggplot2 fix typo in vignette thanks to Teun
+* added `show_table_facet_strip` and `table_facet_switch` arguments to allow user to force a table text colour when desired
 
 # coveffectsplot 1.0.4
 * updated vignettes and examples

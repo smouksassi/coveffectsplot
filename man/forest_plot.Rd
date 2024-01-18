@@ -144,6 +144,8 @@ forest_plot(
 
 \item{table_text_size}{Table text size.}
 
+\item{table_text_colour_overwrite}{Logical TRUE FALSE.}
+
 \item{table_text_colour}{Table text color to be used and overwrites mapped color}
 
 \item{base_size}{theme_bw base_size for the plot and table.}
@@ -300,8 +302,6 @@ for the top, right, bottom and left sides.}
 
 \item{return_list}{What to return if True a list of the main and table plots is returned
 instead of the gtable/plot.}
-
-\item{table_text_colour_overwrite.}{Logical TRUE FALSE.}
 }
 \description{
 Produce forest plots to visualize covariate effects

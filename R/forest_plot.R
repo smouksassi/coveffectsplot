@@ -65,7 +65,7 @@ label_wrap <- function(width) {
 #' @param break_ylabel Split Y axis labels into multiple lines. Logical FALSE TRUE.
 #' @param y_label_text_width Number of characters to break Y axis labels.
 #' @param table_text_size Table text size.
-#' @param table_text_colour_overwrite. Logical TRUE FALSE. 
+#' @param table_text_colour_overwrite Logical TRUE FALSE. 
 #' @param table_text_colour Table text color to be used and overwrites mapped color
 #' @param base_size theme_bw base_size for the plot and table.
 #' @param theme_benrich apply Benjamin Rich's theming.
