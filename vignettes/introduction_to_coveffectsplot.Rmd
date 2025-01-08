@@ -453,6 +453,7 @@ png("./coveffectsplot2.png",width =9 ,height = 6,units = "in",res=72)
             facet_scales = "free",
             facet_space = "fixed",
             paramname_shape = FALSE,
+            combine_interval_shape_legend = TRUE,
             table_position = "right",
             table_text_size = 4,
             plot_table_ratio = 4,
