@@ -73,9 +73,9 @@ $$log(odds) = \color{red}{intercept} + \left( \frac {E_{max} \times \color{blue}
 TypicalProb<- 1/(1+exp(-(log(0.1/(1-0.1)) + (5*75/10/(7.5+75/10)))))
 MaxProb<- 1/(1+exp(-(log(0.1/(1-0.1)) + (5*750/10/(7.5+750/10)))))
 MinProb<- 1/(1+exp(-(log(0.1/(1-0.1)) + (5*0/10/(7.5+0/10)))))
-
+#$PLUGIN Rcpp
+# R::runif(0,1)< P1 ? 1 : 0
 exprespmodel <- '
-$PLUGIN Rcpp
 $PARAM @annotated
 TVCL    : 10  : Clearance CL (L/h)
 WTCL    : 0.75: Weight on CL (ref. 70 kg)
@@ -104,7 +104,7 @@ capture CLi = CL;
 capture AUC = DOSE/CL;
 capture LGST = Intercept + (EMAX*AUC/(AUC50+AUC));
 capture P1 = 1/(1+exp(-LGST));
-capture DV = R::runif(0,1)< P1 ? 1 : 0;
+capture DV = P1;
 '
 
 modexprespsim <- mcode("exprespmodel", exprespmodel)
@@ -118,6 +118,9 @@ simout <- modexprespsim %>%
   carry.out(WT, DOSE, SEV) %>%
   mrgsim()%>%
   as.data.frame
+
+  simout$DV = ifelse(runif(n=nrow(simout),min=0,max=1)< simout$P1,1 , 0)
+
 ```
 ## Visualizing Probability of Cure 
 From the simulation of N=1000 patients we plot the probability of disease Cure versus PK exposures (AUC) for a reference subject with Weight of 70 kg and disease severity of "Not Severe".
