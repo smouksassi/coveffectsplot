@@ -14,7 +14,7 @@ navbar:
      text: Vignettes
      menu:
      - text: Introduction to coveffectsplot
-       href: articles/Introduction_to_coveffectsplot.html
+       href: articles/introduction_to_coveffectsplot.html
      - text: Exposure-Response Example
        href: articles/Exposure_Response_Example.html
      - text: PK Example

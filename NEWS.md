@@ -1,8 +1,10 @@
+# coveffectsplot 1.0.6
+* fixed theme issue in the table when breaking long y axis labels
+* added the `deltamethod` function
+
 # coveffectsplot 1.0.5
 * hotfix for upcoming ggplot2 fix typo in vignette thanks to Teun
 * added `show_table_facet_strip` and `table_facet_switch` arguments to allow user to force a table text colour when desired
-* fixed theme issue in the table when breaking long y axis labels
-* added the `deltamethod` function
 
 # coveffectsplot 1.0.4
 * updated vignettes and examples
