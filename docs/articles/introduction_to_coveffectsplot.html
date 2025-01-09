@@ -6,20 +6,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Introduction to `coveffectsplot` • coveffectsplot</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/united/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/united/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Introduction to `coveffectsplot`">
-<meta property="og:description" content="coveffectsplot">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -33,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">coveffectsplot</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.6</span>
       </span>
     </div>
 
@@ -45,12 +44,12 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/Introduction_to_coveffectsplot.html">Introduction to coveffectsplot</a>
+      <a href="../articles/introduction_to_coveffectsplot.html">Introduction to coveffectsplot</a>
     </li>
     <li>
       <a href="../articles/Exposure_Response_Example.html">Exposure-Response Example</a>
@@ -77,7 +76,7 @@
 <li>
   <a href="https://github.com/smouksassi/coveffectsplot/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -88,7 +87,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
@@ -98,7 +97,7 @@
                         <h4 data-toc-skip class="author">Samer
 Mouksassi</h4>
             
-            <h4 data-toc-skip class="date">2023-09-05</h4>
+            <h4 data-toc-skip class="date">2025-01-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/smouksassi/coveffectsplot/blob/HEAD/vignettes/introduction_to_coveffectsplot.Rmd" class="external-link"><code>vignettes/introduction_to_coveffectsplot.Rmd</code></a></small>
       <div class="hidden name"><code>introduction_to_coveffectsplot.Rmd</code></div>
@@ -141,11 +140,11 @@ mixed effects model is fitted to the PK data and covariates covering
 intrinsic and extrinsic are tested on the various parameters. For
 simplicity, let us assume that the covariate modeling did not add any
 covariate on Ka and V and provided the following model for CL:</p>
-<p><span class="math display">\[CL = \color{blue}{POPCL} \times \left(
+<p><span class="math display">$$CL = \color{blue}{POPCL} \times \left(
 \frac { \color{green}{Weight}} {70}\right)^\color{blue}{dWTdCL}\times
 \left(\color{blue} {dSexdCL}\times \left( \color{green}{Sex}==
 1  \right) \right)\times
-exp(\color{red}\eta\color{red}{CL})\]</span></p>
+exp(\color{red}\eta\color{red}{CL})$$</span></p>
 <p>The above equation shows that we have two covariates on CL one is
 Weight (kg) a continuous variable with reference value of 70 (kg) and
 influencing CL with a power model with coefficient dWTdCL. The second is
@@ -155,13 +154,13 @@ dSexdCL. The last term denotes the individual deviations from the
 population (random effects) which assumes that CL in the population is
 log normally distributed. The same model can be more familiar to
 statisticians if re-written into a log-linear additive form:</p>
-<p><span class="math display">\[log(CL) = {log(\color{blue}{POPCL})} +
+<p><span class="math display">$$log(CL) = {log(\color{blue}{POPCL})} +
 \color{blue}{dWTdCL}\times log\left(\frac { \color{green}{Weight}}
 {70}\right)+ \
 log(\color{blue}{dSexdCL})\times\left(\color{green}{Sex}== 1 \right)
-+\color{red}\eta\color{red}{CL} \]</span> and where the individual level
-random effect describes the between subject variability (BSV): <span class="math display">\[\color{red}\eta{\color{red}{CL}}\sim
-\mathcal{N}(0,\,\omega_{CL}^{2})\]</span></p>
++\color{red}\eta\color{red}{CL} $$</span> and where the individual level
+random effect describes the between subject variability (BSV): <span class="math display">$$\color{red}\eta{\color{red}{CL}}\sim
+\mathcal{N}(0,\,\omega_{CL}^{2})$$</span></p>
 <p>As mentioned in the FDA guidance there is two ways to conduct
 simulations:</p>
 <ol style="list-style-type: decimal">
@@ -320,12 +319,13 @@ ones.</p>
 <td align="left">118</td>
 </tr></tbody>
 </table>
-<p>The model had a between subject variability on CL <span class="math inline">\(\omega_{CL}^{2}\)</span> variance of 0.09 which
-translates to apparent CV of sqrt (exp (0.09) -1) = 0.3069. A common way
-to report this BSV is to say we have 30.7% BSV. But what does this
-really mean in practical terms? What are the chances that a patient with
-known covariate values, will have very low or very high CL warranting
-dose changes?<br>
+<p>The model had a between subject variability on CL
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>ω</mi><mrow><mi>C</mi><mi>L</mi></mrow><mn>2</mn></msubsup><annotation encoding="application/x-tex">\omega_{CL}^{2}</annotation></semantics></math>
+variance of 0.09 which translates to apparent CV of sqrt (exp (0.09) -1)
+= 0.3069. A common way to report this BSV is to say we have 30.7% BSV.
+But what does this really mean in practical terms? What are the chances
+that a patient with known covariate values, will have very low or very
+high CL warranting dose changes?<br>
 A useful metric can be to compute the bounds where say 50% and 90% of
 the patients will be located using simple quantile functions on
 simulated distributions. For the 30.7% BSV case, we compute that 50% of
@@ -705,6 +705,7 @@ list of ggplot objects that can be further manipulated.</p>
 <span>            facet_scales <span class="op">=</span> <span class="st">"free"</span>,</span>
 <span>            facet_space <span class="op">=</span> <span class="st">"fixed"</span>,</span>
 <span>            paramname_shape <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>            combine_interval_shape_legend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>            table_position <span class="op">=</span> <span class="st">"right"</span>,</span>
 <span>            table_text_size <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>            plot_table_ratio <span class="op">=</span> <span class="fl">4</span>,</span>
@@ -753,9 +754,7 @@ February 2022.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
+      </div>
 
 </div>
 
@@ -768,16 +767,16 @@ February 2022.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>

@@ -6,20 +6,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PK Model in Pediatric Patients: Assessing the Impact of a Multivariate Correlated Distribution of Covariates on PK Exposures • coveffectsplot</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/united/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/united/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="PK Model in Pediatric Patients: Assessing the Impact of a Multivariate Correlated Distribution of Covariates on PK Exposures">
-<meta property="og:description" content="coveffectsplot">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -33,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">coveffectsplot</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.6</span>
       </span>
     </div>
 
@@ -45,12 +44,12 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Vignettes
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/Introduction_to_coveffectsplot.html">Introduction to coveffectsplot</a>
+      <a href="../articles/introduction_to_coveffectsplot.html">Introduction to coveffectsplot</a>
     </li>
     <li>
       <a href="../articles/Exposure_Response_Example.html">Exposure-Response Example</a>
@@ -77,7 +76,7 @@
 <li>
   <a href="https://github.com/smouksassi/coveffectsplot/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -88,7 +87,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
@@ -157,8 +156,8 @@ First, we plot a typical PK profile with between subject variability
 <span><span class="st">$CAPTURE CP KAi CLi Vi WT SEX AGE </span></span>
 <span><span class="st">'</span></span>
 <span><span class="va">pedmodsim</span> <span class="op">&lt;-</span> <span class="fu">mcode</span><span class="op">(</span><span class="st">"pedpkmodelcov"</span>, <span class="va">pedpkmodelcov</span><span class="op">)</span></span>
-<span><span class="va">partab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">pedmodsim</span><span class="op">@</span><span class="va">annot</span><span class="op">$</span><span class="va">data</span><span class="op">)</span><span class="op">[</span><span class="va">block</span><span class="op">==</span><span class="st">"PARAM"</span>, <span class="fu">.</span><span class="op">(</span><span class="va">name</span>, <span class="va">descr</span>, <span class="va">unit</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="va">partab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">partab</span>, <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html" class="external-link">melt</a></span><span class="op">(</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">pedmodsim</span><span class="op">@</span><span class="va">param</span><span class="op">@</span><span class="va">data</span><span class="op">)</span>, meas<span class="op">=</span><span class="fu">patterns</span><span class="op">(</span><span class="st">"*"</span><span class="op">)</span>, var<span class="op">=</span><span class="st">"name"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">partab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">pedmodsim</span><span class="op">@</span><span class="va">annot</span><span class="op">$</span><span class="va">data</span><span class="op">)</span><span class="op">[</span><span class="va">block</span><span class="op">==</span><span class="st">"PARAM"</span>, <span class="fu">.</span><span class="op">(</span><span class="va">name</span>, <span class="va">descr</span>, <span class="va">unit</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">partab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">partab</span>, <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/melt.data.table.html" class="external-link">melt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">pedmodsim</span><span class="op">@</span><span class="va">param</span><span class="op">@</span><span class="va">data</span><span class="op">)</span>, meas<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/patterns.html" class="external-link">patterns</a></span><span class="op">(</span><span class="st">"*"</span><span class="op">)</span>, var<span class="op">=</span><span class="st">"name"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">partab</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
@@ -220,7 +219,7 @@ First, we plot a typical PK profile with between subject variability
 </table>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">idata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span></span>
+<span><span class="va">idata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span></span>
 <span>  ID <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="va">nsubj</span>,</span>
 <span>  WT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">15.8</span>,<span class="va">nsubj</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span>,</span>
 <span>         <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">16.2</span>,<span class="va">nsubj</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>,<span class="co">#from Nhanes at 4 years female and male</span></span>
@@ -229,8 +228,8 @@ First, we plot a typical PK profile with between subject variability
 <span><span class="op">)</span></span>
 <span><span class="va">ev1</span> <span class="op">&lt;-</span> <span class="fu">ev</span><span class="op">(</span>time <span class="op">=</span> <span class="fl">0</span>, amt <span class="op">=</span> <span class="fl">100</span>, cmt <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">data.dose</span> <span class="op">&lt;-</span> <span class="fu">ev</span><span class="op">(</span><span class="va">ev1</span><span class="op">)</span></span>
-<span><span class="va">data.dose</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">data.dose</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">data.all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="va">idata</span>, <span class="va">data.dose</span><span class="op">)</span></span>
+<span><span class="va">data.dose</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">data.dose</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">data.all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="va">idata</span>, <span class="va">data.dose</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">678549</span><span class="op">)</span></span>
 <span><span class="va">outputsim</span> <span class="op">&lt;-</span> <span class="va">pedmodsim</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -272,7 +271,7 @@ compute between subject variability ranges.</p>
 <span>    Cmax <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">CP</span><span class="op">)</span>,</span>
 <span>    AUC <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">time</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span><span class="va">CP</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="va">CP</span><span class="op">[</span><span class="op">-</span><span class="va">n</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span></span>
 <span>  <span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>paramname<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, paramvalue<span class="op">=</span><span class="va">x</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>paramname<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, paramvalue<span class="op">=</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="va">refbsv</span> <span class="op">&lt;-</span> <span class="va">outputsim</span><span class="op">[</span>, <span class="fu">derive.exposure</span><span class="op">(</span><span class="va">time</span>, <span class="va">CP</span><span class="op">)</span>, by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">ID</span>, <span class="va">WT</span>, <span class="va">SEX</span>, <span class="va">AGE</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">refbsv</span><span class="op">[</span>, <span class="va">stdparamvalue</span> <span class="op">:=</span> <span class="va">paramvalue</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">paramvalue</span><span class="op">)</span>, by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">SEX</span>,<span class="va">paramname</span><span class="op">)</span><span class="op">]</span></span>
@@ -284,11 +283,12 @@ compute between subject variability ranges.</p>
 <span>    P75 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">stdparamvalue</span>, <span class="fl">0.75</span><span class="op">)</span>,</span>
 <span>    P95 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">stdparamvalue</span>, <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">SEX</span>,<span class="va">paramname</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">bsvranges</span></span>
-<span><span class="co">#&gt;      SEX paramname       P05       P25 P50      P75      P95</span></span>
-<span><span class="co">#&gt; 1: Girls      Cmax 0.7852997 0.9212879   1 1.122921 1.301545</span></span>
-<span><span class="co">#&gt; 2: Girls       AUC 0.6185701 0.8328135   1 1.245339 1.744747</span></span>
-<span><span class="co">#&gt; 3:  Boys      Cmax 0.7742915 0.9104196   1 1.093831 1.251045</span></span>
-<span><span class="co">#&gt; 4:  Boys       AUC 0.6312985 0.8298309   1 1.209752 1.607079</span></span>
+<span><span class="co">#&gt;       SEX paramname       P05       P25   P50      P75      P95</span></span>
+<span><span class="co">#&gt;    &lt;fctr&gt;    &lt;char&gt;     &lt;num&gt;     &lt;num&gt; &lt;num&gt;    &lt;num&gt;    &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:  Girls      Cmax 0.7852997 0.9212879     1 1.122921 1.301545</span></span>
+<span><span class="co">#&gt; 2:  Girls       AUC 0.6185701 0.8328135     1 1.245339 1.744747</span></span>
+<span><span class="co">#&gt; 3:   Boys      Cmax 0.7742915 0.9104196     1 1.093831 1.251045</span></span>
+<span><span class="co">#&gt; 4:   Boys       AUC 0.6312985 0.8298309     1 1.209752 1.607079</span></span>
 <span></span>
 <span><span class="va">yvar_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">'AUC'</span><span class="op">=</span><span class="st">"AUC"</span>,</span>
@@ -572,7 +572,7 @@ some of the options.</p>
 <span>    P75 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">stdparamvalue</span>, <span class="fl">0.75</span><span class="op">)</span>,</span>
 <span>    P95 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">stdparamvalue</span>, <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">paramname</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
-<span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setkey.html" class="external-link">setkey</a></span><span class="op">(</span><span class="va">bsvranges</span>, <span class="va">paramname</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setkey.html" class="external-link">setkey</a></span><span class="op">(</span><span class="va">bsvranges</span>, <span class="va">paramname</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">coveffectsdatacovrepbsv</span> <span class="op">&lt;-</span> <span class="va">coveffectsdatacovrep</span><span class="op">[</span><span class="va">coveffectsdatacovrep</span><span class="op">$</span><span class="va">covname</span><span class="op">==</span><span class="st">"REF"</span>,<span class="op">]</span></span>
 <span><span class="va">coveffectsdatacovrepbsv</span><span class="op">$</span><span class="va">covname</span> <span class="op">&lt;-</span> <span class="st">"BSV"</span></span>
@@ -653,17 +653,15 @@ some of the options.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; agg_png </span></span>
 <span><span class="co">#&gt;       2</span></span></code></pre></div>
-<div class="figure">
-<img src="Figure_7_4.png" alt=""><p class="caption">Covariate Effects Plot.</p>
+<div class="float">
+<img src="Figure_7_4.png" alt="Covariate Effects Plot."><div class="figcaption">Covariate Effects Plot.</div>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
+      </div>
 
 </div>
 
@@ -676,16 +674,16 @@ some of the options.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>

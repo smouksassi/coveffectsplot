@@ -1,69 +1,26 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/404.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/articles/app.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/articles/Exposure_Response_Example.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/articles/introduction_to_coveffectsplot.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/articles/Pediatric_Cov_Sim.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/articles/PKPD_Example.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/articles/PK_Example.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/articles/PK_Example_full.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/index.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/reference/covdatasim.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/reference/draw_key.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/reference/expand_modelframe.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/reference/forest_plot.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/reference/get_sample_data.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/reference/prezista.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/reference/run_interactiveforestplot.html</loc>
-  </url>
-  <url>
-    <loc>https://smouksassi.github.io/coveffectsplot/reference/wtage.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://smouksassi.github.io/coveffectsplot/404.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/articles/app.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/articles/Exposure_Response_Example.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/articles/index.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/articles/introduction_to_coveffectsplot.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/articles/Pediatric_Cov_Sim.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/articles/PKPD_Example.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/articles/PK_Example.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/articles/PK_Example_full.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/authors.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/index.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/LICENSE-text.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/news/index.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/reference/covdatasim.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/reference/deltamethod.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/reference/draw_key.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/reference/expand_modelframe.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/reference/forest_plot.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/reference/get_sample_data.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/reference/index.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/reference/prezista.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/reference/run_interactiveforestplot.html</loc></url>
+<url><loc>https://smouksassi.github.io/coveffectsplot/reference/wtage.html</loc></url>
 </urlset>
+
