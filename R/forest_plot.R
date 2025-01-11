@@ -1,4 +1,5 @@
 #' @importFrom colourpicker colourInput
+#' @importFrom stats deriv
 # ' @importFrom ggplot2 translate_shape_string not yet
 
 # Same as base R `which()` function, but return 0 instead of an empty vector
