@@ -1,0 +1,15 @@
+pandoc: 3.1.11
+pkgdown: 2.1.1
+pkgdown_sha: ~
+articles:
+  app: app.html
+  Exposure_Response_Example: Exposure_Response_Example.html
+  introduction_to_coveffectsplot: introduction_to_coveffectsplot.html
+  Pediatric_Cov_Sim: Pediatric_Cov_Sim.html
+  PK_Example_full: PK_Example_full.html
+  PK_Example: PK_Example.html
+  PKPD_Example: PKPD_Example.html
+last_built: 2025-01-11T15:22Z
+urls:
+  reference: https://smouksassi.github.io/coveffectsplot/reference
+  article: https://smouksassi.github.io/coveffectsplot/articles
