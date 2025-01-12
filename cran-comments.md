@@ -1,5 +1,5 @@
 ## Test environments
-* local Windows 10 install, R 4.3.2
+* local Windows 10 install, R 4.4.2
 * github actions windows-latest (release)
 * github actions macOS-latest (release)
 * github actions ubuntu-latest (devel, release and oldrel-1)
@@ -9,10 +9,9 @@
 
 0 errors | 0 warnings | 0 note
 
-* This is to update an example that resulted in broken code with the latest ggplot2 release, two new function arguments `show_table_facet_strip` and `table_facet_switch` were added
+* This is to fix a bug in the plot function and to fix a vignette
 * Notes about unused declared imports from the previous/current builds are false positives since these are used in the shiny app code and are required for it to work properly
 
 ## Reverse dependencies
-
-There is no listed dependencies.
+NMsim
 ---
