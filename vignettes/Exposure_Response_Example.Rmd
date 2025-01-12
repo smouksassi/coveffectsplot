@@ -73,9 +73,10 @@ $$log(odds) = \color{red}{intercept} + \left( \frac {E_{max} \times \color{blue}
 TypicalProb<- 1/(1+exp(-(log(0.1/(1-0.1)) + (5*75/10/(7.5+75/10)))))
 MaxProb<- 1/(1+exp(-(log(0.1/(1-0.1)) + (5*750/10/(7.5+750/10)))))
 MinProb<- 1/(1+exp(-(log(0.1/(1-0.1)) + (5*0/10/(7.5+0/10)))))
-#$PLUGIN Rcpp
+#
 # R::runif(0,1)< P1 ? 1 : 0
 exprespmodel <- '
+$PLUGIN Rcpp
 $PARAM @annotated
 TVCL    : 10  : Clearance CL (L/h)
 WTCL    : 0.75: Weight on CL (ref. 70 kg)
@@ -104,7 +105,7 @@ capture CLi = CL;
 capture AUC = DOSE/CL;
 capture LGST = Intercept + (EMAX*AUC/(AUC50+AUC));
 capture P1 = 1/(1+exp(-LGST));
-capture DV = P1;
+capture DV = R::runif(0,1)< P1 ? 1 : 0;
 '
 
 modexprespsim <- mcode("exprespmodel", exprespmodel)
@@ -119,7 +120,7 @@ simout <- modexprespsim %>%
   mrgsim()%>%
   as.data.frame
 
-  simout$DV = ifelse(runif(n=nrow(simout),min=0,max=1)< simout$P1,1 , 0)
+#simout$DV = ifelse(runif(n=nrow(simout),min=0,max=1)< simout$P1,1 , 0)
 
 ```
 ## Visualizing Probability of Cure 
@@ -438,7 +439,7 @@ ggplot(iter_sims,aes(x=paramvalue,y=covvalue))+
 ```
 From the distributions plot we can appreciate that severity has the biggest impact on the probability of response followed by Dose which an effect that is saturating above 125 mg. Next, we prepare the data and present it using a forest plot.
 
-```{r plot3, collapse=TRUE }
+```{r plot3, collapse=TRUE, fig.height=7, fig.width=9 }
 coveffectsdatacovrep <- iter_sims %>%
   dplyr::group_by(paramname,ID,WT,DOSE,SEV,covname,covvalue) %>% 
   dplyr::summarize(
@@ -484,8 +485,8 @@ coveffectsdatacovrepbsv$covname <-factor(as.factor(coveffectsdatacovrepbsv$covna
                     levels = c("Weight","DOSE","SEV","REF","BSV"))
 
 ref_legend_text      <- "Reference (vertical line)"
-png("./Figure_8_4.png",width =9 ,height = 7,units = "in",res=72)
-forest_plot(coveffectsdatacovrepbsv,
+#png("./Figure_8_4.png",width =9 ,height = 7,units = "in",res=72)
+fpp <- forest_plot(coveffectsdatacovrepbsv,
                             strip_placement = "outside",
                             show_ref_area = FALSE,
                             show_ref_value=TRUE,
@@ -507,10 +508,9 @@ forest_plot(coveffectsdatacovrepbsv,
                             major_x_ticks          = c(0.1,0.25, 0.5,1,1.5),
                             x_range                = c(0.1, 1.5))
 
-dev.off()
-
+#dev.off()
+#![Covariate Effects Plot.](./Figure_8_4.png)
 ```
-![Covariate Effects Plot.](./Figure_8_4.png)
 
 ## Dose/Exposure Response Curves
 It is more common to construct a full range (every possible combination of dose levels and covariate values) simulations when visualizing dose/exposure/response curves. In this section we show how to construct such a curve:
