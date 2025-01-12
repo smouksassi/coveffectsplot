@@ -178,9 +178,7 @@ $$</span> The equation of the log(odds) becomes: <span class="math display">$$lo
 <span>  <span class="fu">data_set</span><span class="op">(</span><span class="va">simdata</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu">carry.out</span><span class="op">(</span><span class="va">WT</span>, <span class="va">DOSE</span>, <span class="va">SEV</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu">mrgsim</span><span class="op">(</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="va">as.data.frame</span></span>
-<span></span>
-<span><span class="co">#simout$DV = ifelse(runif(n=nrow(simout),min=0,max=1)&lt; simout$P1,1 , 0)</span></span></code></pre></div>
+<span>  <span class="va">as.data.frame</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualizing-probability-of-cure">Visualizing Probability of Cure<a class="anchor" aria-label="anchor" href="#visualizing-probability-of-cure"></a>
@@ -221,8 +219,6 @@ Weight of 70 kg and disease severity of “Not Severe”.</p>
 <span>            n1<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">DV</span><span class="op">[</span><span class="va">DV</span><span class="op">==</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>            medAUC<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">AUC</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span></span>
-<span></span>
 <span><span class="va">percentineachbreakcategory</span> <span class="op">&lt;-</span> <span class="va">simout</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>AUC_bins<span class="op">=</span><span class="fu">table1</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/table1/man/eqcut.html" class="external-link">eqcut</a></span><span class="op">(</span><span class="va">AUC</span>,<span class="fl">4</span>,withhold <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PLACEBO<span class="op">=</span><span class="va">AUC</span><span class="op">==</span><span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">DOSE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
@@ -231,8 +227,6 @@ Weight of 70 kg and disease severity of “Not Severe”.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Ncat<span class="op">=</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,xmed<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">AUC</span><span class="op">)</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>percentage<span class="op">=</span><span class="va">Ncat</span><span class="op">/</span><span class="va">Ntot</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">DOSE</span>,<span class="va">xmed</span>,<span class="va">AUC_bins</span>,<span class="va">percentage</span>,<span class="va">WT</span>,<span class="va">SEV</span><span class="op">)</span></span>
-<span></span>
-<span></span>
 <span></span>
 <span><span class="va">probplot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">simout</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">AUC</span>,<span class="va">DV</span>,linetype<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">SEV_cat</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span> <span class="va">WT</span><span class="op">~</span><span class="va">SEV</span>,labeller<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labeller.html" class="external-link">labeller</a></span><span class="op">(</span>WT<span class="op">=</span><span class="va">WT_names</span>,SEV<span class="op">=</span><span class="va">SEV_names</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
@@ -314,7 +308,11 @@ the computed bin limits.</p>
 Impact on Probabilities<a class="anchor" aria-label="anchor" href="#adding-between-subject-variability-on-intercept-and-showing-its-impact-on-probabilities"></a>
 </h3>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">466548</span><span class="op">)</span></span>
+<span><span class="va">simdata</span> <span class="op">&lt;-</span>  <span class="fu">expand.idata</span><span class="op">(</span>SEV<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
+<span>               DOSE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">75</span><span class="op">)</span>,</span>
+<span>               ID <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10000</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>WT <span class="op">=</span> <span class="fl">70</span><span class="op">)</span> <span class="co">#exp(rnorm(n(),log(70),0.3)</span></span>
 <span><span class="va">simout</span> <span class="op">&lt;-</span> <span class="va">modexprespsim</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu">data_set</span><span class="op">(</span><span class="va">simdata</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu">carry.out</span><span class="op">(</span><span class="va">WT</span>, <span class="va">DOSE</span>, <span class="va">SEV</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -377,10 +375,10 @@ Impact on Probabilities<a class="anchor" aria-label="anchor" href="#adding-betwe
 <span>    P95 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">paramvalue</span>, <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">simoutbsvranges</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 6</span></span></span>
-<span><span class="co">#&gt;   paramname    P05   P25   P50   P75   P95</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> P1        0.075<span style="text-decoration: underline;">4</span> 0.101 0.187 0.575 0.733</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> P1std     0.658  0.849 1     1.15  1.38</span></span>
+<span><span class="co">#&gt;   paramname    P05    P25   P50   P75   P95</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> P1        0.075<span style="text-decoration: underline;">4</span> 0.099<span style="text-decoration: underline;">7</span> 0.209 0.576 0.732</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> P1std     0.655  0.849  1     1.16  1.38</span></span>
 <span><span class="va">pbsvranges</span></span></code></pre></div>
 <p><img src="Exposure_Response_Example_files/figure-html/bsvrangeplot-1.png" width="672">
 The table and associated plot illustrated the impact of between subject
@@ -473,7 +471,12 @@ The above figure show the raw simulated probabilities split by covariate
 values. In the next section we show how we can standardize and summarize
 the probabilities.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">iter_sims</span> <span class="op">&lt;-</span> <span class="va">iter_sims</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">TypicalProb</span> <span class="op">&lt;-</span> <span class="va">iter_sims</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ID</span><span class="op">==</span><span class="fl">3</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>medP1<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">P1</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">medP1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">iter_sims</span> <span class="op">&lt;-</span> <span class="va">iter_sims</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>P1std<span class="op">=</span><span class="va">P1</span><span class="op">/</span><span class="va">TypicalProb</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu">gather</span><span class="op">(</span><span class="va">paramname</span>,<span class="va">paramvalue</span>,<span class="va">P1std</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
@@ -572,10 +575,9 @@ present it using a forest plot.</p>
 <span>              <span class="st">"0 mg"</span>,<span class="st">"25 mg"</span>,<span class="st">"50 mg"</span>,<span class="st">"100 mg"</span>,<span class="st">"125 mg"</span>,<span class="st">"150 mg"</span>,</span>
 <span>              <span class="st">"Severe"</span>,<span class="st">"70 kg\nNot Severe\n75 mg"</span></span>
 <span>              <span class="op">)</span><span class="op">)</span></span>
-<span>    </span>
-<span></span>
 <span><span class="va">coveffectsdatacovrepbsv</span><span class="op">$</span><span class="va">covname</span> <span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">coveffectsdatacovrepbsv</span><span class="op">$</span><span class="va">covname</span> <span class="op">)</span>,</span>
 <span>                    levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Weight"</span>,<span class="st">"DOSE"</span>,<span class="st">"SEV"</span>,<span class="st">"REF"</span>,<span class="st">"BSV"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
 <span></span>
 <span><span class="va">ref_legend_text</span>      <span class="op">&lt;-</span> <span class="st">"Reference (vertical line)"</span></span>
 <span><span class="co">#png("./Figure_8_4.png",width =9 ,height = 7,units = "in",res=72)</span></span>
