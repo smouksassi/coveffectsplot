@@ -290,7 +290,8 @@ fluidPage(
                                                    "diamond plus","circle plus","star","star","square plus","circle cross",
                                                    "square triangle","diamond","circle","bullet",
                                                    "circle filled","square filled","diamond filled","triangle filled",
-                                                   "triangle down filled"),
+                                                   "triangle down filled",
+                                                   "none"),
                                        selected = "circle small"
                            ) 
           ),
@@ -302,7 +303,8 @@ fluidPage(
                                                    "diamond plus","circle plus","star","star","square plus","circle cross",
                                                    "square triangle","diamond","circle","bullet",
                                                    "circle filled","square filled","diamond filled","triangle filled",
-                                                   "triangle down filled"),
+                                                   "triangle down filled",
+                                                   "none"),
                                        selected = "circle small"
                            ) 
           ),

@@ -1,3 +1,6 @@
+# coveffectsplot 1.0.6.9999
+* added possibility to remove shapes from line interval
+
 # coveffectsplot 1.0.6
 * fixed theme issue in the table when breaking long y axis labels
 * added the `deltamethod` function

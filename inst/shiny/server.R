@@ -145,7 +145,7 @@ function(input, output, session) {
                 "diamond plus","circle plus","star","star","square plus","circle cross",
                 "square triangle","diamond","circle","bullet",
                 "circle filled","square filled","diamond filled","triangle filled",
-                "triangle down filled")
+                "triangle down filled","none")
     if(input$shapebyparamname && length(input$exposurevariables) >0){
       lev <- 1:length(input$exposurevariables)
       lapply(seq_along(lev), function(i) {
@@ -368,7 +368,24 @@ function(input, output, session) {
         escape_newline <- function(s) {
           gsub("\\\\n", "\\\n", s)
         }
-
+        translate_shape_string <-  function (shape_string) 
+        {
+          if (nchar(shape_string[1]) <= 1) {
+            return(shape_string)
+          }
+          pch_table <- c(`square open` = 0, `circle open` = 1, `triangle open` = 2, 
+                         plus = 3, cross = 4, `diamond open` = 5, `triangle down open` = 6, 
+                         `square cross` = 7, asterisk = 8, `diamond plus` = 9, 
+                         `circle plus` = 10, star = 11, `square plus` = 12, `circle cross` = 13, 
+                         `square triangle` = 14, `triangle square` = 14, square = 15, 
+                         `circle small` = 16, triangle = 17, diamond = 18, circle = 19, 
+                         bullet = 20, `circle filled` = 21, `square filled` = 22, 
+                         `diamond filled` = 23, `triangle filled` = 24,
+                         `triangle down filled` = 25,
+                         "none" = NA)
+          shape_match <- charmatch(shape_string, names(pch_table))
+          unname(pch_table[shape_match])
+        }
       }),
       "# Manipulate data and plot",
       output$plot()
