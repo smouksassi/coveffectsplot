@@ -14,10 +14,10 @@ Description: Produce forest plots to visualize covariate effects using either
 URL: https://smouksassi.github.io/coveffectsplot/, https://github.com/smouksassi/coveffectsplot
 BugReports: https://github.com/smouksassi/coveffectsplot/issues
 Depends:
-    R (>= 4.0.0),
-    data.table (>= 1.9.8)
+    R (>= 4.0.0)
 Imports:
     colourpicker,
+    data.table (>= 1.9.8),
     egg,
     grid,
     ggplot2 (>= 3.3.2),
