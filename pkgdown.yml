@@ -1,5 +1,5 @@
 pandoc: 3.1.11
-pkgdown: 2.1.1
+pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   app: app.html
@@ -9,7 +9,7 @@ articles:
   PK_Example_full: PK_Example_full.html
   PK_Example: PK_Example.html
   PKPD_Example: PKPD_Example.html
-last_built: 2025-02-09T19:36Z
+last_built: 2025-07-10T21:38Z
 urls:
   reference: https://smouksassi.github.io/coveffectsplot/reference
   article: https://smouksassi.github.io/coveffectsplot/articles
