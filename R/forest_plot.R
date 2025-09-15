@@ -102,7 +102,7 @@ label_wrap <- function(width) {
 #' @param interval_fatten Point range fatten. Default to 4
 #' @param interval_linewidth Point range line width. Default to 1
 #' @param interval_shape Shape used for the Point Range. Default to "circle small".
-#' @param interval_arrow staple or none.
+# #' @param interval_arrow staple or none.
 #' @param bsv_col  BSV pointinterval color. One value.
 #' @param bsv_shape Shape used for the BSV Point Range. Default to "circle small".
 #' @param bsv_text_id Text string(s) to identify BSV. Default to c("BSV","bsv","IIV","Bsv")
@@ -183,7 +183,6 @@ label_wrap <- function(width) {
 #'             logxscale = TRUE, major_x_ticks =c(0.1,1,1.5),
 #'             show_ref_area = FALSE,
 #'             paramname_color =TRUE,
-#'             interval_arrow ="staple",
 #'             interval_col =c("steelblue","red","steelblue","red"),
 #'             facet_formula = "covname~.",
 #'             facet_scales = "free_y",
