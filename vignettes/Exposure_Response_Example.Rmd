@@ -23,6 +23,7 @@ if (capabilities(("cairo"))) {
   knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
 }
 
+library(data.table)
 library(coveffectsplot)
 library(ggplot2)
 library(dplyr)
