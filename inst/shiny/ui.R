@@ -18,6 +18,7 @@ fluidPage(
           ),
           fileInput("datafile", NULL,
                     multiple = FALSE, accept = c("csv")),
+          sliderInput("height", "Plot Height", min=1080/4, max=1080, value=480, animate = FALSE),
           shinyjs::hidden(
             selectizeInput(
               'exposurevariables',
@@ -27,10 +28,13 @@ fluidPage(
               options = list(plugins = list('remove_button', 'drag_drop')),
               width = '800px'
             ),
-            checkboxInput('shapebyparamname', 'Change Symbol by Parameter(s) ?', value = TRUE),
-            checkboxInput('colourbyparamname', 'Change Color by Parameter(s) ?', value = FALSE),
+            checkboxInput('shapebyparamname', 'Change shape by Parameter(s) ?', value = TRUE),
+            checkboxInput('colourbyparamname', 'Change color by Parameter(s) ?', value = FALSE),
+            #checkboxInput('staplearrow', 'Add a staple to the interval ?', value = TRUE),
+            
             sliderInput("vdodgeheight", "Vertical Space Between Parameters(s)",
                         min=0.5, max=2, value=0.8,width = '800px'),
+            
             selectizeInput(
               "covariates",
               "Covariates Top to Bottom (Remove/Drag and Drop to Desired Order):",

@@ -20,7 +20,7 @@ Imports:
     colourpicker,
     egg,
     grid,
-    ggplot2 (>= 3.3.2),
+    ggplot2 (>= 4.0.0),
     shiny,
     stats,
     utils

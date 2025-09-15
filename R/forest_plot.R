@@ -12,6 +12,9 @@ which0 <- function(x) {
   result
 }
 
+staple <- arrow(angle = 90, length = unit(2, "mm"), ends = "both")
+
+
 translate_shape_string <- function (shape_string) 
 {
   if (nchar(shape_string[1]) <= 1) {
@@ -99,6 +102,7 @@ label_wrap <- function(width) {
 #' @param interval_fatten Point range fatten. Default to 4
 #' @param interval_linewidth Point range line width. Default to 1
 #' @param interval_shape Shape used for the Point Range. Default to "circle small".
+#' @param interval_arrow staple or none.
 #' @param bsv_col  BSV pointinterval color. One value.
 #' @param bsv_shape Shape used for the BSV Point Range. Default to "circle small".
 #' @param bsv_text_id Text string(s) to identify BSV. Default to c("BSV","bsv","IIV","Bsv")
@@ -179,6 +183,7 @@ label_wrap <- function(width) {
 #'             logxscale = TRUE, major_x_ticks =c(0.1,1,1.5),
 #'             show_ref_area = FALSE,
 #'             paramname_color =TRUE,
+#'             interval_arrow ="staple",
 #'             interval_col =c("steelblue","red","steelblue","red"),
 #'             facet_formula = "covname~.",
 #'             facet_scales = "free_y",
@@ -418,6 +423,7 @@ forest_plot <- function(
   interval_fatten = 4,
   interval_linewidth = 1,
   interval_shape =  "circle small",
+  #interval_arrow = "none",
   bsv_col = "red",
   bsv_shape = "circle small",
   bsv_text_id = c("BSV","bsv","IIV","Bsv"),
@@ -717,6 +723,8 @@ forest_plot <- function(
         )
     }
   }
+  #if(interval_arrow == "staple") arrowplot <- NULL else arrowplot <- arrow(angle = 90, length = unit(2, "mm"), ends = "both")
+  
   main_plot <- main_plot+
     ggplot2::geom_pointrange(
       position = ggplot2::position_dodge(width = vertical_dodge_height),
@@ -724,9 +732,10 @@ forest_plot <- function(
                           shape = "pointintervalshape"),
       size = interval_size, fatten = interval_fatten,
       linewidth  = interval_linewidth,
-      key_glyph = "pointrange"
+      key_glyph = "pointrange"#,arrow = arrowplot
     )
-
+  
+  
   l_u <- length(unique(as.character(data$paramname)))
   interval_col_values   <- c(interval_col,bsv_col)
   interval_shape_values <- c(translate_shape_string(interval_shape),

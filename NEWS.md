@@ -1,5 +1,7 @@
-# coveffectsplot 1.0.6.9999
+# coveffectsplot 1.0.7
 * added possibility to remove shapes from line interval
+* added missing plot height slider 
+* updated vignettes as some plots and shapes by parameter were missing
 
 # coveffectsplot 1.0.6
 * fixed theme issue in the table when breaking long y axis labels

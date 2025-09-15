@@ -655,8 +655,9 @@ coveffectsdatacovrepbsv$label <- factor(coveffectsdatacovrepbsv$label,
                                                   , "Q4:\n[98.2,222]"
                                         ))
 
-interval_legend_text <- "Median (points)\n90% intervals (horizontal lines) of joint effects:
-covariate distributions, uncertainty
+interval_legend_text <- "Median (points)\n90% intervals (horizontal lines)\njoint effects:
+covariate distributions,
+uncertainty
 and between subject variability"
 interval_bsv_text    <- "BSV (points)\nPrediction Intervals (horizontal lines)"
 ref_legend_text      <- "Reference (vertical line)\nClinically relevant limits\n(gray area)"
@@ -673,9 +674,11 @@ ref_area = c(0.8, 1/0.8),x_range = c(0.4,3),
 strip_placement = "outside",base_size = 18,
 y_label_text_size = 9,x_label_text_size = 10,
 xlabel = "Fold Change Relative to Reference",
-ref_legend_text =ref_legend_text,
-area_legend_text =ref_legend_text ,
+ref_legend_text = ref_legend_text,
+area_legend_text = ref_legend_text ,
 interval_legend_text = interval_legend_text,
+legend_order = c("pointinterval", "ref", "area"),
+combine_interval_shape_legend = TRUE,
 plot_title = "",
 interval_bsv_text = interval_bsv_text,
 facet_formula = "covname~paramname",
@@ -696,4 +699,120 @@ dev.off()
 
 ```
 ![Covariate Effects Plot With BSV.](./coveffectsplot_full.png)
+
+## Computing Geometric Mean Ratios (GMR) using a category as reference
+It is often more useful to compute GMR for each split/facet using one of the categories as reference.
+
+```{r, fig.width=7, fig.height=6}
+
+refSex <- out.df.parameters %>% 
+  filter(SEX==1) %>% 
+  mutate(covname="SEXCAT") %>%
+  group_by(rep,paramname,covname) %>%
+  dplyr::summarize(refvalue=median(paramvalue),
+                   geommeanref= mean(log(paramvalue) ),
+                   varianceref = var(log(paramvalue) ),
+                   Nref = n()
+  )
+
+refWeight <- out.df.parameters %>% 
+  filter(WTCAT4=="2nd quartile of Weight: [71.3,85.0)") %>% 
+  mutate(covname="WTCAT4") %>%
+  group_by(rep,paramname,covname) %>%
+  dplyr::summarize(refvalue=median(paramvalue),
+                   geommeanref= mean(log(paramvalue) ),
+                   varianceref = var(log(paramvalue) ),
+                   Nref = n()
+  )
+
+refAlbumin <- out.df.parameters %>% 
+  filter(ALBCAT3=="2nd tertile of Albumin: [44.0,46.0)") %>% 
+  mutate(covname="ALBCAT3") %>%
+  group_by(rep,paramname,covname) %>%
+  dplyr::summarize(refvalue=median(paramvalue),
+                   geommeanref= mean(log(paramvalue) ),
+                   varianceref = var(log(paramvalue) ),
+                   Nref = n()
+  )
+
+refvaluesall<- rbind(refSex,refWeight,refAlbumin)
+
+out.df.parameters.long <- out.df.parameters %>%
+  gather(covname,covvalue,"SEXCAT","WTCAT4","ALBCAT3",factor_key = TRUE)
+
+out.df.parameters.long <- left_join(out.df.parameters.long,refvaluesall)
+
+out.df.parameters.long$paramvaluestd <- out.df.parameters.long$paramvalue/out.df.parameters.long$refvalue
+out.df.parameters.long<- out.df.parameters.long %>% 
+  group_by(rep,covname,paramname,covvalue,
+           geommeanref,varianceref, Nref)%>% 
+  dplyr::summarize(geommean= mean(log(paramvalue) ),
+                   variance = var(log(paramvalue) ),
+                   N = n()
+  ) %>% 
+  ungroup() %>% 
+  mutate(meanlogdiff= geommean - geommeanref,
+         mid = exp(meanlogdiff),
+         SDERR =  sqrt((variance/N) + (varianceref/Nref)),
+         Rnorm = SDERR*qnorm(0.95),
+         lower = exp(meanlogdiff - qnorm(0.95) * SDERR),
+         upper =   exp(meanlogdiff + qnorm(0.95) * SDERR))
+
+out.df.parameters.long$covvalue2 <- out.df.parameters.long$covvalue
+
+out.df.parameters.long <- out.df.parameters.long %>% 
+  group_by(covvalue2,covname,paramname,covvalue,N) %>% 
+  dplyr::summarize(
+    mid= median(mid ),
+    lower= median(lower  ),
+    upper = median(upper ))
+
+out.df.parameters.long <- out.df.parameters.long %>% 
+  mutate( label= covvalue2,
+          LABEL = paste0(format(round(mid,2), nsmall = 2),
+                         " [", format(round(lower,2), nsmall = 2), "-",
+                         format(round(upper,2), nsmall = 2), "]"," N=",N))
+
+out.df.parameters.long$lower <- ifelse(out.df.parameters.long$mid==1,
+                                   1, out.df.parameters.long$lower)
+out.df.parameters.long$upper <- ifelse(out.df.parameters.long$mid==1,
+                                   1, out.df.parameters.long$upper)
+out.df.parameters.long$LABEL <- ifelse(out.df.parameters.long$mid==1,
+                                   paste0("Reference", " N=",out.df.parameters.long$N),
+                                   out.df.parameters.long$LABEL)
+
+png("./coveffectsplot_full_gmr.png",width =9.5 ,height = 8,units = "in",res=72)
+forest_plot(out.df.parameters.long,
+ref_area = c(0.8, 1/0.8),x_range = c(0.4,3),
+strip_placement = "outside",base_size = 18,
+y_label_text_size = 9,x_label_text_size = 10,
+xlabel = "Fold Change Relative to Reference",
+ref_legend_text = ref_legend_text,
+area_legend_text = ref_legend_text ,
+interval_legend_text = interval_legend_text,
+interval_size = 1,
+interval_fatten = 2,
+legend_order = c("pointinterval", "ref", "area"),
+combine_interval_shape_legend = TRUE,
+plot_title = "",
+interval_bsv_text = interval_bsv_text,
+facet_formula = "covname~paramname",
+facet_switch = "y",
+table_facet_switch = "both",
+reserve_table_xaxis_label_space = FALSE,
+facet_scales = "free_y", facet_space = "free",
+paramname_shape = FALSE,
+table_position = "below",
+show_table_yaxis_tick_label = TRUE,
+table_text_size= 4,
+plot_table_ratio = 1,
+show_table_facet_strip = "both",
+logxscale = TRUE,
+major_x_ticks = c(0.5,0.8,1/0.8,1/0.5),
+return_list = FALSE)
+dev.off()
+
+
+```
+![Covariate Effects Plot With BSV.](./coveffectsplot_full_gmr.png)
 

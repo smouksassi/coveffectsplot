@@ -23,6 +23,7 @@ function(input, output, session) {
     shinyjs::show("covvalueorder")
     shinyjs::show("shapebyparamname")
     shinyjs::show("colourbyparamname")
+    #shinyjs::show("staplearrow")
     shinyjs::show("vdodgeheight")
     shinyjs::show("get_code")
   })
@@ -237,11 +238,13 @@ function(input, output, session) {
       paramshapes <- paste0("c(", paste0("input$shape", 1:ncols, collapse = ", "), ")")
       paramshapes <- eval(parse(text = paramshapes))
     }
-    
+    #staplearrow<- ifelse(input$staplearrow,"staple","none")
+
     metaExpr({
       summarydata <- ..(plotdataprepare())
       paramcols   <- ..(paramcols)
       paramshapes <- ..(paramshapes)
+      #staplearrow <- ..(staplearrow)
     plot <- forest_plot(
         data = summarydata,
         facet_formula = ..(input$facetformula),
@@ -293,6 +296,7 @@ function(input, output, session) {
         interval_fatten = ..(input$fattenpointrange),
         interval_linewidth = ..(input$linewidthpointrange),
         interval_shape = paramshapes,
+        #interval_arrow = staplearrow,
         bsv_col      = ..(input$colourbsvrange),
         bsv_shape = ..(input$shapebsvrange),
         strip_col = ..(input$stripbackgroundfill),
