@@ -12,7 +12,7 @@ which0 <- function(x) {
   result
 }
 
-staple <- arrow(angle = 90, length = unit(2, "mm"), ends = "both")
+#staple <- arrow(angle = 90, length = unit(2, "mm"), ends = "both")
 
 
 translate_shape_string <- function (shape_string) 
