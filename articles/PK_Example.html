@@ -1053,6 +1053,7 @@ text sizes using <code>base_size = 11</code>.</p>
 <span>                            facet_space <span class="op">=</span> <span class="st">"free"</span>,</span>
 <span>                            facet_labeller <span class="op">=</span> <span class="st">"label_parsed"</span>,</span>
 <span>                            paramname_shape <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                            bsv_shape <span class="op">=</span><span class="st">"triangle"</span>,</span>
 <span>                            table_position <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>                            table_text_size<span class="op">=</span><span class="fl">4</span>,</span>
 <span>                            base_size <span class="op">=</span> <span class="fl">11</span>,</span>
@@ -1088,6 +1089,7 @@ legend ordering and few other options.</p>
 <span>            interval_bsv_text <span class="op">=</span> <span class="st">"BSV\nPrediction Intervals"</span>, </span>
 <span>                            facet_formula <span class="op">=</span> <span class="st">"covname~."</span>,</span>
 <span>                            paramname_shape <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                            interval_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"square"</span>,<span class="st">"triangle"</span><span class="op">)</span>,</span>
 <span>            legend_order <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"shape"</span>,<span class="st">"pointinterval"</span>,<span class="st">"ref"</span>, <span class="st">"area"</span><span class="op">)</span>,</span>
 <span>                            legend_shape_reverse <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                            bsv_col <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/muted.html" class="external-link">muted</a></span><span class="op">(</span><span class="st">"red"</span><span class="op">)</span>,</span>
@@ -1133,7 +1135,8 @@ argument</p>
 <span>                            facet_formula <span class="op">=</span> <span class="st">"covname~."</span>,</span>
 <span>                            paramname_shape <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                            paramname_color <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>            combine_interval_shape_legend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                            combine_interval_shape_legend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>            interval_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"square"</span>,<span class="st">"triangle"</span><span class="op">)</span>,</span>
 <span>            legend_order <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"shape"</span>,<span class="st">"pointinterval"</span>,<span class="st">"ref"</span>, <span class="st">"area"</span><span class="op">)</span>,</span>
 <span>                            legend_shape_reverse <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                            bsv_col <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/muted.html" class="external-link">muted</a></span><span class="op">(</span><span class="st">"red"</span><span class="op">)</span>,</span>

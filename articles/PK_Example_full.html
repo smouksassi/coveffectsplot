@@ -841,8 +841,9 @@ uncertainty concisely summarized and presented using intervals.</p>
 <span>                                                  , <span class="st">"Q4:\n[98.2,222]"</span></span>
 <span>                                        <span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">interval_legend_text</span> <span class="op">&lt;-</span> <span class="st">"Median (points)\n90% intervals (horizontal lines) of joint effects:</span></span>
-<span><span class="st">covariate distributions, uncertainty</span></span>
+<span><span class="va">interval_legend_text</span> <span class="op">&lt;-</span> <span class="st">"Median (points)\n90% intervals (horizontal lines)\njoint effects:</span></span>
+<span><span class="st">covariate distributions,</span></span>
+<span><span class="st">uncertainty</span></span>
 <span><span class="st">and between subject variability"</span></span>
 <span><span class="va">interval_bsv_text</span>    <span class="op">&lt;-</span> <span class="st">"BSV (points)\nPrediction Intervals (horizontal lines)"</span></span>
 <span><span class="va">ref_legend_text</span>      <span class="op">&lt;-</span> <span class="st">"Reference (vertical line)\nClinically relevant limits\n(gray area)"</span></span>
@@ -859,9 +860,11 @@ uncertainty concisely summarized and presented using intervals.</p>
 <span>strip_placement <span class="op">=</span> <span class="st">"outside"</span>,base_size <span class="op">=</span> <span class="fl">18</span>,</span>
 <span>y_label_text_size <span class="op">=</span> <span class="fl">9</span>,x_label_text_size <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>xlabel <span class="op">=</span> <span class="st">"Fold Change Relative to Reference"</span>,</span>
-<span>ref_legend_text <span class="op">=</span><span class="va">ref_legend_text</span>,</span>
-<span>area_legend_text <span class="op">=</span><span class="va">ref_legend_text</span> ,</span>
+<span>ref_legend_text <span class="op">=</span> <span class="va">ref_legend_text</span>,</span>
+<span>area_legend_text <span class="op">=</span> <span class="va">ref_legend_text</span> ,</span>
 <span>interval_legend_text <span class="op">=</span> <span class="va">interval_legend_text</span>,</span>
+<span>legend_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pointinterval"</span>, <span class="st">"ref"</span>, <span class="st">"area"</span><span class="op">)</span>,</span>
+<span>combine_interval_shape_legend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>plot_title <span class="op">=</span> <span class="st">""</span>,</span>
 <span>interval_bsv_text <span class="op">=</span> <span class="va">interval_bsv_text</span>,</span>
 <span>facet_formula <span class="op">=</span> <span class="st">"covname~paramname"</span>,</span>
@@ -883,6 +886,126 @@ uncertainty concisely summarized and presented using intervals.</p>
 <span><span class="co">#&gt;   2</span></span></code></pre></div>
 <div class="float">
 <img src="coveffectsplot_full.png" alt="Covariate Effects Plot With BSV."><div class="figcaption">Covariate Effects Plot With BSV.</div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="computing-geometric-mean-ratios-gmr-using-a-category-as-reference">Computing Geometric Mean Ratios (GMR) using a category as
+reference<a class="anchor" aria-label="anchor" href="#computing-geometric-mean-ratios-gmr-using-a-category-as-reference"></a>
+</h2>
+<p>It is often more useful to compute GMR for each split/facet using one
+of the categories as reference.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">refSex</span> <span class="op">&lt;-</span> <span class="va">out.df.parameters</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">SEX</span><span class="op">==</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>covname<span class="op">=</span><span class="st">"SEXCAT"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">rep</span>,<span class="va">paramname</span>,<span class="va">covname</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>refvalue<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">paramvalue</span><span class="op">)</span>,</span>
+<span>                   geommeanref<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">paramvalue</span><span class="op">)</span> <span class="op">)</span>,</span>
+<span>                   varianceref <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">paramvalue</span><span class="op">)</span> <span class="op">)</span>,</span>
+<span>                   Nref <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">refWeight</span> <span class="op">&lt;-</span> <span class="va">out.df.parameters</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">WTCAT4</span><span class="op">==</span><span class="st">"2nd quartile of Weight: [71.3,85.0)"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>covname<span class="op">=</span><span class="st">"WTCAT4"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">rep</span>,<span class="va">paramname</span>,<span class="va">covname</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>refvalue<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">paramvalue</span><span class="op">)</span>,</span>
+<span>                   geommeanref<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">paramvalue</span><span class="op">)</span> <span class="op">)</span>,</span>
+<span>                   varianceref <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">paramvalue</span><span class="op">)</span> <span class="op">)</span>,</span>
+<span>                   Nref <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">refAlbumin</span> <span class="op">&lt;-</span> <span class="va">out.df.parameters</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ALBCAT3</span><span class="op">==</span><span class="st">"2nd tertile of Albumin: [44.0,46.0)"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>covname<span class="op">=</span><span class="st">"ALBCAT3"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">rep</span>,<span class="va">paramname</span>,<span class="va">covname</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>refvalue<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">paramvalue</span><span class="op">)</span>,</span>
+<span>                   geommeanref<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">paramvalue</span><span class="op">)</span> <span class="op">)</span>,</span>
+<span>                   varianceref <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">paramvalue</span><span class="op">)</span> <span class="op">)</span>,</span>
+<span>                   Nref <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">refvaluesall</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">refSex</span>,<span class="va">refWeight</span>,<span class="va">refAlbumin</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">out.df.parameters.long</span> <span class="op">&lt;-</span> <span class="va">out.df.parameters</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">gather</span><span class="op">(</span><span class="va">covname</span>,<span class="va">covvalue</span>,<span class="st">"SEXCAT"</span>,<span class="st">"WTCAT4"</span>,<span class="st">"ALBCAT3"</span>,factor_key <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">out.df.parameters.long</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">out.df.parameters.long</span>,<span class="va">refvaluesall</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">out.df.parameters.long</span><span class="op">$</span><span class="va">paramvaluestd</span> <span class="op">&lt;-</span> <span class="va">out.df.parameters.long</span><span class="op">$</span><span class="va">paramvalue</span><span class="op">/</span><span class="va">out.df.parameters.long</span><span class="op">$</span><span class="va">refvalue</span></span>
+<span><span class="va">out.df.parameters.long</span><span class="op">&lt;-</span> <span class="va">out.df.parameters.long</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">rep</span>,<span class="va">covname</span>,<span class="va">paramname</span>,<span class="va">covvalue</span>,</span>
+<span>           <span class="va">geommeanref</span>,<span class="va">varianceref</span>, <span class="va">Nref</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>geommean<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">paramvalue</span><span class="op">)</span> <span class="op">)</span>,</span>
+<span>                   variance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">paramvalue</span><span class="op">)</span> <span class="op">)</span>,</span>
+<span>                   N <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>meanlogdiff<span class="op">=</span> <span class="va">geommean</span> <span class="op">-</span> <span class="va">geommeanref</span>,</span>
+<span>         mid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">meanlogdiff</span><span class="op">)</span>,</span>
+<span>         SDERR <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="op">(</span><span class="va">variance</span><span class="op">/</span><span class="va">N</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="va">varianceref</span><span class="op">/</span><span class="va">Nref</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         Rnorm <span class="op">=</span> <span class="va">SDERR</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.95</span><span class="op">)</span>,</span>
+<span>         lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">meanlogdiff</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.95</span><span class="op">)</span> <span class="op">*</span> <span class="va">SDERR</span><span class="op">)</span>,</span>
+<span>         upper <span class="op">=</span>   <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">meanlogdiff</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.95</span><span class="op">)</span> <span class="op">*</span> <span class="va">SDERR</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">out.df.parameters.long</span><span class="op">$</span><span class="va">covvalue2</span> <span class="op">&lt;-</span> <span class="va">out.df.parameters.long</span><span class="op">$</span><span class="va">covvalue</span></span>
+<span></span>
+<span><span class="va">out.df.parameters.long</span> <span class="op">&lt;-</span> <span class="va">out.df.parameters.long</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">covvalue2</span>,<span class="va">covname</span>,<span class="va">paramname</span>,<span class="va">covvalue</span>,<span class="va">N</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
+<span>    mid<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">mid</span> <span class="op">)</span>,</span>
+<span>    lower<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">lower</span>  <span class="op">)</span>,</span>
+<span>    upper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">upper</span> <span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">out.df.parameters.long</span> <span class="op">&lt;-</span> <span class="va">out.df.parameters.long</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span> label<span class="op">=</span> <span class="va">covvalue2</span>,</span>
+<span>          LABEL <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">mid</span>,<span class="fl">2</span><span class="op">)</span>, nsmall <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>                         <span class="st">" ["</span>, <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">lower</span>,<span class="fl">2</span><span class="op">)</span>, nsmall <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, <span class="st">"-"</span>,</span>
+<span>                         <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">upper</span>,<span class="fl">2</span><span class="op">)</span>, nsmall <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, <span class="st">"]"</span>,<span class="st">" N="</span>,<span class="va">N</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">out.df.parameters.long</span><span class="op">$</span><span class="va">lower</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">out.df.parameters.long</span><span class="op">$</span><span class="va">mid</span><span class="op">==</span><span class="fl">1</span>,</span>
+<span>                                   <span class="fl">1</span>, <span class="va">out.df.parameters.long</span><span class="op">$</span><span class="va">lower</span><span class="op">)</span></span>
+<span><span class="va">out.df.parameters.long</span><span class="op">$</span><span class="va">upper</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">out.df.parameters.long</span><span class="op">$</span><span class="va">mid</span><span class="op">==</span><span class="fl">1</span>,</span>
+<span>                                   <span class="fl">1</span>, <span class="va">out.df.parameters.long</span><span class="op">$</span><span class="va">upper</span><span class="op">)</span></span>
+<span><span class="va">out.df.parameters.long</span><span class="op">$</span><span class="va">LABEL</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">out.df.parameters.long</span><span class="op">$</span><span class="va">mid</span><span class="op">==</span><span class="fl">1</span>,</span>
+<span>                                   <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Reference"</span>, <span class="st">" N="</span>,<span class="va">out.df.parameters.long</span><span class="op">$</span><span class="va">N</span><span class="op">)</span>,</span>
+<span>                                   <span class="va">out.df.parameters.long</span><span class="op">$</span><span class="va">LABEL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/grDevices/png.html" class="external-link">png</a></span><span class="op">(</span><span class="st">"./coveffectsplot_full_gmr.png"</span>,width <span class="op">=</span><span class="fl">9.5</span> ,height <span class="op">=</span> <span class="fl">8</span>,units <span class="op">=</span> <span class="st">"in"</span>,res<span class="op">=</span><span class="fl">72</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/forest_plot.html">forest_plot</a></span><span class="op">(</span><span class="va">out.df.parameters.long</span>,</span>
+<span>ref_area <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">0.8</span><span class="op">)</span>,x_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.4</span>,<span class="fl">3</span><span class="op">)</span>,</span>
+<span>strip_placement <span class="op">=</span> <span class="st">"outside"</span>,base_size <span class="op">=</span> <span class="fl">18</span>,</span>
+<span>y_label_text_size <span class="op">=</span> <span class="fl">9</span>,x_label_text_size <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>xlabel <span class="op">=</span> <span class="st">"Fold Change Relative to Reference"</span>,</span>
+<span>ref_legend_text <span class="op">=</span> <span class="va">ref_legend_text</span>,</span>
+<span>area_legend_text <span class="op">=</span> <span class="va">ref_legend_text</span> ,</span>
+<span>interval_legend_text <span class="op">=</span> <span class="va">interval_legend_text</span>,</span>
+<span>interval_size <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>interval_fatten <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>legend_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pointinterval"</span>, <span class="st">"ref"</span>, <span class="st">"area"</span><span class="op">)</span>,</span>
+<span>combine_interval_shape_legend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>plot_title <span class="op">=</span> <span class="st">""</span>,</span>
+<span>interval_bsv_text <span class="op">=</span> <span class="va">interval_bsv_text</span>,</span>
+<span>facet_formula <span class="op">=</span> <span class="st">"covname~paramname"</span>,</span>
+<span>facet_switch <span class="op">=</span> <span class="st">"y"</span>,</span>
+<span>table_facet_switch <span class="op">=</span> <span class="st">"both"</span>,</span>
+<span>reserve_table_xaxis_label_space <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>facet_scales <span class="op">=</span> <span class="st">"free_y"</span>, facet_space <span class="op">=</span> <span class="st">"free"</span>,</span>
+<span>paramname_shape <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>table_position <span class="op">=</span> <span class="st">"below"</span>,</span>
+<span>show_table_yaxis_tick_label <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>table_text_size<span class="op">=</span> <span class="fl">4</span>,</span>
+<span>plot_table_ratio <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>show_table_facet_strip <span class="op">=</span> <span class="st">"both"</span>,</span>
+<span>logxscale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>major_x_ticks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>,<span class="fl">0.8</span>,<span class="fl">1</span><span class="op">/</span><span class="fl">0.8</span>,<span class="fl">1</span><span class="op">/</span><span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>return_list <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; png </span></span>
+<span><span class="co">#&gt;   2</span></span></code></pre></div>
+<div class="float">
+<img src="coveffectsplot_full_gmr.png" alt="Covariate Effects Plot With BSV."><div class="figcaption">Covariate Effects Plot With BSV.</div>
 </div>
 </div>
   </div>
